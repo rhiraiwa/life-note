@@ -1,28 +1,20 @@
 import React from 'react';
 import testdata from './Data.json';
-
-const Row = ({data}) => {
-  return (
-    <tr>
-      <td>{data.date}</td>
-      <td>{data.category}</td>
-      <td>{data.shop_name}</td>
-      <td>{data.amount}</td>
-    </tr>
-  )
-}
+import './test.css';
 
 const Table = () => {
-
   return (
-    <table>
+    <table id='home-table'>
       <thead>
         <tr>
-          <th></th>
+          <th>日</th>
+          <th>カテゴリ</th>
+          <th>店名</th>
+          <th>金額</th>
         </tr>
       </thead>
       <tbody>
-        <Row/>
+        {getCompleteRow(testdata)}
       </tbody>
     </table>
   );
@@ -66,113 +58,137 @@ const getCompleteRow = (data) => {
   }
 
   let countMap = countDate(rows);
-  formatRow(rows);
+  let displayRows = formatRow(rows, countMap);
 
-  return rows;
+  return displayRows;
 }
 
 const countDate = (rows) => {
   let countMap = {
-    "a":0,"b":0,"c":0,"d":0,"e":0,"f":0,"g":0,"h":0,
-    "i":0,"j":0,"k":0,"l":0,"m":0,"n":0,"o":0,"p":0,
-    "q":0,"r":0,"s":0,"t":0,"u":0,"v":0,"w":0,"x":0,
-    "y":0,"z":0,"aa":0,"ab":0,"ac":0,"ad":0,"ae":0
+    "1":0,"2":0,"3":0,"4":0,"5":0,"6":0,"7":0,"8":0,
+    "9":0,"10":0,"11":0,"12":0,"13":0,"14":0,"15":0,"16":0,
+    "17":0,"18":0,"19":0,"20":0,"21":0,"22":0,"23":0,"24":0,
+    "25":0,"26":0,"27":0,"28":0,"29":0,"30":0,"31":0
   }
   for (let i = 0; i < rows.length; i++) {
     switch (rows[i].date) {
-      case "1" : countMap["a"] += 1;  break;
-      case "2" : countMap["b"] += 1;  break;
-      case "3" : countMap["c"] += 1;  break;
-      case "4" : countMap["d"] += 1;  break;
-      case "5" : countMap["e"] += 1;  break;
-      case "6" : countMap["f"] += 1;  break;
-      case "7" : countMap["g"] += 1;  break;
-      case "8" : countMap["h"] += 1;  break;
-      case "9" : countMap["i"] += 1;  break;
-      case "10" : countMap["j"] += 1;  break;
-      case "11" : countMap["k"] += 1;  break;
-      case "12" : countMap["l"] += 1;  break;
-      case "13" : countMap["m"] += 1;  break;
-      case "14" : countMap["n"] += 1;  break;
-      case "15" : countMap["o"] += 1;  break;
-      case "16" : countMap["p"] += 1;  break;
-      case "17" : countMap["q"] += 1;  break;
-      case "18" : countMap["r"] += 1;  break;
-      case "19" : countMap["s"] += 1;  break;
-      case "20" : countMap["t"] += 1;  break;
-      case "21" : countMap["u"] += 1;  break;
-      case "22" : countMap["v"] += 1;  break;
-      case "23" : countMap["w"] += 1;  break;
-      case "24" : countMap["x"] += 1;  break;
-      case "25" : countMap["y"] += 1;  break;
-      case "26" : countMap["z"] += 1;  break;
-      case "27" : countMap["aa"] += 1;  break;
-      case "28" : countMap["ab"] += 1;  break;
-      case "29" : countMap["ac"] += 1;  break;
-      case "30" : countMap["ad"] += 1;  break;
-      case "31" : countMap["ae"] += 1;  break;
+      case "1" : countMap["1"] += 1;  break;
+      case "2" : countMap["2"] += 1;  break;
+      case "3" : countMap["3"] += 1;  break;
+      case "4" : countMap["4"] += 1;  break;
+      case "5" : countMap["5"] += 1;  break;
+      case "6" : countMap["6"] += 1;  break;
+      case "7" : countMap["7"] += 1;  break;
+      case "8" : countMap["8"] += 1;  break;
+      case "9" : countMap["9"] += 1;  break;
+      case "10" : countMap["10"] += 1;  break;
+      case "11" : countMap["11"] += 1;  break;
+      case "12" : countMap["12"] += 1;  break;
+      case "13" : countMap["13"] += 1;  break;
+      case "14" : countMap["14"] += 1;  break;
+      case "15" : countMap["15"] += 1;  break;
+      case "16" : countMap["16"] += 1;  break;
+      case "17" : countMap["17"] += 1;  break;
+      case "18" : countMap["18"] += 1;  break;
+      case "19" : countMap["19"] += 1;  break;
+      case "20" : countMap["20"] += 1;  break;
+      case "21" : countMap["21"] += 1;  break;
+      case "22" : countMap["22"] += 1;  break;
+      case "23" : countMap["23"] += 1;  break;
+      case "24" : countMap["24"] += 1;  break;
+      case "25" : countMap["25"] += 1;  break;
+      case "26" : countMap["26"] += 1;  break;
+      case "27" : countMap["27"] += 1;  break;
+      case "28" : countMap["28"] += 1;  break;
+      case "29" : countMap["29"] += 1;  break;
+      case "30" : countMap["30"] += 1;  break;
+      case "31" : countMap["31"] += 1;  break;
     }
   }
   
   return countMap;
 }
 
-const formatRow = (originalRows) => {
+const formatRow = (original, count) => {
   let rows = [];
-  let count = 0;
-  for (let i = 0; i < originalRows.length; i++) {
-    for (let j = i; j < originalRows.length - 1; j++) {
-      if (originalRows[j].date === originalRows[j+1].date) {
-        count++;
-      }
+  let index = 1;
+  for (let i = 0; i < original.length; i++) {
+    if (original[i].date > index) index++; 
+    if (count[index] !== 0) {
+      console.log(count[index.toString()]);
+      rows.push(
+        <tr>
+          <td rowSpan={count[index.toString()]}>{original[i].date}</td>
+          <td>{original[i].category}</td>
+          <td>{original[i].shop_name}</td>
+          <td>{original[i].amount}</td>
+        </tr>
+      )
+      count[index] = 0;
+     }
+    else {
+      rows.push(
+        <tr>
+          <td>{original[i].category}</td>
+          <td>{original[i].shop_name}</td>
+          <td>{original[i].amount}</td>
+        </tr>
+      )
     }
-    for (let k = count; k > 0; k--) {
-      if (k === count) {
-        rows.push(
-          <tr>
-            <td rowSpan={count}>{originalRows[i].date}</td>
-            <td>{originalRows[i].category}</td>
-            <td>{originalRows[i].shop_name}</td>
-            <td>{originalRows[i].amount}</td>
-          </tr>
-        )
-      }
-      else {
-        rows.push(
-          <tr>
-            <td>{originalRows[i].category}</td>
-            <td>{originalRows[i].shop_name}</td>
-            <td>{originalRows[i].amount}</td>
-          </tr>
-        )
-      }
-    }   
-    count = 0; 
   }
+
   return rows
 }
 
 const Test = () => {
     return (
       <>
-        <button>先月</button>
-        <input type='text'/>
-        /
-        <input type='text'/>
-        <button>翌月</button>
-        <table>
-          <thead>
-            <tr>
-              <th>日</th>
-              <th>カテゴリ</th>
-              <th>店名</th>
-              <th>金額</th>
-            </tr>
-          </thead>
-          <tbody>
-            {getCompleteRow(testdata)}
-          </tbody>
-        </table>
+      <div className='flexbox'>
+        <div>
+          <button>先月</button>
+          <input type='text'/>
+          /
+          <input type='text'/>
+          <button>翌月</button>
+          <div id='home-table-area'>
+            <Table/>
+          </div>
+        </div>
+        <div>
+          <div>
+            <label>予算</label>
+            <input type='text'/>
+          </div>
+          <div>
+            <label>入金</label>
+            <input type='text'/>
+          </div>
+          <div>
+            <label>支出</label>
+            <input type='text'/>
+          </div>
+          <div>
+            <label>収支</label>
+            <input type='text'/>
+          </div>
+          <div>
+            <label>メッセージ</label>
+            <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
+              <tbody>
+                <tr>
+                  <td>message</td>
+                </tr>
+                <tr>
+                  <td>message</td>
+                </tr>
+                <tr>
+                  <td>message</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       </>
     );
   }

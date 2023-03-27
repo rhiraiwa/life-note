@@ -6,6 +6,13 @@
       "category":"食費",
       "shop_name":"AEON",
       "amount":"1000"
+    },{
+      "year":"2023",
+      "month":"1",
+      "date":"1",
+      "category":"食費",
+      "shop_name":"AEON",
+      "amount":"11000"
     },
     {
       "year":"2023",
@@ -43,6 +50,22 @@
       "year":"2023",
       "month":"1",
       "date":"16",
+      "category":"食費",
+      "shop_name":"AEON",
+      "amount":"1000"
+    },
+    {
+      "year":"2023",
+      "month":"1",
+      "date":"18",
+      "category":"食費",
+      "shop_name":"AEON",
+      "amount":"1000"
+    },
+    {
+      "year":"2023",
+      "month":"1",
+      "date":"18",
       "category":"食費",
       "shop_name":"AEON",
       "amount":"1000"
