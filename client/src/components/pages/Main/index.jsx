@@ -146,7 +146,7 @@ const formatRow = (original, count, year, month) => {
   return rows
 }
 
-const YearMonthHandler = ({state}) => {
+export const YearMonthHandler = ({state}) => {
 
   const changeYearMonth = (type) => {
     let year = Number(state.selected.year);
