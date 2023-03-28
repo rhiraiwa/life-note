@@ -1,8 +1,8 @@
 import React from 'react';
-import testdata from './Data.json';
-import FlexDiv from './components/atoms/FlexDiv';
-import LabelInput from './components/molecules/LabelInput';
-import './test.css';
+import testdata from '../../../Data.json';
+import FlexDiv from '../../atoms/FlexDiv';
+import LabelInput from '../../molecules/LabelInput';
+import './index.scss';
 
 const Table = ({year, month}) => {
   return (
@@ -146,17 +146,11 @@ const formatRow = (original, count, year, month) => {
   return rows
 }
 
-const Test = () => {
-
-  const date = new Date();
-  const [selected, setSelected] = React.useState({
-    year: date.getFullYear(),
-    month: date. getMonth()
-  })
+const YearMonthHandler = ({state}) => {
 
   const changeYearMonth = (type) => {
-    let year = Number(selected.year);
-    let month = Number(selected.month);
+    let year = Number(state.selected.year);
+    let month = Number(state.selected.month);
 
     if(type==='up') {
         if(month === 11) {
@@ -174,18 +168,33 @@ const Test = () => {
         month -= 1;
     }
 
-    setSelected({...selected, year:year, month:month});
+    state.setSelected({...state.selected, year:year, month:month});
   }
+
+  return (
+    <>
+      <button onClick={()=>changeYearMonth('down')}>先月</button>
+      <input type='text' value={state.selected.year}/>
+      /
+      <input type='text' value={state.selected.month + 1}/>
+      <button onClick={()=>changeYearMonth('up')}>翌月</button>
+    </>
+  );
+}
+
+const Main = () => {
+
+  const date = new Date();
+  const [selected, setSelected] = React.useState({
+    year: date.getFullYear(),
+    month: date. getMonth()
+  })
 
   return (
     <>
       <FlexDiv>
         <div>
-          <button onClick={()=>changeYearMonth('down')}>先月</button>
-          <input type='text' value={selected.year}/>
-          /
-          <input type='text' value={selected.month + 1}/>
-          <button onClick={()=>changeYearMonth('up')}>翌月</button>
+          <YearMonthHandler state={{selected, setSelected}}/>
           <div id='home-table-area'>
             <Table year={selected.year} month={selected.month}/>
           </div>
@@ -222,4 +231,4 @@ const Test = () => {
   );
 }
 
-export default Test;
+export default Main;

@@ -1,0 +1,18 @@
+#home-table-area {
+    height: 85vh;
+    overflow-y: scroll;
+    
+    #home-table {
+        border-collapse: collapse;
+    
+        thead {
+            position:sticky;
+            top: 0;
+            background-color: #AAA;
+        }
+
+        th, td {
+            border: 1px solid #AAA;
+        }
+    }
+}
