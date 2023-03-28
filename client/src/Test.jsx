@@ -1,26 +1,32 @@
 import React from 'react';
 import testdata from './Data.json';
+import FlexDiv from './components/atoms/FlexDiv';
+import LabelInput from './components/molecules/LabelInput';
 import './test.css';
 
-const Table = () => {
+const Table = ({year, month}) => {
   return (
     <table id='home-table'>
       <thead>
         <tr>
           <th>日</th>
+          <th>曜日</th>
           <th>カテゴリ</th>
           <th>店名</th>
           <th>金額</th>
         </tr>
       </thead>
       <tbody>
-        {getCompleteRow(testdata)}
+        {getCompleteRow(testdata, year, month)}
       </tbody>
     </table>
   );
 }
 
-const getCompleteRow = (data) => {
+const getCompleteRow = (data, year, month) => {
+
+  const lastDate = new Date(year, month + 1, 0).getDate();
+
   let rows = [];
   let next = 1;
   for (let i = 0; i < data.length; i++) {
@@ -28,8 +34,6 @@ const getCompleteRow = (data) => {
       for (let j = next; j < data[i].date; j++) {
         rows.push(
           {
-            "year":"2023",
-            "month":"1",
             "date":j.toString(),
             "category":"",
             "shop_name":"",
@@ -41,13 +45,10 @@ const getCompleteRow = (data) => {
     rows.push(data[i]);
     next = Number(data[i].date) + 1;
   }
-  // 31は要変更
-  if (next < 31) {
-    for (let i = next; i <= 31; i++) {
+  if (next < lastDate) {
+    for (let i = next; i <= lastDate; i++) {
       rows.push(
         {
-          "year":"2023",
-          "month":"1",
           "date":i.toString(),
           "category":"",
           "shop_name":"",
@@ -58,7 +59,7 @@ const getCompleteRow = (data) => {
   }
 
   let countMap = countDate(rows);
-  let displayRows = formatRow(rows, countMap);
+  let displayRows = formatRow(rows, countMap, year, month);
 
   return displayRows;
 }
@@ -109,16 +110,21 @@ const countDate = (rows) => {
   return countMap;
 }
 
-const formatRow = (original, count) => {
+const formatRow = (original, count, year, month) => {
+
+  const days = ['日', '月', '火', '水', '木', '金', '土'];
+
   let rows = [];
   let index = 1;
   for (let i = 0; i < original.length; i++) {
     if (original[i].date > index) index++; 
     if (count[index] !== 0) {
-      console.log(count[index.toString()]);
       rows.push(
         <tr>
           <td rowSpan={count[index.toString()]}>{original[i].date}</td>
+          <td rowSpan={count[index.toString()]}>{
+            days[new Date(year, month, original[i].date).getDay()]
+          }</td>
           <td>{original[i].category}</td>
           <td>{original[i].shop_name}</td>
           <td>{original[i].amount}</td>
@@ -141,36 +147,59 @@ const formatRow = (original, count) => {
 }
 
 const Test = () => {
-    return (
-      <>
-      <div className='flexbox'>
+
+  const date = new Date();
+  const [selected, setSelected] = React.useState({
+    year: date.getFullYear(),
+    month: date. getMonth()
+  })
+
+  const changeYearMonth = (type) => {
+    let year = Number(selected.year);
+    let month = Number(selected.month);
+
+    if(type==='up') {
+        if(month === 11) {
+            year += 1;
+            month = -1;
+        }
+        month += 1;
+    }
+
+    if(type==='down') {
+        if(month === 0) {
+            year -= 1;
+            month = 12;
+        }
+        month -= 1;
+    }
+
+    setSelected({...selected, year:year, month:month});
+  }
+
+  return (
+    <>
+      <FlexDiv>
         <div>
-          <button>先月</button>
-          <input type='text'/>
+          <button onClick={()=>changeYearMonth('down')}>先月</button>
+          <input type='text' value={selected.year}/>
           /
-          <input type='text'/>
-          <button>翌月</button>
+          <input type='text' value={selected.month + 1}/>
+          <button onClick={()=>changeYearMonth('up')}>翌月</button>
           <div id='home-table-area'>
-            <Table/>
+            <Table year={selected.year} month={selected.month}/>
           </div>
+          <FlexDiv>
+            <button>チャージ</button>
+            <button>一括チャージ</button>
+            <LabelInput label='小計' type='text' isReadOnly={true}/>
+          </FlexDiv>
         </div>
         <div>
-          <div>
-            <label>予算</label>
-            <input type='text'/>
-          </div>
-          <div>
-            <label>入金</label>
-            <input type='text'/>
-          </div>
-          <div>
-            <label>支出</label>
-            <input type='text'/>
-          </div>
-          <div>
-            <label>収支</label>
-            <input type='text'/>
-          </div>
+          <LabelInput label='予算' type='text' isReadOnly={true}/>
+          <LabelInput label='入金' type='text' isReadOnly={true}/>
+          <LabelInput label='支出' type='text' isReadOnly={true}/>
+          <LabelInput label='収支' type='text' isReadOnly={true}/>
           <div>
             <label>メッセージ</label>
             <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
@@ -188,9 +217,9 @@ const Test = () => {
             </table>
           </div>
         </div>
-      </div>
-      </>
-    );
-  }
-  
-  export default Test;
+      </FlexDiv>
+    </>
+  );
+}
+
+export default Test;
