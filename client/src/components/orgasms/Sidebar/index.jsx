@@ -4,7 +4,6 @@ const Sidebar = () => {
   return (
     <>
       <nav>
-        <h2>logo</h2>
         <ul>
           <li className='headline'>管理</li>
           <li>予算</li>
