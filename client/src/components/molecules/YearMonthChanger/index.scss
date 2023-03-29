@@ -1,0 +1,24 @@
+#year-month-changer {
+  margin-bottom: 5px;
+
+  #month-back,
+  #month-forward {
+    border: none;
+    background-color: #FFFFFF;
+    color: #676F74;
+    
+    &:hover {
+      cursor: pointer;
+    }
+  }
+  
+  #year-input {
+    width: 32px;
+    margin-right: 5px;
+  }
+  
+  #month-input {
+    width: 20px;
+    margin-left: 5px;
+  }
+}

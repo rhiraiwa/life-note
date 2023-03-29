@@ -1,5 +1,5 @@
 import React from "react";
-import { YearMonthHandler } from "../Main";
+import YearMonthChanger from "../../molecules/YearMonthChanger";
 
 const Result = () => {
   const date = new Date();
@@ -10,7 +10,7 @@ const Result = () => {
 
   return (
     <div>
-      <YearMonthHandler state={{selected, setSelected}}/>
+      <YearMonthChanger state={{selected, setSelected}}/>
       <table>
         <thead>
           <tr>

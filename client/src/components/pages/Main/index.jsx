@@ -2,6 +2,7 @@ import React from 'react';
 import testdata from '../../../Data.json';
 import FlexDiv from '../../atoms/FlexDiv';
 import LabelInput from '../../molecules/LabelInput';
+import YearMonthChanger from '../../molecules/YearMonthChanger';
 import './index.scss';
 
 const Table = ({year, month}) => {
@@ -148,42 +149,6 @@ const formatRow = (original, count, year, month) => {
   return rows
 }
 
-export const YearMonthHandler = ({state}) => {
-
-  const changeYearMonth = (type) => {
-    let year = Number(state.selected.year);
-    let month = Number(state.selected.month);
-
-    if(type==='up') {
-        if(month === 11) {
-            year += 1;
-            month = -1;
-        }
-        month += 1;
-    }
-
-    if(type==='down') {
-        if(month === 0) {
-            year -= 1;
-            month = 12;
-        }
-        month -= 1;
-    }
-
-    state.setSelected({...state.selected, year:year, month:month});
-  }
-
-  return (
-    <>
-      <button onClick={()=>changeYearMonth('down')}>先月</button>
-      <input type='text' value={state.selected.year}/>
-      /
-      <input type='text' value={state.selected.month + 1}/>
-      <button onClick={()=>changeYearMonth('up')}>翌月</button>
-    </>
-  );
-}
-
 const Main = () => {
 
   const date = new Date();
@@ -196,7 +161,7 @@ const Main = () => {
     <>
       <FlexDiv>
         <div>
-          <YearMonthHandler state={{selected, setSelected}}/>
+          <YearMonthChanger state={{selected, setSelected}}/>
           <div id='home-table-area'>
             <Table year={selected.year} month={selected.month}/>
           </div>
