@@ -1,3 +1,7 @@
-#page-body-margin {
-  padding: 10px;
+#page-content {
+  width: calc(100vw - 125px);
+
+  #page-body-margin {
+    padding: 10px;
+  }
 }

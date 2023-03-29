@@ -159,43 +159,44 @@ const Main = () => {
   })
 
   return (
-    <>
-      <FlexDiv>
-        <div>
-          <YearMonthChanger state={{selected, setSelected}}/>
-          <div id='home-table-area'>
-            <Table year={selected.year} month={selected.month}/>
-          </div>
-          <FlexDiv>
-            <button className='button-primary home-button'>チャージ</button>
-            <button className='button-primary home-button'>一括チャージ</button>
-            <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
-          </FlexDiv>
+    <FlexDiv id='main'>
+      <div>
+        <YearMonthChanger state={{selected, setSelected}}/>
+        <div id='home-table-area'>
+          <Table year={selected.year} month={selected.month}/>
         </div>
-        <div>
-          <LabelInput label='予算' type='text' isReadOnly={true}/>
-          <LabelInput label='入金' type='text' isReadOnly={true}/>
-          <LabelInput label='支出' type='text' isReadOnly={true}/>
-          <LabelInput label='収支' type='text' isReadOnly={true}/>
-          <div>
-            <label>メッセージ</label>
-            <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
-              <tbody>
-                <tr>
-                  <td>message</td>
-                </tr>
-                <tr>
-                  <td>message</td>
-                </tr>
-                <tr>
-                  <td>message</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+        <FlexDiv>
+          <button className='button-primary home-button'>チャージ</button>
+          <button className='button-primary home-button'>一括チャージ</button>
+          <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
+        </FlexDiv>
+      </div>
+      <div id='flex-right'>
+        <LabelInput label='予算' type='text' isReadOnly={true}/>
+        <LabelInput label='入金' type='text' isReadOnly={true}/>
+        <LabelInput label='支出' type='text' isReadOnly={true}/>
+        <LabelInput label='収支' type='text' isReadOnly={true} id='balance'/>
+        <div id='message-table'>
+          <label>メッセージ</label>
+          <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
+            <tbody>
+              <tr>
+                <td>！予算が設定されていません</td>
+              </tr>
+              <tr>
+                <td>！入金額が不足しています</td>
+              </tr>
+              <tr>
+                <td>！立替が発生しています</td>
+              </tr>
+              <tr>
+                <td>メッセージはありません</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-      </FlexDiv>
-    </>
+      </div>
+    </FlexDiv>
   );
 }
 
