@@ -1,0 +1,3 @@
+CREATE DATABASE LIFE_NOTE;
+
+CREATE USER 'writer'@'localhost' IDENTIFIED BY 'wirter00';
