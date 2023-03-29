@@ -26,7 +26,7 @@ const Table = ({year, month}) => {
 const getCompleteRow = (data, year, month) => {
 
   const lastDate = new Date(year, month + 1, 0).getDate();
-
+  
   let rows = [];
   let next = 1;
   for (let i = 0; i < data.length; i++) {
@@ -45,7 +45,7 @@ const getCompleteRow = (data, year, month) => {
     rows.push(data[i]);
     next = Number(data[i].date) + 1;
   }
-  if (next < lastDate) {
+  if (next <= lastDate) {
     for (let i = next; i <= lastDate; i++) {
       rows.push(
         {
