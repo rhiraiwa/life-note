@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  color: #676F74;
 
   a {
     text-decoration: none;
@@ -18,5 +19,17 @@ body {
     td {
         border-bottom: 1px solid #AAA;
     }
-}
+  }
+
+  .button-primary {
+    border: 1px solid #F0E68C;
+    background-color: #F0E68C;
+    font-size: 14px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: #e7d639;
+      color: #FFFFFF;
+    }
+  }
 }

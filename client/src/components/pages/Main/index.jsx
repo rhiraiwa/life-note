@@ -167,9 +167,9 @@ const Main = () => {
             <Table year={selected.year} month={selected.month}/>
           </div>
           <FlexDiv>
-            <button>チャージ</button>
-            <button>一括チャージ</button>
-            <LabelInput label='小計' type='text' isReadOnly={true}/>
+            <button className='button-primary home-button'>チャージ</button>
+            <button className='button-primary home-button'>一括チャージ</button>
+            <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
           </FlexDiv>
         </div>
         <div>

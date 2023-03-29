@@ -1,6 +1,8 @@
+import './index.scss';
+
 const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value, setValue, clickEvent}) => {
   return (
-    <div id={id}>
+    <div className='label-input' id={id}>
       <label>{label}</label>
       <input type={type}
              id={`${id}_input`}
