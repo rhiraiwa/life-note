@@ -7,12 +7,12 @@ const PageTemplate = ({title, children}) => {
   return (
     <FlexDiv>
       <Sidebar/>
-        <div>
-          <Header title={title}/>
-          <div id='page-body-margin'>
-            {children}
-          </div>
+      <div>
+        <Header title={title}/>
+        <div id='page-body-margin'>
+          {children}
         </div>
+      </div>
     </FlexDiv>
   );
 }

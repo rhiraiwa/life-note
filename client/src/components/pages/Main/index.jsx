@@ -122,7 +122,7 @@ const formatRow = (original, count, year, month) => {
     if (count[index] !== 0) {
       rows.push(
         <tr>
-          <td><input type='checkbox'/></td>
+          <td rowSpan={count[index.toString()]}><input type='checkbox'/></td>
           <td rowSpan={count[index.toString()]}>{original[i].date}</td>
           <td rowSpan={count[index.toString()]}>{
             days[new Date(year, month, original[i].date).getDay()]
@@ -137,7 +137,6 @@ const formatRow = (original, count, year, month) => {
     else {
       rows.push(
         <tr>
-          <td><input type='checkbox'/></td>
           <td>{original[i].category}</td>
           <td>{original[i].shop_name}</td>
           <td>{original[i].amount}</td>
