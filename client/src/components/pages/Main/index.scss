@@ -1,18 +1,30 @@
 #home-table-area {
     height: 85vh;
     overflow-y: scroll;
-    
-    #home-table {
-        border-collapse: collapse;
-    
-        thead {
-            position:sticky;
-            top: 0;
-            background-color: #AAA;
-        }
 
-        th, td {
-            border: 1px solid #AAA;
-        }
+  tr {
+
+    .col-checkbox {
+      width: 20px;
     }
+    .col-date {
+      width: 30px;
+      text-align: center;
+    }
+    .col-day {
+      width: 35px;
+    }
+    .col-category {
+      width: 100px;
+      text-align: center;
+    }
+    .col-amount {
+      width: 100px;
+      
+      &:not(th) {
+        text-align: right;
+        padding-right: 10px;;
+      }
+    }
+  }
 }

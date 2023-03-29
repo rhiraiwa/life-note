@@ -4,4 +4,19 @@ body {
   a {
     text-decoration: none;
   }
+
+  table {
+    border-collapse: collapse;
+
+    thead {
+        position:sticky;
+        top: 0;
+        background-color: #676F74;
+        color: #FFFFFF;
+    }
+
+    td {
+        border-bottom: 1px solid #AAA;
+    }
+}
 }

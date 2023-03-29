@@ -10,12 +10,11 @@ const Table = ({year, month}) => {
     <table id='home-table'>
       <thead>
         <tr>
-          <th></th>
-          <th>日</th>
-          <th>曜日</th>
-          <th>カテゴリ</th>
-          <th>店名</th>
-          <th>金額</th>
+          <th className='col-checkbox'></th>
+          <th colSpan={2} className='col-date'>日</th>
+          <th className='col-category'>カテゴリ</th>
+          <th className='col-shop-name'>店名</th>
+          <th className='col-amount'>金額</th>
         </tr>
       </thead>
       <tbody>
@@ -123,14 +122,16 @@ const formatRow = (original, count, year, month) => {
     if (count[index] !== 0) {
       rows.push(
         <tr>
-          <td rowSpan={count[index.toString()]}><input type='checkbox'/></td>
-          <td rowSpan={count[index.toString()]}>{original[i].date}</td>
-          <td rowSpan={count[index.toString()]}>{
-            days[new Date(year, month, original[i].date).getDay()]
-          }</td>
-          <td>{original[i].category}</td>
-          <td>{original[i].shop_name}</td>
-          <td>{original[i].amount}</td>
+          <td rowSpan={count[index.toString()]} className='col-checkbox'>
+            <input type='checkbox'/>
+          </td>
+          <td rowSpan={count[index.toString()]} className='col-date'>{original[i].date}</td>
+          <td rowSpan={count[index.toString()]} className='col-day'>
+            {`(${days[new Date(year, month, original[i].date).getDay()]})`}
+          </td>
+          <td className='col-category'>{original[i].category}</td>
+          <td className='col-shop-name'>{original[i].shop_name}</td>
+          <td className='col-amount'>{original[i].amount}</td>
         </tr>
       )
       count[index] = 0;
@@ -138,9 +139,9 @@ const formatRow = (original, count, year, month) => {
     else {
       rows.push(
         <tr>
-          <td>{original[i].category}</td>
-          <td>{original[i].shop_name}</td>
-          <td>{original[i].amount}</td>
+          <td className='col-category'>{original[i].category}</td>
+          <td className='col-shop-name'>{original[i].shop_name}</td>
+          <td className='col-amount'>{original[i].amount}</td>
         </tr>
       )
     }
