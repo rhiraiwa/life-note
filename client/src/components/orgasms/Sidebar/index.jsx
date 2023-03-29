@@ -4,7 +4,7 @@ const Sidebar = () => {
   return (
     <>
       <nav>
-        <h2>TitleLogo</h2>
+        <h2><a href='/'>Life Note</a></h2>
         <ul>
           <li><a href='/'>ホーム</a></li>
           <li className='headline'>管理</li>

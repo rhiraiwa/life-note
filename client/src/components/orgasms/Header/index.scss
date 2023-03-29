@@ -1,0 +1,18 @@
+#header {
+  height: 30px;
+  border-bottom: 3px solid #8EDAE5;
+  color: #8EDAE5;
+  font-size: 22px;
+
+  button {
+    margin-left: auto;
+    border: none;
+    background-color: #676F74;
+    color: #FFFFFF;
+
+    &:hover {
+      background-color: #8EDAE5;
+      cursor: pointer;
+    }
+  }
+}

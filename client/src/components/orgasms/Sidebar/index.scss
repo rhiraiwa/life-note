@@ -1,5 +1,40 @@
-.headline {
-    // background-color: #5698c2; /*（仮）*/
-    background-color: #AAA;
-    color: #ffffff;
+nav {
+  background-color: #FFFFFF;
+  color: #F99695;
+  margin-right: 10px;
+  
+  h2 {
+    margin: 0;
+    padding: 5px;
+    background-color: #8EDAE5;
+    
+      a {
+        width: 100%;
+        color: #FFFFFF;
+      }
+  }
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 5px;
+    
+    a {
+      display: block;
+      width: 100%;
+      color: #676F74;
+      padding: 5px 2px;
+
+      &:hover {
+        background-color: #676F74;
+        color: #FFFFFF;
+      }
+    }
+
+    .headline {
+        margin-top: 10px;
+        color: #F99695;
+        border-bottom: 2px solid #F99695;
+    }
+  }
 }

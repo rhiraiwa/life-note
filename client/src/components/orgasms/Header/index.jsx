@@ -1,10 +1,12 @@
+import FlexDiv from '../../atoms/FlexDiv';
+import './index.scss';
+
 const Header = ({title}) => {
   return (
-    <div>
+    <FlexDiv id='header'>
       <span>{title}</span>
-      <span>メモ</span>
-      <span>電卓</span>
-    </div>
+      <button>電卓</button>
+    </FlexDiv>
   )
 }
 
