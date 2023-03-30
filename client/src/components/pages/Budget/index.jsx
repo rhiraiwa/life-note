@@ -1,6 +1,8 @@
 import React from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
+import YearMonthChanger from "../../molecules/YearMonthChanger";
+import './index.scss';
 
 const Budget = () => {
 
@@ -12,8 +14,9 @@ const Budget = () => {
   ]
 
   const list2 = [
-    {user: 'user1'},
-    {user: 'user2'}
+    {cd: '0', name: 'user1'},
+    {cd: '1', name: 'user2'},
+    {cd: '2', name: 'user3'}
   ]
 
   const [burden, setBurden] = React.useState(2);
@@ -40,17 +43,17 @@ const Budget = () => {
       for (let j = 0; j < burden; j++) {
         rows.push(
           <tr key={i}>
-            {j === 0 && <td rowSpan={burden}>{categorylist[i].name}</td>}
-            <td>
-              <select>
+            {j === 0 && <td className='col-category' rowSpan={burden}>{categorylist[i].name}</td>}
+            <td className='col-user'>
+              <select value={list2[j].cd}>
                 {
-                  list2.map((value) => (
-                    <option>{value.user}</option>
+                  list2.map((user) => (
+                    <option value={user.cd}>{user.name}</option>
                   ))
                 }
               </select>
             </td>
-            <td>
+            <td className='col-amount'>
               <input
                 className={`category category_${categorylist[i].cd}`}
                 type='text'
@@ -65,23 +68,27 @@ const Budget = () => {
     return rows;
   }
 
+  const date = new Date();
+  const [selected, setSelected] = React.useState({
+    year: date.getFullYear(),
+    month: date. getMonth()
+  })
+
   return (
-    <FlexDiv>
+    <FlexDiv id='budget'>
       <div>
         <FlexDiv>
-          <LabelInput label='年' type='text'/>
-          <LabelInput label='月' type='text'/>
-          <LabelInput label='負担人数' type='text' value={burden} setValue={setBurden}/>
-          <button>新規作成</button>
-          <button>前月引継</button>
-          <button>修正</button>
+          <YearMonthChanger state={{selected, setSelected}}/>
+          <button className='button-primary'>前月引継</button>
+          <button className='button-primary' disabled>修正</button>
         </FlexDiv>
+        <LabelInput id='burden' label='負担人数' type='text' value={burden} setValue={setBurden}/>
         <table>
           <thead>
             <tr>
-              <th>カテゴリ</th>
-              <th>ユーザー</th>
-              <th>金額</th>
+              <th className='col-category'>カテゴリ</th>
+              <th className='col-user'>ユーザー</th>
+              <th className='col-amount'>金額</th>
             </tr>
           </thead>
           <tbody>
@@ -89,7 +96,7 @@ const Budget = () => {
           </tbody>
         </table>
       </div>
-      <div>
+      <div id='budget-right'>
           {
             categorylist.map((value) => (
               <LabelInput
@@ -100,7 +107,7 @@ const Budget = () => {
             ))
           }
         <LabelInput label='合計' type='text' id='sum' isReadOnly={true}/>
-        <button>登録</button>
+        <button className='button-primary'>登録</button>
       </div>
     </FlexDiv>
   );

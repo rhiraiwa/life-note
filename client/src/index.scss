@@ -24,18 +24,8 @@ body {
   }
 
   .button-primary {
-    // border: 1px solid #F0E68C;
-    // background-color: #F0E68C;
-    // font-size: 14px;
-
-    // &:hover {
-    //   cursor: pointer;
-    //   background-color: #e7d639;
-    //   color: #FFFFFF;
-    // }
-
-
-    border-radius: 5%;
+    border-radius:20px;
+    box-shadow: 3px 3px 4px gray;
     position: relative;
     display: flex;
     justify-content: space-around;
@@ -47,15 +37,16 @@ body {
     transition: 0.3s ease-in-out;
     font-weight: 600;
     background-color: #F0E68C;
-    border: 2px solid #F0E68C;
-    // background: rgb(149,202,252);
-    // background: linear-gradient(270deg, rgba(149,202,252,1) 0%, rgba(107,182,255,1) 100%);
+    border: none;
 
     &:hover {
       cursor: pointer;
       background-color: #f0e053;
-      // background: rgb(117,188,255);
-      // background: linear-gradient(270deg, rgba(117,188,255,1) 0%, rgba(62,159,252,1) 100%);
+    }
+
+    &:disabled {
+      cursor: default;
+      background-color: #CCCCCC;
     }
   }
 }
