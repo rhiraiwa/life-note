@@ -1,5 +1,8 @@
+import React from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
+import YearMonthChanger from "../../molecules/YearMonthChanger";
+import './index.scss';
 
 const Deposit = () => {
 
@@ -15,69 +18,80 @@ const Deposit = () => {
     {cd: '1', name: 'user2'}
   ]
 
+  const date = new Date();
+  const [selected, setSelected] = React.useState({
+    year: date.getFullYear(),
+    month: date. getMonth()
+  })
+
   return (
-    <div>
-      <div>
+    <div id='deposit'>
+      <div className='black-underline-2'>
         <FlexDiv>
-          <LabelInput label='年' type='text'/>
-          <LabelInput label='月' type='text'/>
-          <select>
-            {
-              userlist.map((user) => (
-                <option value={user.cd}>{user.name}</option>
-              ))
-            }
-          </select>
+          <YearMonthChanger state={{selected, setSelected}}/>
+          <div>
+            <label>ユーザー</label>
+            <select>
+              {
+                userlist.map((user) => (
+                  <option value={user.cd}>{user.name}</option>
+                ))
+              }
+            </select>
+          </div>
         </FlexDiv>
-        <FlexDiv>
-          <select>
-            {
-              categorylist.map((category) => (
-                <option>{category.name}</option>
-              ))
-            }
-          </select>
-          <LabelInput label='金額' type='text'/>
-          <button>登録</button>
+        <FlexDiv id='deposit-input-area'>
+          <div>
+            <label>カテゴリ</label>
+            <select>
+              {
+                categorylist.map((category) => (
+                  <option>{category.name}</option>
+                ))
+              }
+            </select>
+          </div>
+          <LabelInput id='deposit-amount' label='金額' type='text'/>
+          <button className='button-primary'>登録</button>
         </FlexDiv>
       </div>
-      <FlexDiv>
-        <div>
+      <FlexDiv id='deposit-table-area'>
+        <div id='deposit-status-table'>
           <span>入金状況</span>
           <table>
             <thead>
               <tr>
-                <th>カテゴリ</th>
-                <th>予算</th>
-                <th>入金額</th>
+                <th className='col-category'>カテゴリ</th>
+                <th className='col-amount'>予算</th>
+                <th className='col-amount'>入金額</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
+                <td className='col-category'>test</td>
+                <td className='col-amount'>test</td>
+                <td className='col-amount'>test</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div>
+        <div id='deposit-history-table'>
           <span>入金履歴</span>
           <table>
             <thead>
               <tr>
-                <th>カテゴリ</th>
-                <th>入金額</th>
-                <th>入金日</th>
-                <th></th>
+                <th className='col-category'>カテゴリ</th>
+                <th className='col-amount'>入金額</th>
+                <th className='col-date'>入金日</th>
+                <th className='col-delete'></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td>test</td>
-                <td>test</td>
-                <td>test</td>
-                <td><button>訂正</button></td>
+                <td className='col-category'>test</td>
+                <td className='col-amount'>test</td>
+                <td className='col-date'>test</td>
+                <td className='col-delete'><button>訂正</button></td>
               </tr>
             </tbody>
           </table>

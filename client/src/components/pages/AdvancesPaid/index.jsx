@@ -76,7 +76,6 @@ const AdvancesPaid = () => {
                   </tr>                  
                 ))
               }
-
             </tbody>
           </table>
         </div>

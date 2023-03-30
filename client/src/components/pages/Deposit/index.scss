@@ -1,0 +1,37 @@
+#deposit {
+  #deposit-input-area {
+    margin: 50px 0;
+
+    #deposit-amount {
+      margin: 0 30px;
+    }    
+  }
+
+  #deposit-table-area {
+    margin-top: 30px;
+
+    .col-category {
+      width: 100px;
+      text-align: center;
+    }
+    .col-amount {
+      width: 100px;
+      
+      &:not(th) {
+        text-align: right;
+        padding-right: 10px;;
+      }
+    }
+    .col-date {
+      width: 100px;
+      text-align: center;
+    }
+    .col-delete {
+      width: 50px;
+    }
+
+    #deposit-history-table {
+      margin-left: 50px;
+    }
+  }
+}
