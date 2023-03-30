@@ -1,0 +1,68 @@
+#advances-paid {
+
+  .label-input {
+    label {
+      width: 100px;
+      float: left;
+      padding: 0 10px;
+      text-align:justify;
+      text-align-last:justify;
+      font-weight: 800;
+      height: 26px;
+    }
+  
+    input {
+      width: 80px;
+      font-weight: 800;
+      height: 20px;
+    }
+  }
+
+  #bulk-return-area {
+    margin: 50px 50px;
+
+    #bulk-sum {
+      margin-right: 30px;
+    }
+  }
+
+  #return-area {
+    margin-top: 30px;
+
+    #advances-paid-list {
+      margin-right: 50px;
+
+      .col-category {
+        width: 100px;
+        text-align: center;
+      }
+      .col-amount {
+        width: 100px;
+        
+        &:not(th) {
+          text-align: right;
+          padding-right: 10px;;
+        }
+      }
+      .col-shop-name {
+        min-width: 100px;
+      }
+      .col-date {
+        width: 100px;
+        text-align: center;
+      }
+    }
+
+    .label-input {
+      margin-top: 22px;
+
+      label {
+        width: 50px;
+      }
+    }
+
+    button {
+      margin: 20px 10px;
+    }
+  }
+}

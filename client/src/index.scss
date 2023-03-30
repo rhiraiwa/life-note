@@ -3,6 +3,31 @@ body {
   color: #676F74;
   background-color: #F5F5F5;
 
+  .black-underline-1 {
+    border-bottom: 1px solid #676F74;
+  }
+  .black-underline-2 {
+    border-bottom: 2px solid #676F74;
+  }
+  .blue-underline-1 {
+    border-bottom: 1px solid #8EDAE5;
+  }
+  .blue-underline-2 {
+    border-bottom: 2px solid #8EDAE5;
+  }
+  .red-underline-1 {
+    border-bottom: 1px solid #F99695;
+  }
+  .red-underline-2 {
+    border-bottom: 2px solid #F99695;
+  }
+  .yellow-underline-1 {
+    border-bottom: 1px solid #F0E68C;
+  }
+  .yellow-underline-2 {
+    border-bottom: 2px solid #F0E68C;
+  }
+
   a {
     text-decoration: none;
   }
@@ -23,20 +48,19 @@ body {
     }
   }
 
-  .button-primary {
+  @mixin button-common {
     border-radius:20px;
-    box-shadow: 3px 3px 4px gray;
+    box-shadow: 3px 3px 4px #808080;
     position: relative;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    margin: 0 auto;
+    // margin: 0 auto;
     max-width: 220px;
     padding: 5px 20px;
     color: #676F74;
     transition: 0.3s ease-in-out;
     font-weight: 600;
-    background-color: #F0E68C;
     border: none;
 
     &:hover {
@@ -48,5 +72,15 @@ body {
       cursor: default;
       background-color: #CCCCCC;
     }
+  }
+
+  .button-primary {
+    @include button-common();
+    background-color: #F0E68C;
+  }
+
+  .button-cancel {
+    @include button-common();
+    background-color: #FFFFFF;
   }
 }

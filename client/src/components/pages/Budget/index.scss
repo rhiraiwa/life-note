@@ -1,4 +1,9 @@
 #budget {
+  
+  button {
+    margin: 0 auto;
+  }
+
   #burden {
     input {
       width: 20px;
@@ -19,6 +24,11 @@
   }
   .col-amount {
     width: 100px;
+        
+    &:not(th) {
+      text-align: right;
+      padding-right: 10px;;
+    }
   }
 
   #budget-right {
