@@ -1,0 +1,31 @@
+#charge {
+  #charge-date {
+    margin-left: 5px;
+    width: 20px;
+    height: 18px;
+  }
+
+  #charge-user {
+    margin-left: 20px;
+
+    label {
+      margin-right: 5px;
+    }
+  }
+
+  #charge-amount {
+    margin-left: 20px;
+
+    label {
+      margin-right: 5px;
+    }
+
+    input {
+      width: 80px;
+    }
+  }
+
+  button {
+    margin-left: 20px;
+  }
+}

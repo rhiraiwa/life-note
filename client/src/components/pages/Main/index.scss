@@ -40,6 +40,11 @@
 
   .home-button {
     margin: 10px 10px 10px 0;
+
+    img {
+      max-width: 25px;
+      padding-right: 5px;
+    }
   }
 
   #subtotal {

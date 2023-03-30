@@ -4,7 +4,8 @@ import FlexDiv from '../../atoms/FlexDiv';
 import LabelInput from '../../molecules/LabelInput';
 import YearMonthChanger from '../../molecules/YearMonthChanger';
 import Modal from '../../orgasms/Modal';
-import Payment from '../Payment';
+import Charge from '../../templates/Charge';
+import money from '../../../img/charge.png';
 import './index.scss';
 
 const Table = ({year, month}) => {
@@ -171,8 +172,11 @@ const Main = () => {
             <Table year={selected.year} month={selected.month}/>
           </div>
           <FlexDiv>
-            <button className='button-primary home-button' onClick={()=>setIsOpen(true)}>チャージ</button>
-            <button className='button-primary home-button'>一括チャージ</button>
+            <button className='button-primary home-button' onClick={()=>setIsOpen(true)}>
+              <img src={money} alt='money'/>
+              WAON
+            </button>
+            {/* <button className='button-primary home-button'>一括チャージ</button> */}
             <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
           </FlexDiv>
         </div>
@@ -202,7 +206,12 @@ const Main = () => {
           </div>
         </div>
       </FlexDiv>
-      {isOpen && <Modal title='カードチャージ登録' closeMethod={()=>setIsOpen(false)}><Payment/></Modal>}
+      {
+        isOpen &&
+        <Modal title='カードチャージ登録' closeMethod={()=>setIsOpen(false)}>
+          <Charge year={selected.year} month={selected.month}/>
+        </Modal>
+      }
     </>
   );
 }
