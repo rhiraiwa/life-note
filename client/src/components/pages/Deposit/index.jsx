@@ -83,7 +83,7 @@ const Deposit = () => {
                 <th className='col-category'>カテゴリ</th>
                 <th className='col-amount'>入金額</th>
                 <th className='col-date'>入金日</th>
-                <th className='col-delete'></th>
+                <th className='col-image-button'></th>
               </tr>
             </thead>
             <tbody>
@@ -91,7 +91,7 @@ const Deposit = () => {
                 <td className='col-category'>test</td>
                 <td className='col-amount'>test</td>
                 <td className='col-date'>test</td>
-                <td className='col-delete'><button>訂正</button></td>
+                <td className='col-image-button'><button>訂正</button></td>
               </tr>
             </tbody>
           </table>
