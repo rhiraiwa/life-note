@@ -27,7 +27,23 @@
       text-align: center;
     }
     .col-image-button {
-      width: 50px;
+      width: 30px;
+  
+      img {
+        border-radius:20px;
+        box-shadow: 3px 3px 4px #808080;
+        justify-content: space-around;
+        align-items: center;
+        margin-right: 10px;
+        max-width: 15px;
+        padding: 5px 5px;
+        border: none;
+    
+        &:hover {
+          cursor: pointer;
+          background-color: #F0E68C;
+        }
+      }
     }
 
     #deposit-history-table {

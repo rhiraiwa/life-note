@@ -1,5 +1,7 @@
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
+import edit from '../../../img/edit.png';
+import del from '../../../img/delete.png';
 import './index.scss';
 
 const UserMaintenance = () => {
@@ -22,8 +24,8 @@ const UserMaintenance = () => {
           <tr>
             <td className='col-cd'>1</td>
             <td className='col-user'>user1</td>
-            <td className='col-image-button'><button>編集</button></td>
-            <td className='col-image-button'><button>削除</button></td>
+            <td className='col-image-button'><img src={edit} alt='edit'/></td>
+            <td className='col-image-button'><img src={del} alt='delete'/></td>
           </tr>
         </tbody>
       </table>

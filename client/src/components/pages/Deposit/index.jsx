@@ -2,6 +2,7 @@ import React from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
+import undo from '../../../img/undo.png';
 import './index.scss';
 
 const Deposit = () => {
@@ -91,7 +92,7 @@ const Deposit = () => {
                 <td className='col-category'>test</td>
                 <td className='col-amount'>test</td>
                 <td className='col-date'>test</td>
-                <td className='col-image-button'><button>訂正</button></td>
+                <td className='col-image-button'><img src={undo} alt='undo'/></td>
               </tr>
             </tbody>
           </table>
