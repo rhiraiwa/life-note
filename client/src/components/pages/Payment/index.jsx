@@ -52,7 +52,7 @@ const Payment = () => {
         </div>
         <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' isDisabled={isDisable}/>
         <LabelInput id='payment-note' label='備考' type='textarea'/>
-        <button>登録</button>
+        <button className='button-primary'>登録</button>
       </div>
       <div id='payment-receipt-preview'></div>
     </FlexDiv>
