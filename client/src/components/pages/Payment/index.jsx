@@ -1,6 +1,7 @@
 import React from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
+import './index.scss';
 
 const Payment = () => {
 
@@ -19,36 +20,41 @@ const Payment = () => {
   const [isDisable, setIsDisable] = React.useState(true);
 
   return (
-    <FlexDiv>
-      <div>
-        <FlexDiv>
-          <LabelInput label='年' type='text'/>
-          <LabelInput label='月' type='text'/>
-          <LabelInput label='日' type='text'/>
+    <FlexDiv id='payment'>
+      <div id='payment-input-area'>
+        <FlexDiv id='payment-year-month-date'>
+          <LabelInput id='payment-year' label='年' type='text'/>
+          <LabelInput id='payment-month' label='月' type='text'/>
+          <LabelInput id='payment-date' label='日' type='text'/>
         </FlexDiv>
-        <select>
-          {
-            categorylist.map((category) => (
-              <option>{category.name}</option>
-            ))
-          }
-        </select>
-        <LabelInput label='金額' type='text'/>
-        <LabelInput label='レシート' type='file'/>
-        <LabelInput label='立替' type='checkbox' clickEvent={()=>setIsDisable(!isDisable)}/>
-        <label>ユーザー</label>
-        <select disabled={isDisable}>
-          {
-            userlist.map((user) => (
-              <option>{user.name}</option>
-            ))
-          }
-        </select>
-        <LabelInput label='立替額' type='text' isDisabled={isDisable}/>
-        <LabelInput label='備考' type='textarea'/>
+        <div className='label-input'>
+          <label>カテゴリ</label>
+          <select>
+            {
+              categorylist.map((category) => (
+                <option>{category.name}</option>
+              ))
+            }
+          </select>
+        </div>
+        <LabelInput id='payment-amount' label='金額' type='text'/>
+        <LabelInput id='payment-receipt' label='レシート' type='file'/>
+        <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={()=>setIsDisable(!isDisable)}/>
+        <div className='label-input'>
+          <label>ユーザー</label>
+          <select disabled={isDisable}>
+            {
+              userlist.map((user) => (
+                <option>{user.name}</option>
+              ))
+            }
+          </select>
+        </div>
+        <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' isDisabled={isDisable}/>
+        <LabelInput id='payment-note' label='備考' type='textarea'/>
         <button>登録</button>
       </div>
-      <div style={{border:'1px solid #AAA', width:'300px'}}></div>
+      <div id='payment-receipt-preview'></div>
     </FlexDiv>
   );
 }

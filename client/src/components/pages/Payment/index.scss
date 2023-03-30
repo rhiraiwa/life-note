@@ -1,0 +1,48 @@
+#payment {
+
+  #payment-input-area {
+    width: 500px;
+
+    .label-input {
+      &:not(#payment-year, #payment-month, #payment-date) {
+        margin: 29px 0px;
+
+        label {
+          width: 80px;
+          float: left;
+          padding-right: 10px;
+          text-align:justify;
+          text-align-last:justify;
+          height: 26px;
+        }
+      
+        input {
+          &:not(input[type='checkbox'], input[type='file']) {
+            width: 80px;
+            height: 20px;
+          }
+        }
+      }
+    }
+
+    #payment-year_input {
+      width: 32px;
+      margin-right: 5px;
+    }
+
+    #payment-month_input {
+      width: 20px;
+      margin-left: 5px;
+    }
+    
+    #payment-date_input {
+      width: 20px;
+      margin-left: 5px;
+    }
+  }
+
+  #payment-receipt-preview {
+    width: 300px;
+    border: 1px solid #AAAAAA;
+  }
+}
