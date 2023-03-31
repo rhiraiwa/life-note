@@ -38,6 +38,23 @@ const UserMaintenance = () => {
     .catch(err => alert(err))
   }
 
+  const delete_user = (cd) => {
+
+    fetch('http://localhost:5000/user_delete', {
+      method: 'POST',
+      body: JSON.stringify({
+        "usercd": cd
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => setUserlist(JSON.parse(json['data'])))
+    .then(setUsername(''))
+    .catch(err => alert(err))
+  }
+
   return (
     <div id='user-maintenance'>
       <FlexDiv id='user-maintenance-input'>
@@ -60,7 +77,9 @@ const UserMaintenance = () => {
                 <td className='col-cd'>{user.cd}</td>
                 <td className='col-user'>{user.name}</td>
                 <td className='col-image-button'><img src={edit} alt='edit'/></td>
-                <td className='col-image-button'><img src={del} alt='delete'/></td>
+                <td className='col-image-button'>
+                  <img onClick={()=>delete_user(user.cd)} src={del} alt='delete'/>
+                </td>
               </tr>
             ))
           }

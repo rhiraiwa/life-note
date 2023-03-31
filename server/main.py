@@ -18,3 +18,11 @@ def user_insert():
   table_data = db.select_mf('USER_MF')
 
   return {'data': table_data}
+
+@app.route('/user_delete', methods=['POST'])
+def user_delete():
+  rd = json.loads(request.data)
+  db.delete_mf('USER_MF', rd['usercd'])
+  table_data = db.select_mf('USER_MF')
+
+  return {'data': table_data}

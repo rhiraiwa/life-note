@@ -12,10 +12,12 @@ def conn_db():
   )
   return conn
 
+# 現在時間取得SQL
+date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
+time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
+
 def insert_mf(table, name):
   count_query = f'select count(*) from {table};'
-  date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
-  time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
   try:
     conn = conn_db()                #ここでDBに接続
@@ -37,7 +39,7 @@ def insert_mf(table, name):
 
 def select_mf(table):
 
-  query = f'SELECT cd, name FROM {table} ORDER BY CAST(cd AS SIGNED);'
+  query = f'SELECT cd, name FROM {table} WHERE delete_flag = 0 ORDER BY CAST(cd AS SIGNED);'
   result_row = []
   
   try:
@@ -62,3 +64,21 @@ def select_mf(table):
 
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
+
+def delete_mf(table, cd):
+
+  query = f'UPDATE {table} SET delete_flag = 1, update_date = {date}, update_time = {time} WHERE cd = {cd};'
+
+  try:
+    conn = conn_db()                #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
