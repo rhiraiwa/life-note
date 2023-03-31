@@ -13,7 +13,6 @@
   
     input {
       width: 80px;
-      font-weight: 800;
       height: 20px;
     }
   }
@@ -31,26 +30,6 @@
 
     #advances-paid-list {
       margin-right: 50px;
-
-      .col-category {
-        width: 100px;
-        text-align: center;
-      }
-      .col-amount {
-        width: 100px;
-        
-        &:not(th) {
-          text-align: right;
-          padding-right: 10px;;
-        }
-      }
-      .col-shop-name {
-        min-width: 100px;
-      }
-      .col-date {
-        width: 100px;
-        text-align: center;
-      }
     }
 
     .label-input {

@@ -9,43 +9,7 @@
 
   #deposit-table-area {
     margin-top: 30px;
-
-    .col-category {
-      width: 100px;
-      text-align: center;
-    }
-    .col-amount {
-      width: 100px;
-      
-      &:not(th) {
-        text-align: right;
-        padding-right: 10px;;
-      }
-    }
-    .col-date {
-      width: 100px;
-      text-align: center;
-    }
-    .col-image-button {
-      width: 30px;
-  
-      img {
-        border-radius:20px;
-        box-shadow: 3px 3px 4px #808080;
-        justify-content: space-around;
-        align-items: center;
-        margin-right: 10px;
-        max-width: 15px;
-        padding: 5px 5px;
-        border: none;
     
-        &:hover {
-          cursor: pointer;
-          background-color: #F0E68C;
-        }
-      }
-    }
-
     #deposit-history-table {
       margin-left: 50px;
     }

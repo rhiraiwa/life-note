@@ -62,7 +62,7 @@ const AdvancesPaid = () => {
                 <th className='col-category'>カテゴリ</th>
                 <th className='col-amount'>立替額</th>
                 <th className='col-shop-name'>店名</th>
-                <th className='col-date'>立替日</th>
+                <th className='col-year-month-date'>立替日</th>
               </tr>
             </thead>
             <tbody>
@@ -72,7 +72,7 @@ const AdvancesPaid = () => {
                     <td className='col-category'>{history.categary}</td>
                     <td className='col-amount'>{history.amount}</td>
                     <td className='col-shop-name'>{history.shopName}</td>
-                    <td className='col-date'>{history.date}</td>
+                    <td className='col-year-month-date'>{history.date}</td>
                   </tr>                  
                 ))
               }

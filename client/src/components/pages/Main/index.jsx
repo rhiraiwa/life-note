@@ -6,6 +6,7 @@ import YearMonthChanger from '../../molecules/YearMonthChanger';
 import Modal from '../../orgasms/Modal';
 import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
+import attention from '../../../img/attention.png';
 import './index.scss';
 
 const Table = ({year, month}) => {
@@ -120,17 +121,26 @@ const formatRow = (original, count, year, month) => {
 
   let rows = [];
   let index = 1;
+  let day = '';
+  let className = '';
   for (let i = 0; i < original.length; i++) {
     if (original[i].date > index) index++; 
     if (count[index] !== 0) {
+
+      day = new Date(year, month, original[i].date).getDay();
+      if (day === 0) className = 'sunday-row';
+      else if (day === 6) className = 'saturday-row';
+      else className  = 'other-day-row';
+
       rows.push(
-        <tr>
+        <tr className={className}>
           <td rowSpan={count[index.toString()]} className='col-checkbox'>
             <input type='checkbox'/>
           </td>
           <td rowSpan={count[index.toString()]} className='col-date'>{original[i].date}</td>
           <td rowSpan={count[index.toString()]} className='col-day'>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
+            {/* {`${day},${className}`} */}
           </td>
           <td className='col-category'>{original[i].category}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
@@ -190,13 +200,13 @@ const Main = () => {
             <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
               <tbody>
                 <tr>
-                  <td>！予算が設定されていません</td>
+                  <td><img src={attention} alt='attention'/>予算が設定されていません</td>
                 </tr>
                 <tr>
-                  <td>！入金額が不足しています</td>
+                  <td><img src={attention} alt='attention'/>入金額が不足しています</td>
                 </tr>
                 <tr>
-                  <td>！立替が発生しています</td>
+                  <td><img src={attention} alt='attention'/>立替が発生しています</td>
                 </tr>
                 <tr>
                   <td>メッセージはありません</td>
