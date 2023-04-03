@@ -7,17 +7,18 @@ import './index.scss';
 
 const Deposit = () => {
 
-  const categorylist = [
-    {cd:'0', name: '食費'},
-    {cd:'1', name: '雑費'},
-    {cd:'2', name: '水道代'},
-    {cd:'3', name: '電気代'}
-  ]
+  const [categorylist, setCategorylist] = React.useState([]);
+  const [userlist, setUserlist] = React.useState([]);
 
-  const userlist = [
-    {cd: '0', name: 'user1'},
-    {cd: '1', name: 'user2'}
-  ]
+  React.useEffect(() => {
+    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => {
+      setCategorylist(JSON.parse(json['category']))
+      setUserlist(JSON.parse(json['user']))
+    })
+    .catch(err => alert(err))
+  }, []);
 
   const date = new Date();
   const [selected, setSelected] = React.useState({

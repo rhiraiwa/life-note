@@ -51,3 +51,11 @@ def category_delete():
   table_data = category_maintenance.select_mf()
 
   return {'data': table_data}
+
+# カテゴリとユーザーの一覧取得
+@app.route('/category_and_user_select', methods=['POST'])
+def category_and_user_select():
+  category_list = category_maintenance.select_mf()
+  user_list = user_maintenance.select_mf()
+  
+  return {'category': category_list, 'user': user_list}

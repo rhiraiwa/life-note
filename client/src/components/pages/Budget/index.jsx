@@ -6,20 +6,19 @@ import './index.scss';
 
 const Budget = () => {
 
-  const categorylist = [
-    {cd:'0', name: '食費'},
-    {cd:'1', name: '雑費'},
-    {cd:'2', name: '水道代'},
-    {cd:'3', name: '電気代'}
-  ]
-
-  const list2 = [
-    {cd: '0', name: 'user1'},
-    {cd: '1', name: 'user2'},
-    {cd: '2', name: 'user3'}
-  ]
-
+  const [categorylist, setCategorylist] = React.useState([]);
+  const [userlist, setUserlist] = React.useState([]);
   const [burden, setBurden] = React.useState(2);
+
+  React.useEffect(() => {
+    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => {
+      setCategorylist(JSON.parse(json['category']))
+      setUserlist(JSON.parse(json['user']))
+    })
+    .catch(err => alert(err))
+  }, []);
 
   const calcSum = (target) => {
     let elements = document.getElementsByClassName(target);
@@ -45,9 +44,9 @@ const Budget = () => {
           <tr key={i}>
             {j === 0 && <td className='col-category' rowSpan={burden}>{categorylist[i].name}</td>}
             <td className='col-user'>
-              <select value={list2[j].cd}>
+              <select value={userlist[j].cd}>
                 {
-                  list2.map((user) => (
+                  userlist.map((user) => (
                     <option value={user.cd}>{user.name}</option>
                   ))
                 }

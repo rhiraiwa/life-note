@@ -6,6 +6,8 @@ import './index.scss';
 
 const AdvancesPaid = () => {
 
+  const [userlist, setUserlist] = React.useState([]);
+
   const adlist = [
     {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'},
     {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'},
@@ -13,10 +15,12 @@ const AdvancesPaid = () => {
     {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'}
   ]
 
-  const userlist = [
-    {cd: '0', name: 'user1'},
-    {cd: '1', name: 'user2'}
-  ]
+  React.useEffect(() => {
+    fetch('http://localhost:5000/user_select', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => setUserlist(JSON.parse(json['data'])))
+    .catch(err => alert(err))
+  }, []);
 
   const date = new Date();
   const [selected, setSelected] = React.useState({
