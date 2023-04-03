@@ -1,5 +1,5 @@
 from server import app
-from server.dao import user_maintenance, category_maintenance
+from server.dao import user_maintenance, category_maintenance, budget
 from flask import request, json
 
 @app.route('/')
@@ -59,3 +59,22 @@ def category_and_user_select():
   user_list = user_maintenance.select_mf()
   
   return {'category': category_list, 'user': user_list}
+
+# 予算管理
+@app.route('/budget_insert', methods=['POST'])
+def budget_insert():
+  rd = json.loads(request.data)
+  budget.insert_budget(rd['forms'])
+
+  table_data = budget.select_budget(rd['forms'][0]['year'], rd['forms'][0]['month'])
+
+  return {'data': table_data}
+
+@app.route('/budget_init', methods=['POST'])
+def budget_init():
+  rd = json.loads(request.data)
+  budget_list = budget.select_budget(rd['year'], rd['month'])
+  category_list = category_maintenance.select_mf()
+  user_list = user_maintenance.select_mf()
+
+  return {'budget': budget_list, 'category': category_list, 'user': user_list}

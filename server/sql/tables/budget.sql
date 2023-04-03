@@ -5,7 +5,7 @@ CREATE TABLE LIFE_NOTE.BUDGET (
   month         VARCHAR(2)    NOT NULL,
   category_cd   SMALLINT      NOT NULL,
   user_cd       VARCHAR(15)   NOT NULL,
-  budeget       DECIMAL(9,0)  NOT NULL,
+  budget        DECIMAL(9,0)  NOT NULL,
   insert_date   VARCHAR(8),
   insert_time   VARCHAR(6),
   update_date   VARCHAR(8),
