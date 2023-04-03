@@ -1,31 +1,20 @@
-
 import mysql.connector
 import json
-
-#DB接続情報
-def conn_db():
-  conn = mysql.connector.connect(
-    host = '127.0.0.1',      #localhostでもOK
-    user = 'writer',
-    passwd = 'writer00',
-    db = 'LIFE_NOTE'
-  )
-  return conn
+import server.dao.db_connection as db
 
 # 現在時間取得SQL
 date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
-def insert_mf(table, name):
-  count_query = f'select count(*) from {table};'
+def insert_mf(name):
+  count_query = f'select count(*) from USER_MF;'
 
   try:
-    conn = conn_db()                #ここでDBに接続
+    conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     cursor.execute(count_query)
     rows = cursor.fetchall()        #selectの結果を全件タプルに格納
-    insert_query = f'INSERT INTO {table} VALUES ({rows[0][0]}, \'{name}\', {date}, {time}, {date}, {time}, 0);'
-    print(insert_query)
+    insert_query = f'INSERT INTO USER_MF VALUES ({rows[0][0]}, \'{name}\', {date}, {time}, {date}, {time}, 0);'
     cursor.execute(insert_query)
     conn.commit()                   #コミット
 
@@ -37,13 +26,13 @@ def insert_mf(table, name):
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
-def select_mf(table):
+def select_mf():
 
-  query = f'SELECT cd, name FROM {table} WHERE delete_flag = 0 ORDER BY CAST(cd AS SIGNED);'
+  query = f'SELECT cd, name FROM USER_MF WHERE delete_flag = 0 ORDER BY CAST(cd AS SIGNED);'
   result_row = []
   
   try:
-    conn = conn_db()                #ここでDBに接続
+    conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     cursor.execute(query)           #sql実行
     rows = cursor.fetchall()        #selectの結果を全件タプルに格納
@@ -65,12 +54,12 @@ def select_mf(table):
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
 
-def delete_mf(table, cd):
+def delete_mf(cd):
 
-  query = f'UPDATE {table} SET delete_flag = 1, update_date = {date}, update_time = {time} WHERE cd = {cd};'
+  query = f'UPDATE USER_MF SET delete_flag = 1, update_date = {date}, update_time = {time} WHERE cd = {cd};'
 
   try:
-    conn = conn_db()                #ここでDBに接続
+    conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     cursor.execute(query)
     conn.commit()                   #コミット
