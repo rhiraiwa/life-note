@@ -23,9 +23,30 @@ def insert_budget(forms):
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
-def select_budget(year, month):
+def inherit_budget(year, month):
+  if month == 1:
+    base_year = year - 1
+    base_month = 12
+  else:
+    base_year = year
+    base_month = month - 1
 
-  # query = f'SELECT cd, name FROM CATEGORY_MF WHERE delete_flag = 0 ORDER BY CAST(cd AS SIGNED);'
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    insert_query = f'insert into budget select \'{year}\', \'{month}\', category_cd, user_cd, budget, {date}, {time}, {date}, {time} from budget where year = \'{base_year}\' and month = \'{base_month}\';'
+    cursor.execute(insert_query)
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+def select_budget(year, month):
   query = 'select C.name, U.name, CAST(B.budget AS NCHAR) from budget B '
   query += 'left join category_mf C on B.category_cd = C.cd '
   query += 'left join user_mf U on B.user_cd = U.cd '

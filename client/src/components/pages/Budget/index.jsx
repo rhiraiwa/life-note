@@ -14,6 +14,7 @@ const Budget = () => {
   const [categorylist, setCategorylist] = React.useState([]);
   const [userlist, setUserlist] = React.useState([]);
   const [budgetlist, setBudgetlist] = React.useState([]);
+  const [modifyflag, setModifyflag] = React.useState(false);
   // const [burden, setBurden] = React.useState(2);
 
   React.useEffect(() => {
@@ -119,13 +120,36 @@ const Budget = () => {
     .catch(err => alert(err))
   }
 
+  const inheritBudget = () => {
+    if (!window.confirm('前月と同じ予算で登録しますか？')) return;
+
+    fetch('http://localhost:5000/budget_inherit', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        'month': selected.month + 1,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => setBudgetlist(JSON.parse(json['data'])))
+    .catch(err => alert(err))
+  }
+
   return (
     <FlexDiv id='budget'>
       <div>
         <FlexDiv>
           <YearMonthChanger state={{selected, setSelected}}/>
-          <button className='button-primary'>前月引継</button>
-          <button className='button-primary' disabled>修正</button>
+          <button className='button-primary' onClick={inheritBudget} disabled={budgetlist.length !== 0 && !modifyflag}>前月引継</button>
+          {!modifyflag && 
+            <button className='button-primary' disabled={budgetlist.length === 0} onClick={()=>setModifyflag(true)}>修正</button>
+          }
+          {modifyflag && 
+            <button className='button-cancel' onClick={()=>setModifyflag(false)}>キャンセル</button>
+          }
         </FlexDiv>
         {/* <LabelInput id='burden' label='負担人数' type='text' value={burden} setValue={setBurden}/> */}
         {/* <label>{`負担人数${userlist.length}人`}</label> */}
@@ -137,12 +161,12 @@ const Budget = () => {
               <th className='col-amount'>金額</th>
             </tr>
           </thead>
-          {budgetlist.length === 0 && (
+          {(budgetlist.length === 0 || modifyflag) && (
             <tbody>
               {getRows()}
             </tbody>
           )}
-          {budgetlist.length !== 0 && (
+          {(budgetlist.length !== 0 && !modifyflag) && (
             <tbody>
               {budgetlist.map((budget, index) => (
                 <tr key={index}>

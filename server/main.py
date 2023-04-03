@@ -70,6 +70,15 @@ def budget_insert():
 
   return {'data': table_data}
 
+@app.route('/budget_inherit', methods=['POST'])
+def budget_inherit():
+  rd = json.loads(request.data)
+  budget.inherit_budget(rd['year'], rd['month'])
+
+  table_data = budget.select_budget(rd['year'], rd['month'])
+
+  return {'data': table_data}
+
 @app.route('/budget_init', methods=['POST'])
 def budget_init():
   rd = json.loads(request.data)
