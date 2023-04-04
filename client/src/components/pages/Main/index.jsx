@@ -140,7 +140,6 @@ const formatRow = (original, count, year, month) => {
           <td rowSpan={count[index.toString()]} className='col-date'>{original[i].date}</td>
           <td rowSpan={count[index.toString()]} className='col-day'>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
-            {/* {`${day},${className}`} */}
           </td>
           <td className='col-category'>{original[i].category}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
@@ -172,6 +171,34 @@ const Main = () => {
   })
 
   const [isOpen, setIsOpen] = React.useState(false);
+  const [reference, setReference] = React.useState({
+    budget: '',
+    deposit: '',
+    paymnet: '',
+    balance: ''
+  })
+
+  React.useEffect(() => {
+    setReference({...reference, budget: ''});
+
+    fetch('http://localhost:5000/home', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      let budget = 0;
+      if (json['budget'] !== null) budget = json['budget']
+      setReference({...reference, budget: budget});
+    })
+    .catch(err => alert(err))
+  }, [selected]);
 
   return (
     <>
@@ -191,26 +218,32 @@ const Main = () => {
           </FlexDiv>
         </div>
         <div id='flex-right'>
-          <LabelInput label='予算' type='text' isReadOnly={true}/>
-          <LabelInput label='入金' type='text' isReadOnly={true}/>
-          <LabelInput label='支出' type='text' isReadOnly={true}/>
-          <LabelInput label='収支' type='text' isReadOnly={true} id='balance'/>
+          <LabelInput label='予算' type='text' isReadOnly={true} value={reference.budget}/>
+          <LabelInput label='入金' type='text' isReadOnly={true} value={reference.deposit}/>
+          <LabelInput label='支出' type='text' isReadOnly={true} value={reference.paymnet}/>
+          <LabelInput label='収支' type='text' isReadOnly={true} value={reference.balance} id='balance'/>
           <div id='message-table'>
             <label>メッセージ</label>
             <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>
               <tbody>
-                <tr>
-                  <td><img src={attention} alt='attention'/>予算が設定されていません</td>
-                </tr>
-                <tr>
-                  <td><img src={attention} alt='attention'/>入金額が不足しています</td>
-                </tr>
+                {reference.budget === 0 &&
+                  <tr>
+                    <td><img src={attention} alt='attention'/>予算が設定されていません</td>
+                  </tr>
+                }
+                {reference.budget > reference.deposit &&
+                  <tr>
+                    <td><img src={attention} alt='attention'/>入金額が不足しています</td>
+                  </tr>
+                }
                 <tr>
                   <td><img src={attention} alt='attention'/>立替が発生しています</td>
                 </tr>
-                <tr>
-                  <td>メッセージはありません</td>
-                </tr>
+                {reference.budget !== 0 && reference.budget > reference.deposit &&
+                  <tr>
+                    <td>メッセージはありません</td>
+                  </tr>
+                }
               </tbody>
             </table>
           </div>

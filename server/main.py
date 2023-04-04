@@ -1,5 +1,5 @@
 from server import app
-from server.dao import user_maintenance, category_maintenance, budget
+from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance
 from flask import request, json
 
 @app.route('/')
@@ -84,7 +84,16 @@ def budget_init():
   rd = json.loads(request.data)
   budget_list = budget.select_budget(rd['year'], rd['month'])
   sum_list = budget.select_sum(rd['year'], rd['month'])
-  category_list = category_maintenance.select_mf()
-  user_list = user_maintenance.select_mf()
+  # category_list = category_maintenance.select_mf()
+  # user_list = user_maintenance.select_mf()
 
-  return {'budget': budget_list, 'sum': sum_list, 'category': category_list, 'user': user_list}
+  # return {'budget': budget_list, 'sum': sum_list, 'category': category_list, 'user': user_list}
+  return {'budget': budget_list, 'sum': sum_list}
+
+# メイン画面（ホーム）
+@app.route('/home', methods=['POST'])
+def home():
+  rd = json.loads(request.data)
+  budget = home_refarance.select_home(rd['year'], rd['month'])
+
+  return {'budget': budget, 'sum': '0', 'category': '0', 'user': '0'}

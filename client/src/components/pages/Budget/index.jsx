@@ -15,11 +15,18 @@ const Budget = () => {
   const [userlist, setUserlist] = React.useState([]);
   const [budgetlist, setBudgetlist] = React.useState([]);
   const [modifyflag, setModifyflag] = React.useState(false);
-  // const [burden, setBurden] = React.useState(2);
 
   React.useEffect(() => {
     setModifyflag(false);
-
+    
+    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => {
+      setCategorylist(JSON.parse(json['category']));
+      setUserlist(JSON.parse(json['user']));
+    })
+    .catch(err => alert(err))
+    
     fetch('http://localhost:5000/budget_init', {
       method: 'POST',
       body: JSON.stringify({
@@ -33,9 +40,6 @@ const Budget = () => {
     .then(response => response.json())
     .then(json => {
       setBudgetlist(JSON.parse(json['budget']));
-      setCategorylist(JSON.parse(json['category']));
-      setUserlist(JSON.parse(json['user']));
-
       let allsum = 0;
       if (JSON.parse(json['sum']).length === 0) {
         for (let i = 0; i < categorylist.length; i++) {
@@ -72,20 +76,11 @@ const Budget = () => {
   const getRows = () => {
     let rows = [];
     for (let i = 0; i < categorylist.length; i++) {
-      // for (let j = 0; j < burden; j++) {
       for (let j = 0; j < userlist.length; j++) {
         rows.push(
           <tr key={i}>
-            {/* {j === 0 && <td className='col-category' rowSpan={burden}>{categorylist[i].name}</td>} */}
             {j === 0 && <td className='col-category' rowSpan={userlist.length}>{categorylist[i].name}</td>}
             <td className='col-user'>
-              {/* <select value={userlist.length >= burden? userlist[j].cd : ''}>
-                {
-                  userlist.map((user) => (
-                    <option value={user.cd}>{user.name}</option>
-                  ))
-                }
-              </select> */}
               {userlist[j].name}
             </td>
             <td className='col-amount'>
@@ -170,8 +165,6 @@ const Budget = () => {
             <button className='button-cancel' onClick={()=>setModifyflag(false)}>キャンセル</button>
           }
         </FlexDiv>
-        {/* <LabelInput id='burden' label='負担人数' type='text' value={burden} setValue={setBurden}/> */}
-        {/* <label>{`負担人数${userlist.length}人`}</label> */}
         <table id='budget-table'>
           <thead>
             <tr>
