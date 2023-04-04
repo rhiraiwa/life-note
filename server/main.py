@@ -83,7 +83,8 @@ def budget_inherit():
 def budget_init():
   rd = json.loads(request.data)
   budget_list = budget.select_budget(rd['year'], rd['month'])
+  sum_list = budget.select_sum(rd['year'], rd['month'])
   category_list = category_maintenance.select_mf()
   user_list = user_maintenance.select_mf()
 
-  return {'budget': budget_list, 'category': category_list, 'user': user_list}
+  return {'budget': budget_list, 'sum': sum_list, 'category': category_list, 'user': user_list}

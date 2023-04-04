@@ -18,6 +18,8 @@ const Budget = () => {
   // const [burden, setBurden] = React.useState(2);
 
   React.useEffect(() => {
+    setModifyflag(false);
+
     fetch('http://localhost:5000/budget_init', {
       method: 'POST',
       body: JSON.stringify({
@@ -30,9 +32,23 @@ const Budget = () => {
     })
     .then(response => response.json())
     .then(json => {
-      setBudgetlist(JSON.parse(json['budget']))
-      setCategorylist(JSON.parse(json['category']))
-      setUserlist(JSON.parse(json['user']))
+      setBudgetlist(JSON.parse(json['budget']));
+      setCategorylist(JSON.parse(json['category']));
+      setUserlist(JSON.parse(json['user']));
+
+      let allsum = 0;
+      if (JSON.parse(json['sum']).length === 0) {
+        for (let i = 0; i < categorylist.length; i++) {
+          document.getElementById(`category_${categorylist[i].cd}_sum_input`).value = 0;
+        }
+      };
+
+      for (let i = 0; i < JSON.parse(json['sum']).length; i++) {
+        document.getElementById(`category_${JSON.parse(json['sum'])[i].category}_sum_input`).value = JSON.parse(json['sum'])[i].sum;
+        allsum += Number(JSON.parse(json['sum'])[i].sum);
+      }
+
+      document.getElementById('sum_input').value = allsum;
     })
     .catch(err => alert(err))
   }, [selected]);
@@ -90,10 +106,11 @@ const Budget = () => {
 
   const insertBudget = () => {
     let forms = [];
-    let budget = '';
+    let budget = 0;
     for (let i = 0; i < categorylist.length; i++) {
       for (let j = 0; j < userlist.length; j++) {
         budget = document.getElementById(`amount-${i}-${j}`).value;
+        budget = budget === '' ? 0 : budget;
         forms.push(
           {
             'year': selected.year,
@@ -118,6 +135,8 @@ const Budget = () => {
     .then(response => response.json())
     .then(json => setBudgetlist(JSON.parse(json['data'])))
     .catch(err => alert(err))
+    
+    setModifyflag(false);
   }
 
   const inheritBudget = () => {

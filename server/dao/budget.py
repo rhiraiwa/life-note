@@ -7,9 +7,12 @@ date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
 def insert_budget(forms):
+  delete_query = f'DELETE FROM BUDGET WHERE year = \'{forms[0]["year"]}\' and month = \'{forms[0]["month"]}\';'
+
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(delete_query)
     for form in forms:
       insert_query = f'INSERT INTO BUDGET VALUES (\'{form["year"]}\', \'{form["month"]}\', \'{form["category"]}\', \'{form["user"]}\', \'{form["budget"]}\', {date}, {time}, {date}, {time});'
       cursor.execute(insert_query)
@@ -31,10 +34,13 @@ def inherit_budget(year, month):
     base_year = year
     base_month = month - 1
 
+  delete_query = f'DELETE FROM BUDGET WHERE year = \'{year}\' and month = \'{month}\';'
+  insert_query = f'insert into budget select \'{year}\', \'{month}\', category_cd, user_cd, budget, {date}, {time}, {date}, {time} from budget where year = \'{base_year}\' and month = \'{base_month}\';'
+
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
-    insert_query = f'insert into budget select \'{year}\', \'{month}\', category_cd, user_cd, budget, {date}, {time}, {date}, {time} from budget where year = \'{base_year}\' and month = \'{base_month}\';'
+    cursor.execute(delete_query)
     cursor.execute(insert_query)
     conn.commit()                   #コミット
 
@@ -47,11 +53,11 @@ def inherit_budget(year, month):
       conn.close()                # DB切断
 
 def select_budget(year, month):
-  query = 'select C.name, U.name, CAST(B.budget AS NCHAR) from budget B '
-  query += 'left join category_mf C on B.category_cd = C.cd '
-  query += 'left join user_mf U on B.user_cd = U.cd '
-  query += f'where B.year = \'{year}\' and B.month = \'{month}\' '
-  query += 'order by CAST(B.year AS SIGNED), '
+  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR) FROM BUDGET B '
+  query += 'LEFT JOIN category_mf C ON B.category_cd = C.cd '
+  query += 'LEFT JOIN user_mf U ON B.user_cd = U.cd '
+  query += f'WHERE B.year = \'{year}\' AND B.month = \'{month}\' '
+  query += 'ORDER BY CAST(B.year AS SIGNED), '
   query += 'CAST(B.month AS SIGNED), '
   query += 'CAST(B.category_cd AS SIGNED), '
   query += 'CAST(B.user_cd AS SIGNED);'
@@ -80,20 +86,29 @@ def select_budget(year, month):
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
 
-# def delete_mf(cd):
+def select_sum(year, month):
+  query = f'select category_cd, CAST(sum(budget) AS NCHAR) from budget where year = \'{year}\' and month = \'{month}\' group by category_cd;'
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
 
-#   query = f'UPDATE CATEGORY_MF SET delete_flag = 1, update_date = {date}, update_time = {time} WHERE cd = {cd};'
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('category', 'sum')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
 
-#   try:
-#     conn = db.get_conn()            #ここでDBに接続
-#     cursor = conn.cursor()          #カーソルを取得
-#     cursor.execute(query)
-#     conn.commit()                   #コミット
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
 
-#   except(mysql.connector.errors.ProgrammingError) as e:
-#     print('エラーが発生しました')
-#     print(e)
-#   finally:
-#     if conn != None:
-#       cursor.close()              # カーソルを終了
-#       conn.close()                # DB切断
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json
