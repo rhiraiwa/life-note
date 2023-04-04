@@ -1,5 +1,5 @@
 from server import app
-from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance
+from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit
 from flask import request, json
 
 @app.route('/')
@@ -60,6 +60,16 @@ def category_and_user_select():
   
   return {'category': category_list, 'user': user_list}
 
+# 予算の取得
+@app.route('/budget_select', methods=['POST'])
+def budget_select():
+  rd = json.loads(request.data)
+  print('=============AAAAAAA========')
+  print(rd['user'])
+  budget_month = budget.select_sum_month(rd['year'], rd['month'], rd['user'])
+  
+  return {'budget': budget_month}
+
 # 予算管理
 @app.route('/budget_insert', methods=['POST'])
 def budget_insert():
@@ -97,3 +107,13 @@ def home():
   budget = home_refarance.select_home(rd['year'], rd['month'])
 
   return {'budget': budget, 'sum': '0', 'category': '0', 'user': '0'}
+
+# 入金入力
+@app.route('/deposit_insert', methods=['POST'])
+def deposit_insert():
+  rd = json.loads(request.data)
+  deposit.insert_deposit(rd['year'], rd['month'], rd['date'], rd['user'], rd['category'], rd['amount'])
+  # table_data = deposit.select_deposit(rd['year'], rd['month'], rd['user'])
+
+  # return {'data': table_data}
+  return {'insert': 'done'}

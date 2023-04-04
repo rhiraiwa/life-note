@@ -112,3 +112,25 @@ def select_sum(year, month):
 
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
+
+def select_sum_month(year, month, user):
+  query = f'SELECT CAST(sum(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\' AND user_cd = \'{user}\';'
+  print('=====================================================')
+  print(user)
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+      
+  return rows[0][0]

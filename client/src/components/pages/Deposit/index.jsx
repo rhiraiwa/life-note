@@ -7,8 +7,20 @@ import './index.scss';
 
 const Deposit = () => {
 
+  const date = new Date();
+  const [selected, setSelected] = React.useState({
+    year: date.getFullYear(),
+    month: date. getMonth()
+  })
+
   const [categorylist, setCategorylist] = React.useState([]);
   const [userlist, setUserlist] = React.useState([]);
+  const [deposit, setDeposit] = React.useState({
+    user: '',
+    category: '',
+    amount: ''
+  });
+  const [budget, setBudget] = React.useState('');
 
   React.useEffect(() => {
     fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
@@ -16,15 +28,53 @@ const Deposit = () => {
     .then(json => {
       setCategorylist(JSON.parse(json['category']))
       setUserlist(JSON.parse(json['user']))
+      setDeposit({...deposit, user: JSON.parse(json['user'])[0].cd})
     })
     .catch(err => alert(err))
   }, []);
 
-  const date = new Date();
-  const [selected, setSelected] = React.useState({
-    year: date.getFullYear(),
-    month: date. getMonth()
-  })
+  React.useEffect(() => {
+    fetch('http://localhost:5000/budget_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": deposit.user
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      let budget = 0;
+      if (json['budget'] !== null) budget = json['budget']
+      setBudget(budget);
+    })
+    .catch(err => alert(err))
+  }, [selected]);
+
+  const insert_deposit = () => {
+
+    fetch('http://localhost:5000/deposit_insert', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": date.getFullYear(),
+        "month": date.getMonth() + 1,
+        "date": date.getDate(),
+        "user": deposit.user,
+        "category": deposit.category,
+        "amount": deposit.amount
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    // .then(json => setUserlist(JSON.parse(json['data'])))
+    // .then(setUsername(''))
+    .catch(err => alert(err))
+  }
 
   return (
     <div id='deposit'>
@@ -33,7 +83,7 @@ const Deposit = () => {
           <YearMonthChanger state={{selected, setSelected}}/>
           <div>
             <label>ユーザー</label>
-            <select>
+            <select value={deposit.user} onChange={(e)=>setDeposit({...deposit, user: e.target.value})}>
               {
                 userlist.map((user) => (
                   <option value={user.cd}>{user.name}</option>
@@ -45,7 +95,7 @@ const Deposit = () => {
         <FlexDiv id='deposit-input-area'>
           <div>
             <label>カテゴリ</label>
-            <select>
+            <select value={deposit.category} onChange={(e)=>setDeposit({...deposit, category: e.target.value})}>
               {
                 categorylist.map((category) => (
                   <option>{category.name}</option>
@@ -53,8 +103,11 @@ const Deposit = () => {
               }
             </select>
           </div>
-          <LabelInput id='deposit-amount' label='金額' type='text'/>
-          <button className='button-primary'>登録</button>
+          <div>
+            <LabelInput id='deposit-amount' label='予算' type='text' value={budget} isReadOnly={true}/>
+            <LabelInput id='deposit-amount' label='金額' type='text' value={deposit.amount} setValue={(e)=>setDeposit({...deposit, amount: e.target.value})}/>            
+          </div>
+          <button className='button-primary' onClick={insert_deposit}>登録</button>
         </FlexDiv>
       </div>
       <FlexDiv id='deposit-table-area'>
