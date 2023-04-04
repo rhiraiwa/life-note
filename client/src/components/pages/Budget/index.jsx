@@ -209,7 +209,7 @@ const Budget = () => {
             ))
           }
         <LabelInput label='合計' type='text' id='sum' isReadOnly={true}/>
-        <button className='button-primary' onClick={insertBudget}>登録</button>
+        <button className='button-primary' onClick={insertBudget} disabled={budgetlist.length !== 0 && !modifyflag}>登録</button>
       </div>
     </FlexDiv>
   );
