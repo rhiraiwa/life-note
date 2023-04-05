@@ -112,7 +112,7 @@ def home():
 @app.route('/deposit_insert', methods=['POST'])
 def deposit_insert():
   rd = json.loads(request.data)
-  deposit.insert_deposit(rd['year'], rd['month'], rd['date'], rd['user'], rd['category'], rd['amount'])
+  deposit.insert_deposit(rd['year'], rd['month'], rd['date'], rd['category'], rd['user'], rd['amount'])
   # table_data = deposit.select_deposit(rd['year'], rd['month'], rd['user'])
 
   # return {'data': table_data}

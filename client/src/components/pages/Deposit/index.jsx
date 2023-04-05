@@ -20,7 +20,8 @@ const Deposit = () => {
     category: '',
     amount: ''
   });
-  const [budget, setBudget] = React.useState('');
+  const [statuslist, setStatuslist] = React.useState([]);
+  const [historylist, setHistorylist] = React.useState([]);
 
   React.useEffect(() => {
     fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
@@ -28,34 +29,16 @@ const Deposit = () => {
     .then(json => {
       setCategorylist(JSON.parse(json['category']))
       setUserlist(JSON.parse(json['user']))
-      setDeposit({...deposit, user: JSON.parse(json['user'])[0].cd})
+      setDeposit({...deposit, user: JSON.parse(json['user'])[0].cd, category: JSON.parse(json['category'])[0].cd})
+      //ここでふたつのリストを取得する
+      //もしくはcategery_anduser_select以外の専用メソッドでふたつのリストも一緒に取得する
     })
     .catch(err => alert(err))
   }, []);
 
-  React.useEffect(() => {
-    fetch('http://localhost:5000/budget_select', {
-      method: 'POST',
-      body: JSON.stringify({
-        "year": selected.year,
-        "month": selected.month + 1,
-        "user": deposit.user
-      }),
-      headers: {
-        "Content-type": "application/json; charset=utf-8"
-      }
-    })
-    .then(response => response.json())
-    .then(json => {
-      let budget = 0;
-      if (json['budget'] !== null) budget = json['budget']
-      setBudget(budget);
-    })
-    .catch(err => alert(err))
-  }, [selected]);
+  //二つのリストはselectedが更新される度に取り直す
 
   const insert_deposit = () => {
-
     fetch('http://localhost:5000/deposit_insert', {
       method: 'POST',
       body: JSON.stringify({
@@ -98,13 +81,12 @@ const Deposit = () => {
             <select value={deposit.category} onChange={(e)=>setDeposit({...deposit, category: e.target.value})}>
               {
                 categorylist.map((category) => (
-                  <option>{category.name}</option>
+                  <option value={category.cd}>{category.name}</option>
                 ))
               }
             </select>
           </div>
           <div>
-            <LabelInput id='deposit-amount' label='予算' type='text' value={budget} isReadOnly={true}/>
             <LabelInput id='deposit-amount' label='金額' type='text' value={deposit.amount} setValue={(e)=>setDeposit({...deposit, amount: e.target.value})}/>            
           </div>
           <button className='button-primary' onClick={insert_deposit}>登録</button>
