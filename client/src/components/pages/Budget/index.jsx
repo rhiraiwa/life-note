@@ -3,6 +3,7 @@ import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
+import { useMasterFileData } from "../../../context/MasterFileContext";
 
 const Budget = () => {
 
@@ -11,22 +12,13 @@ const Budget = () => {
     year: date.getFullYear(),
     month: date. getMonth()
   })
-  const [categorylist, setCategorylist] = React.useState([]);
-  const [userlist, setUserlist] = React.useState([]);
+  const {userlist, categorylist} = useMasterFileData();
   const [budgetlist, setBudgetlist] = React.useState([]);
   const [modifyflag, setModifyflag] = React.useState(false);
 
   React.useEffect(() => {
     setModifyflag(false);
-    
-    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => {
-      setCategorylist(JSON.parse(json['category']));
-      setUserlist(JSON.parse(json['user']));
-    })
-    .catch(err => alert(err))
-    
+
     fetch('http://localhost:5000/budget_init', {
       method: 'POST',
       body: JSON.stringify({

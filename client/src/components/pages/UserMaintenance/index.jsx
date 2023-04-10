@@ -4,22 +4,16 @@ import LabelInput from "../../molecules/LabelInput";
 import edit from '../../../img/edit.png';
 import del from '../../../img/delete.png';
 import './index.scss';
+import { useMasterFileData } from "../../../context/MasterFileContext";
 
 const UserMaintenance = () => {
 
-  const [userlist, setUserlist] = React.useState([]);
+  const {userlist, setUserlist} = useMasterFileData();
   const [username, setUsername] = React.useState('');
 
   const handleUsername = (e) => {
     setUsername(e.target.value);
   }
-
-  React.useEffect(() => {
-    fetch('http://localhost:5000/user_select', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => setUserlist(JSON.parse(json['data'])))
-    .catch(err => alert(err))
-  }, []);
 
   const insert_user = () => {
 

@@ -4,6 +4,8 @@ import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import undo from '../../../img/undo.png';
 import './index.scss';
+import { useMasterFileData } from "../../../context/MasterFileContext";
+import { formatDate, formatTime } from "../../utils/"
 
 const Deposit = () => {
 
@@ -13,8 +15,7 @@ const Deposit = () => {
     month: date. getMonth()
   })
 
-  const [categorylist, setCategorylist] = React.useState([]);
-  const [userlist, setUserlist] = React.useState([]);
+  const {userlist, categorylist} = useMasterFileData();
   const [deposit, setDeposit] = React.useState({
     user: '',
     category: '',
@@ -24,21 +25,28 @@ const Deposit = () => {
   const [historylist, setHistorylist] = React.useState([]);
 
   React.useEffect(() => {
-    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
+    fetch('http://localhost:5000/deposit_init', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": deposit.user
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
     .then(response => response.json())
     .then(json => {
-      setCategorylist(JSON.parse(json['category']))
-      setUserlist(JSON.parse(json['user']))
-      setDeposit({...deposit, user: JSON.parse(json['user'])[0].cd, category: JSON.parse(json['category'])[0].cd})
-      //ここでふたつのリストを取得する
-      //もしくはcategery_anduser_select以外の専用メソッドでふたつのリストも一緒に取得する
+      setStatuslist(JSON.parse(json['status']));
+      setHistorylist(JSON.parse(json['history']));
     })
     .catch(err => alert(err))
-  }, []);
-
-  //二つのリストはselectedが更新される度に取り直す
+  }, [selected, deposit.user]);
 
   const insert_deposit = () => {
+    let category = deposit.category === ''? categorylist[0].cd : deposit.category;
+
     fetch('http://localhost:5000/deposit_insert', {
       method: 'POST',
       body: JSON.stringify({
@@ -46,7 +54,7 @@ const Deposit = () => {
         "month": date.getMonth() + 1,
         "date": date.getDate(),
         "user": deposit.user,
-        "category": deposit.category,
+        "category": category,
         "amount": deposit.amount
       }),
       headers: {
@@ -54,8 +62,8 @@ const Deposit = () => {
       }
     })
     .then(response => response.json())
-    // .then(json => setUserlist(JSON.parse(json['data'])))
-    // .then(setUsername(''))
+    .then(json => setHistorylist(JSON.parse(json['data'])))
+    .then(setDeposit({...deposit, amount: ''}))
     .catch(err => alert(err))
   }
 
@@ -67,6 +75,7 @@ const Deposit = () => {
           <div>
             <label>ユーザー</label>
             <select value={deposit.user} onChange={(e)=>setDeposit({...deposit, user: e.target.value})}>
+              <option value=''>選択してください</option>
               {
                 userlist.map((user) => (
                   <option value={user.cd}>{user.name}</option>
@@ -104,11 +113,13 @@ const Deposit = () => {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className='col-category'>test</td>
-                <td className='col-amount'>test</td>
-                <td className='col-amount'>test</td>
-              </tr>
+              {statuslist.map((status, index) => (
+                <tr key={index}>
+                  <td className='col-category'>{status.category_name}</td>
+                  <td className='col-amount'>{status.budget}</td>
+                  <td className='col-amount'>{status.deposit}</td>
+                </tr>                
+              ))}
             </tbody>
           </table>
         </div>
@@ -120,16 +131,22 @@ const Deposit = () => {
                 <th className='col-category'>カテゴリ</th>
                 <th className='col-amount'>入金額</th>
                 <th className='col-year-month-date'>入金日</th>
+                <th className='col-year-month-date'>入金時刻</th>
                 <th className='col-image-button'></th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td className='col-category'>test</td>
-                <td className='col-amount'>test</td>
-                <td className='col-year-month-date'>test</td>
-                <td className='col-image-button'><img src={undo} alt='undo'/></td>
-              </tr>
+                {
+                  historylist.map((history, index) => (
+                    <tr key={index}>
+                      <td className='col-category'>{history.category_name}</td>
+                      <td className='col-amount'>{history.deposit}</td>
+                      <td className='col-year-month-date'>{formatDate(history.insert_date)}</td>
+                      <td className='col-year-month-date'>{formatTime(history.insert_time)}</td>
+                      <td className='col-image-button'><img src={undo} alt='undo'/></td>
+                    </tr>                    
+                  ))
+                }
             </tbody>
           </table>
         </div>

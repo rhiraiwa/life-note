@@ -64,8 +64,6 @@ def category_and_user_select():
 @app.route('/budget_select', methods=['POST'])
 def budget_select():
   rd = json.loads(request.data)
-  print('=============AAAAAAA========')
-  print(rd['user'])
   budget_month = budget.select_sum_month(rd['year'], rd['month'], rd['user'])
   
   return {'budget': budget_month}
@@ -104,16 +102,26 @@ def budget_init():
 @app.route('/home', methods=['POST'])
 def home():
   rd = json.loads(request.data)
-  budget = home_refarance.select_home(rd['year'], rd['month'])
+  # budget = home_refarance.select_home(rd['year'], rd['month'])
 
-  return {'budget': budget, 'sum': '0', 'category': '0', 'user': '0'}
+  # return {'budget': budget, 'sum': '0', 'category': '0', 'user': '0'}
+  table_data = home_refarance.select_home(rd['year'], rd['month'])
+  
+  return {'data': table_data}
 
 # 入金入力
 @app.route('/deposit_insert', methods=['POST'])
 def deposit_insert():
   rd = json.loads(request.data)
   deposit.insert_deposit(rd['year'], rd['month'], rd['date'], rd['category'], rd['user'], rd['amount'])
-  # table_data = deposit.select_deposit(rd['year'], rd['month'], rd['user'])
+  table_data = deposit.select_history(rd['year'], rd['month'], rd['user'])
+  
+  return {'data': table_data}
 
-  # return {'data': table_data}
-  return {'insert': 'done'}
+@app.route('/deposit_init', methods=['POST'])
+def deposit_init():
+  rd = json.loads(request.data)
+  status = deposit.select_status(rd['year'], rd['month'], rd['user'])
+  history = deposit.select_history(rd['year'], rd['month'], rd['user'])
+
+  return {'status': status, 'history': history}

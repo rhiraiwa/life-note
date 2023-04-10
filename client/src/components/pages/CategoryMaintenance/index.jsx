@@ -4,22 +4,16 @@ import LabelInput from "../../molecules/LabelInput";
 import edit from '../../../img/edit.png';
 import del from '../../../img/delete.png';
 import './index.scss';
+import { useMasterFileData } from "../../../context/MasterFileContext";
 
 const CategoryMaintenance = () => {
 
-  const [categorylist, setCategorylist] = React.useState([]);
+  const {categorylist, setCategorylist} = useMasterFileData();
   const [categoryname, setCategoryname] = React.useState('');
 
   const handleCategoryname = (e) => {
     setCategoryname(e.target.value);
   }
-
-  React.useEffect(() => {
-    fetch('http://localhost:5000/category_select', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => setCategorylist(JSON.parse(json['data'])))
-    .catch(err => alert(err))
-  }, []);
 
   const insert_category = () => {
 

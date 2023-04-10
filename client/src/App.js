@@ -1,3 +1,4 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
 import PageTemplate from "./components/templates/PageTemplate";
 import Main from "./components/pages/Main";
@@ -8,8 +9,21 @@ import AdvancesPaid from "./components/pages/AdvancesPaid";
 import Result from "./components/pages/Result";
 import CategoryMaintenance from "./components/pages/CategoryMaintenance";
 import UserMaintenance from "./components/pages/UserMaintenance"
+import { useMasterFileData } from "./context/MasterFileContext";
 
 function App() {
+
+  const {setUserlist, setCategorylist} = useMasterFileData();
+  React.useEffect(() => {
+    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => {
+      setCategorylist(JSON.parse(json['category']))
+      setUserlist(JSON.parse(json['user']))
+    })
+    .catch(err => alert(err))
+  }, []);
+
   return (
     <div className="App">
       <Routes>
