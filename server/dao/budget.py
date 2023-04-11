@@ -87,7 +87,7 @@ def select_budget(year, month):
   return output_json
 
 def select_sum(year, month):
-  query = f'select category_cd, CAST(sum(budget) AS NCHAR) from budget where year = \'{year}\' and month = \'{month}\' group by category_cd;'
+  query = f'select category_cd, name, CAST(sum(budget) AS NCHAR) from budget left join CATEGORY_MF on category_cd = cd where year = \'{year}\' and month = \'{month}\' group by category_cd;'
   result_row = []
   
   try:
@@ -98,7 +98,7 @@ def select_sum(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('category', 'sum')
+      label_tuple = ('category_cd', 'category_name',  'sum')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 
@@ -115,9 +115,6 @@ def select_sum(year, month):
 
 def select_sum_month(year, month, user):
   query = f'SELECT CAST(sum(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\' AND user_cd = \'{user}\';'
-  print('=====================================================')
-  print(user)
-  result_row = []
   
   try:
     conn = db.get_conn()            #ここでDBに接続

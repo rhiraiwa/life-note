@@ -14,6 +14,8 @@ const Budget = () => {
   })
   const {userlist, categorylist} = useMasterFileData();
   const [budgetlist, setBudgetlist] = React.useState([]);
+  const [sumlist, setSumlist] = React.useState([]);
+  const [allSum, setAllsum] = React.useState(0);
   const [modifyflag, setModifyflag] = React.useState(false);
 
   React.useEffect(() => {
@@ -32,22 +34,18 @@ const Budget = () => {
     .then(response => response.json())
     .then(json => {
       setBudgetlist(JSON.parse(json['budget']));
-      let allsum = 0;
-      if (JSON.parse(json['sum']).length === 0) {
-        for (let i = 0; i < categorylist.length; i++) {
-          document.getElementById(`category_${categorylist[i].cd}_sum_input`).value = 0;
-        }
-      };
-
-      for (let i = 0; i < JSON.parse(json['sum']).length; i++) {
-        document.getElementById(`category_${JSON.parse(json['sum'])[i].category}_sum_input`).value = JSON.parse(json['sum'])[i].sum;
-        allsum += Number(JSON.parse(json['sum'])[i].sum);
-      }
-
-      document.getElementById('sum_input').value = allsum;
+      setSumlist(JSON.parse(json['sum']));
     })
     .catch(err => alert(err))
   }, [selected]);
+
+  React.useEffect(() => {
+    let sum = 0;
+    for (let i = 0; i < sumlist.length; i++) {
+      sum += Number(sumlist[i].sum);
+    }
+    setAllsum(sum);
+  }, [sumlist]);
 
   const calcSum = (target) => {
     let elements = document.getElementsByClassName(target);
@@ -63,32 +61,6 @@ const Budget = () => {
       allSum += Number(allElements[i].value);
     }
     document.getElementById('sum_input').value = allSum;
-  }
-
-  const getRows = () => {
-    let rows = [];
-    for (let i = 0; i < categorylist.length; i++) {
-      for (let j = 0; j < userlist.length; j++) {
-        rows.push(
-          <tr key={i}>
-            {j === 0 && <td className='col-category' rowSpan={userlist.length}>{categorylist[i].name}</td>}
-            <td className='col-user'>
-              {userlist[j].name}
-            </td>
-            <td className='col-amount'>
-              <input
-                className={`category category_${categorylist[i].cd}`}
-                id={`amount-${i}-${j}`}
-                type='text'
-                onChange={()=>calcSum(`category_${categorylist[i].cd}`)}
-                />
-            </td>
-          </tr>
-        )
-      }
-    }
-    
-    return rows;
   }
 
   const insertBudget = () => {
@@ -167,7 +139,24 @@ const Budget = () => {
           </thead>
           {(budgetlist.length === 0 || modifyflag) && (
             <tbody>
-              {getRows()}
+              {categorylist.map((category, i) => (
+                userlist.map((user, j) => (
+                  <tr key={i}>
+                    {j === 0 && <td className='col-category' rowSpan={userlist.length}>{category.name}</td>}
+                    <td className='col-user'>
+                      {user.name}
+                    </td>
+                    <td className='col-amount'>
+                      <input
+                        className={`category category_${category.cd}`}
+                        id={`amount-${i}-${j}`}
+                        type='text'
+                        onChange={()=>calcSum(`category_${category.cd}`)}
+                        />
+                    </td>
+                  </tr>
+                ))
+              ))}
             </tbody>
           )}
           {(budgetlist.length !== 0 && !modifyflag) && (
@@ -184,16 +173,37 @@ const Budget = () => {
         </table>
       </div>
       <div id='budget-right'>
-          {
-            categorylist.map((value) => (
-              <LabelInput
-                label={value.name}
-                type='text'
-                id={`category_${value.cd}_sum`}
-                isReadOnly={true}/>
-            ))
+          {(budgetlist.length === 0 || modifyflag) && (
+            <>
+              {
+                categorylist.map((value) => (
+                  <LabelInput
+                    label={value.name}
+                    type='text'
+                    id={`category_${value.cd}_sum`}
+                    isReadOnly={true}/>
+                ))                
+              }
+              <LabelInput label='合計' type='text' id='sum' isReadOnly={true}/>
+            </>
+            )
           }
-        <LabelInput label='合計' type='text' id='sum' isReadOnly={true}/>
+          {(budgetlist.length !== 0 && !modifyflag) && (
+            <>
+              {
+                sumlist.map((value) => (
+                  <LabelInput
+                    label={value.category_name}
+                    type='text'
+                    id={`category_${value.category_cd}_sum`}
+                    value={value.sum}
+                    isReadOnly={true}/>
+                ))                
+              }
+              <LabelInput label='合計' type='text' id='sum' value={allSum} isReadOnly={true}/>
+            </>
+            )
+          }
         <button className='button-primary' onClick={insertBudget} disabled={budgetlist.length !== 0 && !modifyflag}>登録</button>
       </div>
     </FlexDiv>
