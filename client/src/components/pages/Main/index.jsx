@@ -1,5 +1,5 @@
 import React from 'react';
-import testdata from '../../../Data.json';
+import { useNavigate } from "react-router-dom";
 import FlexDiv from '../../atoms/FlexDiv';
 import LabelInput from '../../molecules/LabelInput';
 import YearMonthChanger from '../../molecules/YearMonthChanger';
@@ -9,7 +9,9 @@ import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
 import './index.scss';
 
-const Table = ({year, month}) => {
+const Table = ({year, month, data}) => {
+  const navigate = useNavigate();
+
   return (
     <table id='home-table'>
       <thead>
@@ -22,13 +24,13 @@ const Table = ({year, month}) => {
         </tr>
       </thead>
       <tbody>
-        {getCompleteRow(testdata, year, month)}
+        {getCompleteRow(data, year, month, navigate)}
       </tbody>
     </table>
   );
 }
 
-const getCompleteRow = (data, year, month) => {
+const getCompleteRow = (data, year, month, navigate) => {
 
   const lastDate = new Date(year, month + 1, 0).getDate();
   
@@ -64,7 +66,7 @@ const getCompleteRow = (data, year, month) => {
   }
 
   let countMap = countDate(rows);
-  let displayRows = formatRow(rows, countMap, year, month);
+  let displayRows = formatRow(rows, countMap, year, month, navigate);
 
   return displayRows;
 }
@@ -115,8 +117,7 @@ const countDate = (rows) => {
   return countMap;
 }
 
-const formatRow = (original, count, year, month) => {
-
+const formatRow = (original, count, year, month, navigate) => {
   const days = ['日', '月', '火', '水', '木', '金', '土'];
 
   let rows = [];
@@ -137,8 +138,8 @@ const formatRow = (original, count, year, month) => {
           <td rowSpan={count[index.toString()]} className='col-checkbox'>
             <input type='checkbox'/>
           </td>
-          <td rowSpan={count[index.toString()]} className='col-date'>{original[i].date}</td>
-          <td rowSpan={count[index.toString()]} className='col-day'>
+          <td rowSpan={count[index.toString()]} className='col-date' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>{original[i].date}</td>
+          <td rowSpan={count[index.toString()]} className='col-day' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
           </td>
           <td className='col-category'>{original[i].category}</td>
@@ -174,9 +175,12 @@ const Main = () => {
   const [reference, setReference] = React.useState({
     budget: '',
     deposit: '',
-    paymnet: '',
-    balance: ''
+    payment: '',
+    balance: '',
+    advancesPaid: 0
   })
+
+  const [data, setData] = React.useState([])
 
   React.useEffect(() => {
     setReference({...reference, budget: ''});
@@ -196,10 +200,15 @@ const Main = () => {
       let budget = 0;
       let deposit = 0;
       let payment = 0;
-      if (JSON.parse(json['data'])[0].budget !== null) budget = JSON.parse(json['data'])[0].budget
-      if (JSON.parse(json['data'])[0].deposit !== null) deposit = JSON.parse(json['data'])[0].deposit
-      if (JSON.parse(json['data'])[0].payment !== null) payment = JSON.parse(json['data'])[0].payment
-      setReference({...reference, budget: budget, deposit: deposit, payment: payment});
+      let balance = 0;
+      let advancesPaid = false;
+      if (JSON.parse(json['refarance'])[0].budget !== null) budget = JSON.parse(json['refarance'])[0].budget
+      if (JSON.parse(json['refarance'])[0].deposit !== null) deposit = JSON.parse(json['refarance'])[0].deposit
+      if (JSON.parse(json['refarance'])[0].payment !== null) payment = JSON.parse(json['refarance'])[0].payment
+      if (JSON.parse(json['refarance'])[0].advances_paid !== null) advancesPaid = JSON.parse(json['refarance'])[0].advances_paid
+      balance = deposit - payment;
+      setReference({...reference, budget: budget, deposit: deposit, payment: payment, balance: balance, advancesPaid: advancesPaid});
+      setData(JSON.parse(json['data']))
     })
     .catch(err => alert(err))
   }, [selected]);
@@ -210,7 +219,7 @@ const Main = () => {
         <div>
           <YearMonthChanger state={{selected, setSelected}}/>
           <div id='home-table-area'>
-            <Table year={selected.year} month={selected.month}/>
+            <Table year={selected.year} month={selected.month} data={data}/>
           </div>
           <FlexDiv>
             <button className='button-primary home-button' onClick={()=>setIsOpen(true)}>
@@ -224,7 +233,7 @@ const Main = () => {
         <div id='flex-right'>
           <LabelInput label='予算' type='text' isReadOnly={true} value={reference.budget}/>
           <LabelInput label='入金' type='text' isReadOnly={true} value={reference.deposit}/>
-          <LabelInput label='支出' type='text' isReadOnly={true} value={reference.paymnet}/>
+          <LabelInput label='支出' type='text' isReadOnly={true} value={reference.payment}/>
           <LabelInput label='収支' type='text' isReadOnly={true} value={reference.balance} id='balance'/>
           <div id='message-table'>
             <label>メッセージ</label>
@@ -240,10 +249,12 @@ const Main = () => {
                     <td><img src={attention} alt='attention'/>入金額が不足しています</td>
                   </tr>
                 }
-                <tr>
-                  <td><img src={attention} alt='attention'/>立替が発生しています</td>
-                </tr>
-                {reference.budget !== 0 && reference.budget > reference.deposit &&
+                {reference.advancesPaid > 0 &&
+                  <tr>
+                    <td><img src={attention} alt='attention'/>立替が発生しています</td>
+                  </tr>
+                }
+                {reference.budget !== 0 && reference.budget < reference.deposit && reference.advancesPaid === 0 &&
                   <tr>
                     <td>メッセージはありません</td>
                   </tr>

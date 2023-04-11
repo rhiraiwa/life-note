@@ -1,5 +1,5 @@
 from server import app
-from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit
+from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment
 from flask import request, json
 
 @app.route('/')
@@ -92,16 +92,17 @@ def budget_init():
   rd = json.loads(request.data)
   budget_list = budget.select_budget(rd['year'], rd['month'])
   sum_list = budget.select_sum(rd['year'], rd['month'])
-  
+
   return {'budget': budget_list, 'sum': sum_list}
 
 # メイン画面（ホーム）
 @app.route('/home', methods=['POST'])
 def home():
   rd = json.loads(request.data)
-  table_data = home_refarance.select_home(rd['year'], rd['month'])
-  
-  return {'data': table_data}
+  refarance = home_refarance.select_home(rd['year'], rd['month'])
+  data = home_refarance.select_data(rd['year'], rd['month'])
+
+  return {'refarance': refarance, 'data': data}
 
 # 入金入力
 @app.route('/deposit_insert', methods=['POST'])
@@ -119,3 +120,13 @@ def deposit_init():
   history = deposit.select_history(rd['year'], rd['month'], rd['user'])
 
   return {'status': status, 'history': history}
+
+# 支払入力
+@app.route('/payment_insert', methods=['POST'])
+def payment_insert():
+  rd = json.loads(request.data)
+  rd = rd['form']
+  rd['advancePaidAmount'] = rd['advancePaidAmount'] if rd['advancePaidAmount'] != '' else 0
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'])
+
+  return {'payment_insert': 'done'}

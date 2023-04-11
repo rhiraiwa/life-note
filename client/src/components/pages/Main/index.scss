@@ -29,10 +29,18 @@
     .col-date {
       width: 30px;
       text-align: center;
+      
+      &:not(th) {
+        cursor: pointer;
+      }
     }
     .col-day {
       width: 35px;
       padding-right: 5px;
+      
+      &:not(th) {
+        cursor: pointer;
+      }
     }
   }
 }
