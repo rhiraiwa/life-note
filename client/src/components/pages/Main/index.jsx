@@ -193,13 +193,12 @@ const Main = () => {
     })
     .then(response => response.json())
     .then(json => {
-      debugger;
       let budget = 0;
       let deposit = 0;
       let payment = 0;
-      if (json['data'].budget !== null) budget = json['data'].budget
-      if (json['data'].deposit !== null) deposit = json['data'].deposit
-      if (json['data'].payment !== null) payment = json['data'].payment
+      if (JSON.parse(json['data'])[0].budget !== null) budget = JSON.parse(json['data'])[0].budget
+      if (JSON.parse(json['data'])[0].deposit !== null) deposit = JSON.parse(json['data'])[0].deposit
+      if (JSON.parse(json['data'])[0].payment !== null) payment = JSON.parse(json['data'])[0].payment
       setReference({...reference, budget: budget, deposit: deposit, payment: payment});
     })
     .catch(err => alert(err))
