@@ -1,32 +1,51 @@
-import React from "react";
+import React, { useState } from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
+import { useMasterFileData } from "../../../context/MasterFileContext";
 
 const AdvancesPaid = () => {
 
-  const [userlist, setUserlist] = React.useState([]);
-
-  const adlist = [
-    {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'},
-    {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'},
-    {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'},
-    {categary:'0', amount: '1500', shopName: 'AEON', date: '2023/2/23'}
-  ]
-
-  React.useEffect(() => {
-    fetch('http://localhost:5000/user_select', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => setUserlist(JSON.parse(json['data'])))
-    .catch(err => alert(err))
-  }, []);
+  const {userlist} = useMasterFileData();
+  const [advancesPaidlist, setAdvancesPaidlist] = React.useState([]);
+  const [sum, setSum] = React.useState(0);
 
   const date = new Date();
   const [selected, setSelected] = React.useState({
     year: date.getFullYear(),
-    month: date. getMonth()
+    month: date. getMonth(),
+    user: ''
   })
+
+  React.useEffect(() => {
+    fetch('http://localhost:5000/advances_paid_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": selected.user
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      setAdvancesPaidlist(JSON.parse(json['data']))
+    })
+    .catch(err => alert(err))
+  }, [selected]);
+
+  React.useEffect(() => {
+    let sum = 0;
+
+    for (let i = 0; i < advancesPaidlist.length; i++) {
+      sum += Number(advancesPaidlist[i].amount);
+    }
+
+    setSum(sum);
+  }, [advancesPaidlist]);
 
   const setAdvancesPaid = (advancesPaid) => {
     document.getElementById('advances-paid_input').value = advancesPaid;
@@ -43,7 +62,8 @@ const AdvancesPaid = () => {
           <YearMonthChanger state={{selected, setSelected}}/>
           <div>
             <label>ユーザー</label>
-            <select>
+            <select value={selected.user} onChange={(e)=>setSelected({...selected, user: e.target.value})}>
+              <option value=''>選択してください</option>
               {
                 userlist.map((user) => (
                   <option value={user.cd}>{user.name}</option>
@@ -53,7 +73,7 @@ const AdvancesPaid = () => {
           </div>
         </FlexDiv>
         <FlexDiv id='bulk-return-area'>
-          <LabelInput id='bulk-sum' label='立替額合計' type='text' isReadOnly={true}/>
+          <LabelInput id='bulk-sum' label='立替額合計' type='text' value={sum} isReadOnly={true}/>
           <button className='button-primary'>一括返金登録</button>
         </FlexDiv>
       </div>
@@ -71,12 +91,12 @@ const AdvancesPaid = () => {
             </thead>
             <tbody>
               {
-                adlist.map((history) => (
+                advancesPaidlist.map((history) => (
                   <tr onClick={()=>setAdvancesPaid(history.amount)}>
-                    <td className='col-category'>{history.categary}</td>
+                    <td className='col-category'>{history.category}</td>
                     <td className='col-amount'>{history.amount}</td>
-                    <td className='col-shop-name'>{history.shopName}</td>
-                    <td className='col-year-month-date'>{history.date}</td>
+                    <td className='col-shop-name'>{history.shop_name}</td>
+                    <td className='col-year-month-date'>{history.payment_date}</td>
                   </tr>                  
                 ))
               }
