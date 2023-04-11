@@ -8,6 +8,39 @@ const Result = () => {
     year: date.getFullYear(),
     month: date. getMonth()
   })
+  const [resultlist, setResultlist] = React.useState([]);
+  const [sum, setSum] = React.useState({
+    budget: 0,
+    payment: 0
+  })
+
+  React.useEffect(() => {
+    fetch('http://localhost:5000/result_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      setResultlist(JSON.parse(json['data']))
+    })
+    .catch(err => alert(err))
+  }, [selected]);
+
+  React.useEffect(() => {
+    let budgetSum = 0;
+    let paymentSum = 0;
+    for (let i = 0; i < resultlist.length; i++) {
+      budgetSum += Number(resultlist[i].budget);
+      paymentSum += Number(resultlist[i].payment);
+    }
+    setSum({...sum, budget: budgetSum, payment: paymentSum});
+  }, [resultlist]);
 
   return (
     <div id='result'>
@@ -22,17 +55,21 @@ const Result = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className='col-category'>test</td>
-            <td className='col-amount'>test</td>
-            <td className='col-amount'>test</td>
-            <td className='col-amount'>test</td>
-          </tr>
+          {
+            resultlist.map((result, index) => (
+              <tr key={index}>
+                <td className='col-category'>{result.category}</td>
+                <td className='col-amount'>{result.budget}</td>
+                <td className='col-amount'>{result.payment}</td>
+                <td className='col-amount'>{result.budget - result.payment}</td>
+              </tr>
+            ))
+          }
           <tr>
             <td className='col-category'>合計</td>
-            <td className='col-amount'>sum</td>
-            <td className='col-amount'>sum</td>
-            <td className='col-amount'>sum</td>
+            <td className='col-amount'>{sum.budget}</td>
+            <td className='col-amount'>{sum.payment}</td>
+            <td className='col-amount'>{sum.budget - sum.payment}</td>
           </tr>
         </tbody>
       </table>

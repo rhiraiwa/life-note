@@ -1,5 +1,5 @@
 from server import app
-from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment
+from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment, result
 from flask import request, json
 
 @app.route('/')
@@ -130,3 +130,11 @@ def payment_insert():
   payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'])
 
   return {'payment_insert': 'done'}
+
+# 実績照会画面
+@app.route('/result_select', methods=['POST'])
+def result_select():
+  rd = json.loads(request.data)
+  table_data = result.select_result(rd['year'], rd['month'])
+
+  return {'data': table_data}
