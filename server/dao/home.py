@@ -36,7 +36,7 @@ def select_home(year, month):
 
 def select_data(year, month):
   
-  query = f'SELECT year, month, date, name, shop_name, CAST(amount AS NCHAR) FROM PAYMENT LEFT JOIN CATEGORY_MF ON category_cd = cd WHERE year = \'{year}\' AND month = \'{month}\' ORDER BY CAST(date AS SIGNED);;'
+  query = f'SELECT year, month, date, name, shop_name, CAST(amount AS NCHAR) FROM PAYMENT LEFT JOIN CATEGORY_MF ON category_cd = cd WHERE year = \'{year}\' AND month = \'{month}\' AND category_cd != 999 ORDER BY CAST(date AS SIGNED);;'
   result_row = []
   
   try:

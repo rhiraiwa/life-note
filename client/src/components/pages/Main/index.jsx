@@ -267,7 +267,7 @@ const Main = () => {
       {
         isOpen &&
         <Modal title='カードチャージ登録' closeMethod={()=>setIsOpen(false)}>
-          <Charge year={selected.year} month={selected.month}/>
+          <Charge year={selected.year} month={selected.month+1}/>
         </Modal>
       }
     </>

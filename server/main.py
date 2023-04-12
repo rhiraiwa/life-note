@@ -132,6 +132,16 @@ def payment_insert():
 
   return {'payment_insert': 'done'}
 
+# WAONカードチャージ
+@app.route('/charge_history_insert', methods=['POST'])
+def charge_history_insert():
+  rd = json.loads(request.data)
+  rd = rd['form']
+  charge = rd['amount']
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, 'WAONカードチャージ', 0, 1, rd['amount'], rd['user'], f'{charge}円')
+
+  return {'payment_insert': 'done'}
+
 # 実績照会画面
 @app.route('/result_select', methods=['POST'])
 def result_select():

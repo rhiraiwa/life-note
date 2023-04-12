@@ -3,7 +3,7 @@ import json
 import server.dao.db_connection as db
 
 def select_advances_paid(year, month, user):
-  query = f'select name, CAST(amount AS NCHAR), shop_name, concat(year, \'/\', month, \'/\', date) '
+  query = f'select name, CAST(advances_paid_amount AS NCHAR), shop_name, concat(year, \'/\', month, \'/\', date) '
   query += f'from payment left join CATEGORY_MF on category_cd = cd '
   query += f'where year = \'{year}\' and month = \'{month}\' and advances_paid_user_cd = \'{user}\' and advances_paid_flag = 1 '
   query += f'ORDER BY CAST(date AS SIGNED);'
