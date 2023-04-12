@@ -254,7 +254,7 @@ const Main = () => {
                     <td><img src={attention} alt='attention'/>立替が発生しています</td>
                   </tr>
                 }
-                {reference.budget !== 0 && reference.budget < reference.deposit && reference.advancesPaid === 0 &&
+                {reference.budget !== 0 && reference.budget <= reference.deposit && reference.advancesPaid === 0 &&
                   <tr>
                     <td>メッセージはありません</td>
                   </tr>
