@@ -62,7 +62,10 @@ const Deposit = () => {
       }
     })
     .then(response => response.json())
-    .then(json => setHistorylist(JSON.parse(json['data'])))
+    .then(json => {
+      setStatuslist(JSON.parse(json['status']));
+      setHistorylist(JSON.parse(json['history']));
+    })
     .then(setDeposit({...deposit, amount: ''}))
     .catch(err => alert(err))
   }
