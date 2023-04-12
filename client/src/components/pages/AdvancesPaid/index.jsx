@@ -55,6 +55,23 @@ const AdvancesPaid = () => {
     document.getElementById('advances-paid_input').value = '';
   }
 
+  const resetAdvancesPaidFlag = () => {
+    fetch('http://localhost:5000/advances_paid_flag_reset', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": selected.user
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(setAdvancesPaidlist([]))
+    .catch(err => alert(err))
+  }
+
   return (
     <div id='advances-paid'>
       <div className='black-underline-2'>
@@ -74,7 +91,7 @@ const AdvancesPaid = () => {
         </FlexDiv>
         <FlexDiv id='bulk-return-area'>
           <LabelInput id='bulk-sum' label='立替額合計' type='text' value={sum} isReadOnly={true}/>
-          <button className='button-primary'>一括返金登録</button>
+          <button className='button-primary' onClick={resetAdvancesPaidFlag}>一括返金登録</button>
         </FlexDiv>
       </div>
       <FlexDiv id='return-area'>

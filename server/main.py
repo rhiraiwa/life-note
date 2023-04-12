@@ -109,9 +109,10 @@ def home():
 def deposit_insert():
   rd = json.loads(request.data)
   deposit.insert_deposit(rd['year'], rd['month'], rd['date'], rd['category'], rd['user'], rd['amount'])
-  table_data = deposit.select_history(rd['year'], rd['month'], rd['user'])
-  
-  return {'data': table_data}
+  status = deposit.select_status(rd['year'], rd['month'], rd['user'])
+  history = deposit.select_history(rd['year'], rd['month'], rd['user'])
+
+  return {'status': status, 'history': history}
 
 @app.route('/deposit_init', methods=['POST'])
 def deposit_init():
@@ -146,3 +147,10 @@ def advances_paid_select():
   table_data = advances_paid.select_advances_paid(rd['year'], rd['month'], rd['user'])
 
   return {'data': table_data}
+
+@app.route('/advances_paid_flag_reset', methods=['POST'])
+def advances_paid_flag_reset():
+  rd = json.loads(request.data)
+  advances_paid.reset_advances_paid_flag(rd['year'], rd['month'], rd['user'])
+
+  return {'advances_paid_flag_reset': 'done'}
