@@ -2,6 +2,10 @@ import mysql.connector
 import json
 import server.dao.db_connection as db
 
+# 現在時間取得SQL
+date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
+time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
+
 def select_advances_paid(year, month, user):
   query = f'select name, CAST(advances_paid_amount AS NCHAR), shop_name, concat(year, \'/\', month, \'/\', date) '
   query += f'from payment left join CATEGORY_MF on category_cd = cd '
@@ -33,7 +37,7 @@ def select_advances_paid(year, month, user):
   return output_json
 
 def reset_advances_paid_flag(year, month, user):
-  update_query = f'UPDATE PAYMENT SET advances_paid_flag = 0 WHERE year = \'{year}\' AND month = \'{month}\' AND advances_paid_user_cd = \'{user}\';'
+  update_query = f'UPDATE PAYMENT SET advances_paid_flag = 0 , update_date = \'{date}\', update_time = \'{time}\' WHERE year = \'{year}\' AND month = \'{month}\' AND advances_paid_user_cd = \'{user}\';'
   
   try:
     conn = db.get_conn()            #ここでDBに接続
