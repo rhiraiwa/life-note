@@ -6,7 +6,7 @@ import rembg
 
 # パス設定
 DATA_DIR='client/public/receipt/temp/'
-RESULT_DIR='client/public/receipt/result/'
+RESULT_DIR='client/public/receipt/preview/'
 
 # 背景除去
 def doTrim(filename):

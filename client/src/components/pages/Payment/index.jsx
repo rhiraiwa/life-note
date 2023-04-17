@@ -26,10 +26,12 @@ const Payment = () => {
     isAdvancePaid: 0,
     advancePaidUser: '',
     advancePaidAmount: '',
-    note: ''
+    note: '',
+    filename: ''
   })
 
   const [isOpen, setIsOpen] = React.useState(false);
+  const [preview, setPreview] = React.useState('');
 
   React.useEffect(() => {
     console.log(initialdate);
@@ -118,12 +120,17 @@ const Payment = () => {
           <LabelInput id='payment-note' label='備考' type='textarea' value={form.note} setValue={(e)=>setForm({...form, note: e.target.value})}/>
           <button className='button-primary' onClick={insert_payment}>登録</button>
         </div>
-        <div id='payment-receipt-preview'></div>
+        <div id='payment-receipt-preview'>
+          {
+            form.filename !== '' &&
+            <img src={'../receipt/preview/' + form.filename} alt='プレビュー' />
+          }
+        </div>
       </FlexDiv>
       {
         isOpen &&
         <Modal title='レシート画像プレビュー' closeMethod={()=>setIsOpen(false)}>
-          <ReceiptPreview closeMethod={()=>setIsOpen(false)}/>
+          <ReceiptPreview setPreview={(value)=>setForm({...form, filename: value})} closeMethod={()=>setIsOpen(false)} filename='LOWSON_0.jpg'/>
         </Modal>
       }
     </>

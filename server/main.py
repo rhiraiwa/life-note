@@ -128,7 +128,7 @@ def payment_insert():
   rd = json.loads(request.data)
   rd = rd['form']
   rd['advancePaidAmount'] = rd['advancePaidAmount'] if rd['advancePaidAmount'] != '' else 0
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'])
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'], rd['filename'])
 
   return {'payment_insert': 'done'}
 
