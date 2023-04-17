@@ -1,0 +1,12 @@
+#receipt-preview {
+  #img-area {
+    width: 75vw;
+    height: 75vh;
+
+    img{
+      width: 100%;
+      height: 100%;
+      object-fit: scale-down;
+    }
+  }
+}

@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import './index.scss';
+import ReceiptPreview from "../../templates/ReceiptPreview";
+import Modal from "../../orgasms/Modal";
 
 const Payment = () => {
 
@@ -26,6 +28,8 @@ const Payment = () => {
     advancePaidAmount: '',
     note: ''
   })
+
+  const [isOpen, setIsOpen] = React.useState(false);
 
   React.useEffect(() => {
     console.log(initialdate);
@@ -67,46 +71,62 @@ const Payment = () => {
     navigate('/');
   }
 
+  const processing_image = () => {
+    fetch('http://localhost:5000/image_processing', { method: 'POST' })
+    .then(response => response.json())
+    .catch(err => alert(err))
+  }
+
   return (
-    <FlexDiv id='payment'>
-      <div id='payment-input-area'>
-        <FlexDiv id='payment-year-month-date'>
-          <LabelInput id='payment-year' label='' type='text' value={form.year} setValue={(e)=>setForm({...form, year: e.target.value})}/>
-          <LabelInput id='payment-month' label='/' type='text' value={form.month} setValue={(e)=>setForm({...form, month: e.target.value})}/>
-          <LabelInput id='payment-date' label='/' type='text' value={form.date} setValue={(e)=>setForm({...form, date: e.target.value})}/>
-        </FlexDiv>
-        <div className='label-input'>
-          <label>カテゴリ</label>
-          <select value={form.category} onChange={(e)=>setForm({...form, category: e.target.value})}>
-            <option value=''>選択してください</option>
-            {
-              categorylist.map((category) => (
-                <option value={category.cd}>{category.name}</option>
-              ))
-            }
-          </select>
+    <>
+      <FlexDiv id='payment'>
+        <div id='payment-input-area'>
+          <FlexDiv id='payment-year-month-date'>
+            <LabelInput id='payment-year' label='' type='text' value={form.year} setValue={(e)=>setForm({...form, year: e.target.value})}/>
+            <LabelInput id='payment-month' label='/' type='text' value={form.month} setValue={(e)=>setForm({...form, month: e.target.value})}/>
+            <LabelInput id='payment-date' label='/' type='text' value={form.date} setValue={(e)=>setForm({...form, date: e.target.value})}/>
+          </FlexDiv>
+          <div className='label-input'>
+            <label>カテゴリ</label>
+            <select value={form.category} onChange={(e)=>setForm({...form, category: e.target.value})}>
+              <option value=''>選択してください</option>
+              {
+                categorylist.map((category) => (
+                  <option value={category.cd}>{category.name}</option>
+                ))
+              }
+            </select>
+          </div>
+          <LabelInput id='payment-shop-name' label='店名' type='text' value={form.shopName} setValue={(e)=>setForm({...form, shopName: e.target.value})}/>
+          <LabelInput id='payment-amount' label='金額' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
+          <LabelInput id='payment-receipt' label='レシート' type='file'/>
+          <button onClick={processing_image}>画像処理</button>
+          <button onClick={()=>setIsOpen(true)}>プレビュー</button>
+          <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
+          <div className='label-input'>
+            <label>ユーザー</label>
+            <select value={form.advancePaidUser} onChange={(e)=>setForm({...form, advancePaidUser: e.target.value})} disabled={isDisable}>
+              <option value=''>選択してください</option>
+              {
+                userlist.map((user) => (
+                  <option value={user.cd}>{user.name}</option>
+                ))
+              }
+            </select>
+          </div>
+          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={form.advancePaidAmount} setValue={(e)=>setForm({...form, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
+          <LabelInput id='payment-note' label='備考' type='textarea' value={form.note} setValue={(e)=>setForm({...form, note: e.target.value})}/>
+          <button className='button-primary' onClick={insert_payment}>登録</button>
         </div>
-        <LabelInput id='payment-shop-name' label='店名' type='text' value={form.shopName} setValue={(e)=>setForm({...form, shopName: e.target.value})}/>
-        <LabelInput id='payment-amount' label='金額' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
-        <LabelInput id='payment-receipt' label='レシート' type='file'/>
-        <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
-        <div className='label-input'>
-          <label>ユーザー</label>
-          <select value={form.advancePaidUser} onChange={(e)=>setForm({...form, advancePaidUser: e.target.value})} disabled={isDisable}>
-            <option value=''>選択してください</option>
-            {
-              userlist.map((user) => (
-                <option value={user.cd}>{user.name}</option>
-              ))
-            }
-          </select>
-        </div>
-        <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={form.advancePaidAmount} setValue={(e)=>setForm({...form, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
-        <LabelInput id='payment-note' label='備考' type='textarea' value={form.note} setValue={(e)=>setForm({...form, note: e.target.value})}/>
-        <button className='button-primary' onClick={insert_payment}>登録</button>
-      </div>
-      <div id='payment-receipt-preview'></div>
-    </FlexDiv>
+        <div id='payment-receipt-preview'></div>
+      </FlexDiv>
+      {
+        isOpen &&
+        <Modal title='レシート画像プレビュー' closeMethod={()=>setIsOpen(false)}>
+          <ReceiptPreview closeMethod={()=>setIsOpen(false)}/>
+        </Modal>
+      }
+    </>
   );
 }
 

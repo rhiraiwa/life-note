@@ -1,5 +1,6 @@
 from server import app
 from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment, result, advances_paid
+from server.model import camera
 from flask import request, json
 
 @app.route('/')
@@ -163,3 +164,11 @@ def advances_paid_flag_reset():
   advances_paid.reset_advances_paid_flag(rd['year'], rd['month'], rd['user'])
 
   return {'advances_paid_flag_reset': 'done'}
+
+# 画像処理
+@app.route('/image_processing', methods=['POST'])
+def image_processing():
+  filename = camera.camera_main()
+  print(filename)
+
+  return {'filename': filename}
