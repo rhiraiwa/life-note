@@ -169,6 +169,11 @@ def advances_paid_flag_reset():
 @app.route('/image_processing', methods=['POST'])
 def image_processing():
   filename = camera.camera_main()
-  print(filename)
+
+  return {'filename': filename}
+
+@app.route('/image_web', methods=['POST'])
+def image_web():
+  filename = camera.web()
 
   return {'filename': filename}

@@ -1,12 +1,18 @@
 import numpy as np
-import cv2
 import os
+# cv2のインポート前にカメラに関する設定を行う
+os.environ["OPENCV_VIDEOIO_MSMF_ENABLE_HW_TRANSFORMS"] = "0"
+import cv2
 import glob
 import rembg
+
 
 # パス設定
 DATA_DIR='client/public/receipt/temp/'
 RESULT_DIR='client/public/receipt/preview/'
+
+# 拡張子指定
+ext='jpg'
 
 # 背景除去
 def doTrim(filename):
@@ -40,7 +46,7 @@ def rectangle_extraction(img, filename):
     if len(areas) == 0:
         continue
     dst = get_dst(img_con, areas)
-    cv2.imwrite(RESULT_DIR + filename + "_{}.jpg".format(i), dst)
+    cv2.imwrite(RESULT_DIR + filename + ".jpg".format(i), dst)
 
 # 射影変換メソッド
 def get_dst(img, areas):
@@ -104,4 +110,30 @@ def camera_main():
       output = doTrim(target)
       rectangle_extraction(output, target.replace('.jpg', ''))
 
-      return DATA_DIR+target.replace('.jpg', '')
+      # return DATA_DIR+target.replace('.jpg', '')
+      return target
+
+# WEBカメラ
+def web():
+  cap = cv2.VideoCapture(1)
+  while True:
+    # 1フレームずつ取得する。
+    ret, frame = cap.read()
+    #フレームが取得できなかった場合は、画面を閉じる
+    if not ret:
+      break
+      
+    # ウィンドウに出力
+    cv2.imshow("Frame", frame)
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('c'):
+      cv2.imwrite('{}_{}.{}'.format(DATA_DIR, 'receipt', ext), frame)
+      break
+    # Escキーを入力されたら画面を閉じる
+    if key == 27:
+      break
+  cap.release()
+  cv2.destroyAllWindows()
+  filename = camera_main()
+  
+  return filename

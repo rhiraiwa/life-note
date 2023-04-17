@@ -79,6 +79,16 @@ const Payment = () => {
     .catch(err => alert(err))
   }
 
+  const web_image = () => {
+    fetch('http://localhost:5000/image_web', { method: 'POST' })
+    .then(response => response.json())
+    .then(json => {
+      setPreview(json['filename']);
+      setIsOpen(true);
+    })
+    .catch(err => alert(err))
+  }
+
   return (
     <>
       <FlexDiv id='payment'>
@@ -104,6 +114,7 @@ const Payment = () => {
           <LabelInput id='payment-receipt' label='レシート' type='file'/>
           <button onClick={processing_image}>画像処理</button>
           <button onClick={()=>setIsOpen(true)}>プレビュー</button>
+          <button onClick={web_image}>WEBcamera</button>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
           <div className='label-input'>
             <label>ユーザー</label>
@@ -130,7 +141,7 @@ const Payment = () => {
       {
         isOpen &&
         <Modal title='レシート画像プレビュー' closeMethod={()=>setIsOpen(false)}>
-          <ReceiptPreview setPreview={(value)=>setForm({...form, filename: value})} closeMethod={()=>setIsOpen(false)} filename='LOWSON_0.jpg'/>
+          <ReceiptPreview setPreview={(value)=>setForm({...form, filename: value})} closeMethod={()=>setIsOpen(false)} filename={preview}/>
         </Modal>
       }
     </>
