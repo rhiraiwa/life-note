@@ -86,9 +86,18 @@ def select_budget(year, month):
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
 
-def select_sum(year, month):
-  query = f'select category_cd, name, CAST(sum(budget) AS NCHAR) from budget left join CATEGORY_MF on category_cd = cd where year = \'{year}\' and month = \'{month}\' group by category_cd;'
-  result_row = []
+def budget_init(year, month):
+  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR) FROM BUDGET B '
+  query += 'LEFT JOIN category_mf C ON B.category_cd = C.cd '
+  query += 'LEFT JOIN user_mf U ON B.user_cd = U.cd '
+  query += f'WHERE B.year = \'{year}\' AND B.month = \'{month}\' '
+  query += 'ORDER BY CAST(B.year AS SIGNED), '
+  query += 'CAST(B.month AS SIGNED), '
+  query += 'CAST(B.category_cd AS SIGNED), '
+  query += 'CAST(B.user_cd AS SIGNED);'
+  result = []
+  sum_query = f'select category_cd, name, CAST(sum(budget) AS NCHAR) from budget left join CATEGORY_MF on category_cd = cd where year = \'{year}\' and month = \'{month}\' group by category_cd;'
+  sum_result= []
   
   try:
     conn = db.get_conn()            #ここでDBに接続
@@ -98,9 +107,18 @@ def select_sum(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
+      label_tuple = ('category', 'user', 'budget')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result.append(row_dict)
+
+    cursor.execute(sum_query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
       label_tuple = ('category_cd', 'category_name',  'sum')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
-      result_row.append(row_dict)
+      sum_result.append(row_dict)
 
   except(mysql.connector.errors.ProgrammingError) as e:
     print('エラーが発生しました')
@@ -110,8 +128,9 @@ def select_sum(year, month):
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
-  output_json = json.dumps(result_row, ensure_ascii=False)
-  return output_json
+  result_json = json.dumps(result, ensure_ascii=False)
+  result_sum_json = json.dumps(sum_result, ensure_ascii=False)
+  return {'budget': result_json, 'sum': result_sum_json}
 
 def select_sum_month(year, month, user):
   query = f'SELECT CAST(sum(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\' AND user_cd = \'{user}\';'

@@ -90,10 +90,9 @@ def budget_inherit():
 @app.route('/budget_init', methods=['POST'])
 def budget_init():
   rd = json.loads(request.data)
-  budget_list = budget.select_budget(rd['year'], rd['month'])
-  sum_list = budget.select_sum(rd['year'], rd['month'])
+  init_json = budget.budget_init(rd['year'], rd['month'])
 
-  return {'budget': budget_list, 'sum': sum_list}
+  return init_json
 
 # メイン画面（ホーム）
 @app.route('/home', methods=['POST'])

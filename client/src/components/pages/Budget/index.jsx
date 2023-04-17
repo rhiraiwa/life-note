@@ -137,39 +137,37 @@ const Budget = () => {
               <th className='col-amount'>金額</th>
             </tr>
           </thead>
-          {(budgetlist.length === 0 || modifyflag) && (
-            <tbody>
-              {categorylist.map((category, i) => (
-                userlist.map((user, j) => (
-                  <tr key={i}>
-                    {j === 0 && <td className='col-category' rowSpan={userlist.length}>{category.name}</td>}
-                    <td className='col-user'>
-                      {user.name}
-                    </td>
-                    <td className='col-amount'>
-                      <input
-                        className={`category category_${category.cd}`}
-                        id={`amount-${i}-${j}`}
-                        type='text'
-                        onChange={()=>calcSum(`category_${category.cd}`)}
-                        />
-                    </td>
-                  </tr>
-                ))
-              ))}
-            </tbody>
-          )}
+          <tbody>
           {(budgetlist.length !== 0 && !modifyflag) && (
-            <tbody>
-              {budgetlist.map((budget, index) => (
-                <tr key={index}>
-                  <td className='col-category'>{budget.category}</td>
-                  <td className='col-user'>{budget.user}</td>
-                  <td className='col-amount'>{budget.budget}</td>
-                </tr>
-              ))}
-            </tbody>
+            budgetlist.map((budget, index) => (
+              <tr key={index}>
+                <td className='col-category'>{budget.category}</td>
+                <td className='col-user'>{budget.user}</td>
+                <td className='col-amount'>{budget.budget}</td>
+              </tr>
+            ))
           )}
+          {(budgetlist.length === 0 || modifyflag) && (
+            categorylist.map((category, i) => (
+              userlist.map((user, j) => (
+                <tr key={i}>
+                  {j === 0 && <td className='col-category' rowSpan={userlist.length}>{category.name}</td>}
+                  <td className='col-user'>
+                    {user.name}
+                  </td>
+                  <td className='col-amount'>
+                    <input
+                      className={`category category_${category.cd}`}
+                      id={`amount-${i}-${j}`}
+                      type='text'
+                      onChange={()=>calcSum(`category_${category.cd}`)}
+                      />
+                  </td>
+                </tr>
+              ))
+            ))
+          )}
+          </tbody>
         </table>
       </div>
       <div id='budget-right'>
