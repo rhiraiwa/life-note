@@ -4,15 +4,17 @@ import './index.scss';
 
 const ReceiptPreview = ({setPreview, closeMethod, filename}) => {
 
+  React.useEffect(() => console.log('preview'))
+
   const accept = () => {
-    setPreview(filename);
+    setPreview(filename + '.jpg');
     closeMethod();
   }
 
   return (
     <div id='receipt-preview'>
       <div id='img-area'>
-        <img src={'../receipt/preview/' + filename} alt='receipt'/>
+        <img src={'../receipt/preview/' + filename + '.jpg'} alt='receipt'/>
       </div>
       <FlexDiv id='button-area'>
         <button onClick={accept}>OK</button>

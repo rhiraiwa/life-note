@@ -174,6 +174,9 @@ def image_processing():
 
 @app.route('/image_web', methods=['POST'])
 def image_web():
-  filename = camera.web()
+  rd = json.loads(request.data)
+  # filename = camera.web(rd['filename'])
+  camera.web(rd['filename'])
 
-  return {'filename': filename}
+  # return {'filename': filename}
+  return {'web': 'done'}

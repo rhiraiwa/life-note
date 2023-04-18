@@ -107,6 +107,7 @@ def camera_main():
   for p in glob.glob(DATA_DIR+'*.jpg'):
     if os.path.isfile(p):
       target=os.path.basename(p)
+      print(target)
       output = doTrim(target)
       rectangle_extraction(output, target.replace('.jpg', ''))
 
@@ -114,8 +115,34 @@ def camera_main():
       return target
 
 # WEBカメラ
-def web():
-  cap = cv2.VideoCapture(1)
+def web(filename):
+  # Webカメラ
+  DEVICE_ID = 1 
+
+  WIDTH = 1280
+  HEIGHT = 960
+  FPS = 5
+
+  def decode_fourcc(v):
+          v = int(v)
+          return "".join([chr((v >> 8 * i) & 0xFF) for i in range(4)])
+          
+  cap = cv2.VideoCapture (DEVICE_ID)
+
+  # フォーマット・解像度・FPSの設定
+  # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+  cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('Y','U','Y','V'))
+  cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
+  cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
+  cap.set(cv2.CAP_PROP_FPS, FPS)
+
+  # フォーマット・解像度・FPSの取得
+  fourcc = decode_fourcc(cap.get(cv2.CAP_PROP_FOURCC))
+  width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
+  height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
+  fps = cap.get(cv2.CAP_PROP_FPS)
+  # print("fourcc:{} fps:{}　width:{}　height:{}".format(fourcc, fps, width, height))
+  
   while True:
     # 1フレームずつ取得する。
     ret, frame = cap.read()
@@ -127,13 +154,18 @@ def web():
     cv2.imshow("Frame", frame)
     key = cv2.waitKey(1) & 0xFF
     if key == ord('c'):
-      cv2.imwrite('{}_{}.{}'.format(DATA_DIR, 'receipt', ext), frame)
+      cv2.imwrite('{}{}.{}'.format(DATA_DIR, str(filename), ext), frame)
       break
     # Escキーを入力されたら画面を閉じる
     if key == 27:
       break
   cap.release()
   cv2.destroyAllWindows()
-  filename = camera_main()
   
-  return filename
+  print(filename)
+  print(str(filename))
+  print(str(filename) + '.' + ext)
+  output = doTrim(str(filename) + '.' + ext)
+  rectangle_extraction(output, str(filename))
+  
+  return

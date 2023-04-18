@@ -7,6 +7,7 @@ import shutil
 # 現在時間取得SQL
 date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
+temp_path = 'client/public/receipt/temp/'
 preview_path = 'client/public/receipt/preview/'
 
 def insert_payment(year, month, today, category, shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note, filename):
@@ -28,6 +29,7 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     if filename != '':
       os.mkdir(store_path)
       os.replace(preview_path + filename, store_path + filename)
+      os.remove(temp_path + filename)
 
     # cursor.execute(insert_query)
     # conn.commit()                   #コミット

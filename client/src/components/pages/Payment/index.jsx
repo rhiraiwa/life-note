@@ -5,6 +5,7 @@ import LabelInput from "../../molecules/LabelInput";
 import './index.scss';
 import ReceiptPreview from "../../templates/ReceiptPreview";
 import Modal from "../../orgasms/Modal";
+import { useMasterFileData } from "../../../context/MasterFileContext";
 
 const Payment = () => {
 
@@ -13,8 +14,7 @@ const Payment = () => {
 
   const [initialdate] = React.useState(location.state);
 
-  const [categorylist, setCategorylist] = React.useState([]);
-  const [userlist, setUserlist] = React.useState([]);
+  const {userlist, categorylist} = useMasterFileData();
   const [isDisable, setIsDisable] = React.useState(true);
   const [form, setForm] = React.useState({
     year: initialdate? initialdate.year : '',
@@ -32,17 +32,6 @@ const Payment = () => {
 
   const [isOpen, setIsOpen] = React.useState(false);
   const [preview, setPreview] = React.useState('');
-
-  React.useEffect(() => {
-    console.log(initialdate);
-    fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => {
-      setCategorylist(JSON.parse(json['category']))
-      setUserlist(JSON.parse(json['user']))
-    })
-    .catch(err => alert(err))
-  }, []);
 
   const handleAdvancePaid = () => {
     setIsDisable(!isDisable)
@@ -73,19 +62,29 @@ const Payment = () => {
     navigate('/');
   }
 
-  const processing_image = () => {
-    fetch('http://localhost:5000/image_processing', { method: 'POST' })
-    .then(response => response.json())
-    .catch(err => alert(err))
-  }
+  // const processing_image = () => {
+  //   fetch('http://localhost:5000/image_processing', { method: 'POST' })
+  //   .then(response => response.json())
+  //   .catch(err => alert(err))
+  // }
 
   const web_image = () => {
-    fetch('http://localhost:5000/image_web', { method: 'POST' })
-    .then(response => response.json())
-    .then(json => {
-      setPreview(json['filename']);
-      setIsOpen(true);
+
+    let filename = Math.floor( Math.random() * 1000000 );
+    setPreview(filename);
+    
+    fetch('http://localhost:5000/image_web', {
+      method: 'POST',
+      body: JSON.stringify({
+        "filename": filename
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
     })
+    .then(response => response.json())
+    .then(() => setIsOpen(true))
+    .then(() => console.log('setTrue'))
     .catch(err => alert(err))
   }
 
@@ -112,8 +111,8 @@ const Payment = () => {
           <LabelInput id='payment-shop-name' label='店名' type='text' value={form.shopName} setValue={(e)=>setForm({...form, shopName: e.target.value})}/>
           <LabelInput id='payment-amount' label='金額' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
           <LabelInput id='payment-receipt' label='レシート' type='file'/>
-          <button onClick={processing_image}>画像処理</button>
-          <button onClick={()=>setIsOpen(true)}>プレビュー</button>
+          {/* <button onClick={processing_image}>画像処理</button>
+          <button onClick={()=>setIsOpen(true)}>プレビュー</button> */}
           <button onClick={web_image}>WEBcamera</button>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
           <div className='label-input'>
