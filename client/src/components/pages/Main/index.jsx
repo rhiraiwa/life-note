@@ -8,6 +8,7 @@ import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
 import './index.scss';
+import { formatComma, formatMoney } from '../../utils';
 
 const Table = ({year, month, data}) => {
   const navigate = useNavigate();
@@ -144,7 +145,7 @@ const formatRow = (original, count, year, month, navigate) => {
           </td>
           <td className='col-category'>{original[i].category}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{original[i].amount}</td>
+          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
         </tr>
       )
       count[index] = 0;
@@ -154,7 +155,7 @@ const formatRow = (original, count, year, month, navigate) => {
         <tr key={i}>
           <td className='col-category'>{original[i].category}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{original[i].amount}</td>
+          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
         </tr>
       )
     }
@@ -231,10 +232,10 @@ const Main = () => {
           </FlexDiv>
         </div>
         <div id='flex-right'>
-          <LabelInput label='予算' type='text' isReadOnly={true} value={reference.budget}/>
-          <LabelInput label='入金' type='text' isReadOnly={true} value={reference.deposit}/>
-          <LabelInput label='支出' type='text' isReadOnly={true} value={reference.payment}/>
-          <LabelInput label='収支' type='text' isReadOnly={true} value={reference.balance} id='balance'/>
+          <LabelInput label='予算' type='text' isReadOnly={true} value={formatComma(reference.budget)}/>
+          <LabelInput label='入金' type='text' isReadOnly={true} value={formatComma(reference.deposit)}/>
+          <LabelInput label='支出' type='text' isReadOnly={true} value={formatComma(reference.payment)}/>
+          <LabelInput label='収支' type='text' isReadOnly={true} value={formatComma(reference.balance)} id='balance'/>
           <div id='message-table'>
             <label>メッセージ</label>
             <table style={{borderCollapse:'collapse', border: '1px solid #AAA'}}>

@@ -5,7 +5,7 @@ import YearMonthChanger from "../../molecules/YearMonthChanger";
 import undo from '../../../img/undo.png';
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
-import { formatDate, formatTime } from "../../utils/"
+import { formatDate, formatMoney, formatTime } from "../../utils/"
 
 const Deposit = () => {
 
@@ -119,8 +119,8 @@ const Deposit = () => {
               {statuslist.map((status, index) => (
                 <tr key={index}>
                   <td className='col-category'>{status.category_name}</td>
-                  <td className='col-amount'>{status.budget}</td>
-                  <td className='col-amount'>{status.deposit}</td>
+                  <td className='col-amount'>{formatMoney(status.budget)}</td>
+                  <td className='col-amount'>{formatMoney(status.deposit)}</td>
                 </tr>                
               ))}
             </tbody>
@@ -143,7 +143,7 @@ const Deposit = () => {
                   historylist.map((history, index) => (
                     <tr key={index}>
                       <td className='col-category'>{history.category_name}</td>
-                      <td className='col-amount'>{history.deposit}</td>
+                      <td className='col-amount'>{formatMoney(history.deposit)}</td>
                       <td className='col-year-month-date'>{formatDate(history.insert_date)}</td>
                       <td className='col-year-month-date'>{formatTime(history.insert_time)}</td>
                       <td className='col-image-button'><img src={undo} alt='undo'/></td>

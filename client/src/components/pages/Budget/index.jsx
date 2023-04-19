@@ -4,6 +4,7 @@ import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
+import { formatComma, formatMoney } from "../../utils";
 
 const Budget = () => {
 
@@ -143,7 +144,7 @@ const Budget = () => {
               <tr key={index}>
                 <td className='col-category'>{budget.category}</td>
                 <td className='col-user'>{budget.user}</td>
-                <td className='col-amount'>{budget.budget}</td>
+                <td className='col-amount'>{formatMoney(budget.budget)}</td>
               </tr>
             ))
           )}
@@ -196,11 +197,11 @@ const Budget = () => {
                     label={value.category_name}
                     type='text'
                     id={`category_${value.category_cd}_sum`}
-                    value={value.sum}
+                    value={formatComma(value.sum)}
                     isReadOnly={true}/>
                 ))                
               }
-              <LabelInput label='合計' type='text' id='sum' value={allSum} isReadOnly={true}/>
+              <LabelInput label='合計' type='text' id='sum' value={formatComma(allSum)} isReadOnly={true}/>
             </>
             )
           }

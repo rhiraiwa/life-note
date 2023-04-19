@@ -21,3 +21,16 @@ export const formatTime = (value) => {
 
   return `${wHour}:${wMinutes}:${wSecond}`;
 }
+
+// 金額の整形
+export const formatMoney = (value) => {
+
+  if (value === '' || value === '0' || value === 0) return;
+
+  return `\\ ${Number(value).toLocaleString()}`
+}
+
+// 数値の整形
+export const formatComma = (value) => {
+  return `${Number(value).toLocaleString()}`
+}

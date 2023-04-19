@@ -4,6 +4,7 @@ import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
+import { formatMoney } from "../../utils";
 
 const AdvancesPaid = () => {
 
@@ -111,7 +112,7 @@ const AdvancesPaid = () => {
                 advancesPaidlist.map((history, index) => (
                   <tr key={index} onClick={()=>setAdvancesPaid(history.amount)}>
                     <td className='col-category'>{history.category}</td>
-                    <td className='col-amount'>{history.amount}</td>
+                    <td className='col-amount'>{formatMoney(history.amount)}</td>
                     <td className='col-shop-name'>{history.shop_name}</td>
                     <td className='col-year-month-date'>{history.payment_date}</td>
                   </tr>                  

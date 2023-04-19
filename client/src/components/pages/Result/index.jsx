@@ -1,6 +1,7 @@
 import React from "react";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
+import { formatMoney } from "../../utils";
 
 const Result = () => {
   const date = new Date();
@@ -26,9 +27,7 @@ const Result = () => {
       }
     })
     .then(response => response.json())
-    .then(json => {
-      setResultlist(JSON.parse(json['data']))
-    })
+    .then(json => {setResultlist(JSON.parse(json['data']))})
     .catch(err => alert(err))
   }, [selected]);
 
@@ -59,17 +58,17 @@ const Result = () => {
             resultlist.map((result, index) => (
               <tr key={index}>
                 <td className='col-category'>{result.category}</td>
-                <td className='col-amount'>{result.budget}</td>
-                <td className='col-amount'>{result.payment}</td>
-                <td className='col-amount'>{result.budget - result.payment}</td>
+                <td className='col-amount'>{formatMoney(result.budget)}</td>
+                <td className='col-amount'>{formatMoney(result.payment)}</td>
+                <td className='col-amount'>{formatMoney(result.budget - result.payment)}</td>
               </tr>
             ))
           }
-          <tr>
+          <tr id='sum-row'>
             <td className='col-category'>合計</td>
-            <td className='col-amount'>{sum.budget}</td>
-            <td className='col-amount'>{sum.payment}</td>
-            <td className='col-amount'>{sum.budget - sum.payment}</td>
+            <td className='col-amount'>{formatMoney(sum.budget)}</td>
+            <td className='col-amount'>{formatMoney(sum.payment)}</td>
+            <td className='col-amount'>{formatMoney(sum.budget - sum.payment)}</td>
           </tr>
         </tbody>
       </table>
