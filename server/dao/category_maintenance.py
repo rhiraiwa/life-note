@@ -54,6 +54,24 @@ def select_mf():
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
 
+def edit_mf(cd, name):
+
+  query = f'UPDATE CATEGORY_MF SET name = \'{name}\', update_date = {date}, update_time = {time} WHERE cd = {cd};'
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+      
 def delete_mf(cd):
 
   query = f'UPDATE CATEGORY_MF SET delete_flag = 1, update_date = {date}, update_time = {time} WHERE cd = {cd};'

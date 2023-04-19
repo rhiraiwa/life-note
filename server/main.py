@@ -22,6 +22,14 @@ def user_insert():
 
   return {'data': table_data}
 
+@app.route('/user_edit', methods=['POST'])
+def user_edit():
+  rd = json.loads(request.data)
+  user_maintenance.edit_mf(rd['cd'], rd['name'])
+  table_data = user_maintenance.select_mf()
+
+  return {'data': table_data}
+
 @app.route('/user_delete', methods=['POST'])
 def user_delete():
   rd = json.loads(request.data)
@@ -41,6 +49,14 @@ def category_select():
 def category_insert():
   rd = json.loads(request.data)
   category_maintenance.insert_mf(rd['categoryname'])
+  table_data = category_maintenance.select_mf()
+
+  return {'data': table_data}
+
+@app.route('/category_edit', methods=['POST'])
+def category_edit():
+  rd = json.loads(request.data)
+  category_maintenance.edit_mf(rd['cd'], rd['name'])
   table_data = category_maintenance.select_mf()
 
   return {'data': table_data}
