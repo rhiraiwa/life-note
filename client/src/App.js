@@ -16,9 +16,6 @@ function App() {
   const {userlist, setUserlist, categorylist, setCategorylist} = useMasterFileData();
 
   React.useEffect(() => {
-    console.log(userlist);
-    console.log(categorylist);
-    console.log('list取得')
     fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
     .then(response => response.json())
     .then(json => {
@@ -68,11 +65,19 @@ function App() {
         }
         {
           userlist.length === 0 && categorylist.length === 0 &&
-          <Route path='/' element={
-            <PageTemplate title='ユーザーマスタメンテナンス'>
-              <UserMaintenance/>
-            </PageTemplate>
-          }/>
+          <>
+            <Route path='/' element={
+              <PageTemplate title='ユーザーマスタメンテナンス'>
+                <UserMaintenance/>
+              </PageTemplate>
+            }/>
+            {/* ↓書きたくないが、書かないとデバッグモードで警告が出る */}
+            <Route path='/Budget' element={<></>}/>
+            <Route path='/Deposit' element={<></>}/>
+            <Route path='/Payment' element={<></>}/>
+            <Route path='/AdvancesPaid' element={<></>}/>
+            <Route path='/Result' element={<></>}/>
+          </>
         }
         <Route path='/UserMaintenance' element={
           <PageTemplate title='ユーザーマスタメンテナンス'>

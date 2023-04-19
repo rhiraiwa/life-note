@@ -80,8 +80,8 @@ const Deposit = () => {
             <select value={deposit.user} onChange={(e)=>setDeposit({...deposit, user: e.target.value})}>
               <option value=''>選択してください</option>
               {
-                userlist.map((user) => (
-                  <option value={user.cd}>{user.name}</option>
+                userlist.map((user, index) => (
+                  <option key={index} value={user.cd}>{user.name}</option>
                 ))
               }
             </select>
@@ -92,8 +92,8 @@ const Deposit = () => {
             <label>カテゴリ</label>
             <select value={deposit.category} onChange={(e)=>setDeposit({...deposit, category: e.target.value})}>
               {
-                categorylist.map((category) => (
-                  <option value={category.cd}>{category.name}</option>
+                categorylist.map((category, index) => (
+                  <option key={index} value={category.cd}>{category.name}</option>
                 ))
               }
             </select>

@@ -82,8 +82,8 @@ const AdvancesPaid = () => {
             <select value={selected.user} onChange={(e)=>setSelected({...selected, user: e.target.value})}>
               <option value=''>選択してください</option>
               {
-                userlist.map((user) => (
-                  <option value={user.cd}>{user.name}</option>
+                userlist.map((user, index) => (
+                  <option key={index} value={user.cd}>{user.name}</option>
                 ))
               }
             </select>
@@ -108,8 +108,8 @@ const AdvancesPaid = () => {
             </thead>
             <tbody>
               {
-                advancesPaidlist.map((history) => (
-                  <tr onClick={()=>setAdvancesPaid(history.amount)}>
+                advancesPaidlist.map((history, index) => (
+                  <tr key={index} onClick={()=>setAdvancesPaid(history.amount)}>
                     <td className='col-category'>{history.category}</td>
                     <td className='col-amount'>{history.amount}</td>
                     <td className='col-shop-name'>{history.shop_name}</td>

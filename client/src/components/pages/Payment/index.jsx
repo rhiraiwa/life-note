@@ -102,8 +102,8 @@ const Payment = () => {
             <select value={form.category} onChange={(e)=>setForm({...form, category: e.target.value})}>
               <option value=''>選択してください</option>
               {
-                categorylist.map((category) => (
-                  <option value={category.cd}>{category.name}</option>
+                categorylist.map((category, index) => (
+                  <option key={index} value={category.cd}>{category.name}</option>
                 ))
               }
             </select>
@@ -120,8 +120,8 @@ const Payment = () => {
             <select value={form.advancePaidUser} onChange={(e)=>setForm({...form, advancePaidUser: e.target.value})} disabled={isDisable}>
               <option value=''>選択してください</option>
               {
-                userlist.map((user) => (
-                  <option value={user.cd}>{user.name}</option>
+                userlist.map((user, index) => (
+                  <option key={index} value={user.cd}>{user.name}</option>
                 ))
               }
             </select>

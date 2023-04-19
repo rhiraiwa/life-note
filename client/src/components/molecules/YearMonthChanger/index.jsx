@@ -25,12 +25,20 @@ const YearMonthChanger = ({state}) => {
     state.setSelected({...state.selected, year:year, month:month});
   }
 
+  const handleChangeYear = (e) => {
+    state.setSelected({...state.selected, year:e.target.value});
+  }
+
+  const handleChangeMonth = (e) => {
+    state.setSelected({...state.selected, month:Number(e.target.value) - 1});
+  }
+
   return (
     <div id='year-month-changer'>
       <button id='month-back' onClick={()=>changeYearMonth('down')}>◀</button>
-      <input id='year-input' type='text' value={state.selected.year}/>
+      <input id='year-input' type='text' value={state.selected.year} onChange={handleChangeYear}/>
       /
-      <input id='month-input' type='text' value={state.selected.month + 1}/>
+      <input id='month-input' type='text' value={state.selected.month + 1} onChange={handleChangeMonth}/>
       <button id='month-forward' onClick={()=>changeYearMonth('up')}>▶</button>
     </div>
   );

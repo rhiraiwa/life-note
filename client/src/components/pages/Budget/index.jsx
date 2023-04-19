@@ -150,7 +150,7 @@ const Budget = () => {
           {(budgetlist.length === 0 || modifyflag) && (
             categorylist.map((category, i) => (
               userlist.map((user, j) => (
-                <tr key={i}>
+                <tr key={`${i}_${j}`}>
                   {j === 0 && <td className='col-category' rowSpan={userlist.length}>{category.name}</td>}
                   <td className='col-user'>
                     {user.name}
@@ -174,8 +174,9 @@ const Budget = () => {
           {(budgetlist.length === 0 || modifyflag) && (
             <>
               {
-                categorylist.map((value) => (
+                categorylist.map((value, index) => (
                   <LabelInput
+                    key={index}
                     label={value.name}
                     type='text'
                     id={`category_${value.cd}_sum`}
@@ -189,8 +190,9 @@ const Budget = () => {
           {(budgetlist.length !== 0 && !modifyflag) && (
             <>
               {
-                sumlist.map((value) => (
+                sumlist.map((value, index) => (
                   <LabelInput
+                    key={index}
                     label={value.category_name}
                     type='text'
                     id={`category_${value.category_cd}_sum`}

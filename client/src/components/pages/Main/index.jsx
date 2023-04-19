@@ -134,7 +134,7 @@ const formatRow = (original, count, year, month, navigate) => {
       else className  = 'other-day-row';
 
       rows.push(
-        <tr className={className}>
+        <tr key={i} className={className}>
           <td rowSpan={count[index.toString()]} className='col-checkbox'>
             <input type='checkbox'/>
           </td>
@@ -151,7 +151,7 @@ const formatRow = (original, count, year, month, navigate) => {
      }
     else {
       rows.push(
-        <tr>
+        <tr key={i}>
           <td className='col-category'>{original[i].category}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{original[i].amount}</td>
