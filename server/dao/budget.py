@@ -87,7 +87,9 @@ def select_budget(year, month):
   return output_json
 
 def budget_init(year, month):
-  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR) FROM BUDGET B '
+  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR), '
+  query += f'(select distinct count(*) from budget where year = \'{year}\' and month = \'{month}\' group by category_cd) '
+  query += 'FROM BUDGET B '
   query += 'LEFT JOIN category_mf C ON B.category_cd = C.cd '
   query += 'LEFT JOIN user_mf U ON B.user_cd = U.cd '
   query += f'WHERE B.year = \'{year}\' AND B.month = \'{month}\' '
@@ -107,11 +109,11 @@ def budget_init(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('category', 'user', 'budget')
+      label_tuple = ('category', 'user', 'budget', 'userCount')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result.append(row_dict)
 
-    cursor.execute(sum_query)           #sql実行
+    cursor.execute(sum_query)       #sql実行
     rows = cursor.fetchall()        #selectの結果を全件タプルに格納
 
     ### ２つのリストを辞書へ変換

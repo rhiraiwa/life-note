@@ -1,7 +1,7 @@
 #budget {
   
   button {
-    margin: 0 auto;
+    margin: 0 10px;
   }
 
   #burden {
@@ -19,7 +19,8 @@
     }    
   }
 
-  #budget-right {
+  .budget-right {
+    margin-top: 20px;
 
     #sum {
       label {
