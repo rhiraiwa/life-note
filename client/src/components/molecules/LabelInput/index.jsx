@@ -11,6 +11,7 @@ const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value,
              readOnly={isReadOnly}
              disabled={isDisabled}
              onClick={clickEvent}
+             tabIndex={isReadOnly? -1 : ''}
              />  
     </div>
   );

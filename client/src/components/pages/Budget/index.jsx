@@ -98,9 +98,15 @@ const Budget = () => {
       }
     })
     .then(response => response.json())
-    .then(json => setBudgetlist(JSON.parse(json['data'])))
+    .then(json => {
+      setBudgetlist(JSON.parse(json['budget']));
+      setSumlist(JSON.parse(json['sum']));
+      if (JSON.parse(json['budget']).length !== 0) {
+        setUserCount(JSON.parse(json['budget'])[0]['userCount']);
+      }
+    })
     .then(setIsOpen(false))
-    // .then(alert('予算を設定しました'))
+    .then(() => alert('予算を設定しました'))
     .catch(err => alert(err))
   }
 
@@ -118,8 +124,15 @@ const Budget = () => {
       }
     })
     .then(response => response.json())
-    .then(json => setBudgetlist(JSON.parse(json['data'])))
-    // .then(alert('予算を設定しました'))
+    .then(json => {
+      setBudgetlist(JSON.parse(json['budget']));
+      setSumlist(JSON.parse(json['sum']));
+      if (JSON.parse(json['budget']).length !== 0) {
+        setUserCount(JSON.parse(json['budget'])[0]['userCount']);
+      }
+    })
+    .then(setIsOpen(false))
+    .then(() => alert('予算を設定しました'))
     .catch(err => alert(err))
   }
   

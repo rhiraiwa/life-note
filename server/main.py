@@ -91,18 +91,18 @@ def budget_insert():
   rd = json.loads(request.data)
   budget.insert_budget(rd['forms'])
 
-  table_data = budget.select_budget(rd['forms'][0]['year'], rd['forms'][0]['month'])
+  init_json = budget.budget_init(rd['forms'][0]['year'], rd['forms'][0]['month'])
 
-  return {'data': table_data}
+  return init_json
 
 @app.route('/budget_inherit', methods=['POST'])
 def budget_inherit():
   rd = json.loads(request.data)
   budget.inherit_budget(rd['year'], rd['month'])
 
-  table_data = budget.select_budget(rd['year'], rd['month'])
+  init_json = budget.budget_init(rd['year'], rd['month'])
 
-  return {'data': table_data}
+  return init_json
 
 @app.route('/budget_init', methods=['POST'])
 def budget_init():
