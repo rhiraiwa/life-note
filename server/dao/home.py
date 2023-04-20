@@ -4,11 +4,15 @@ import server.dao.db_connection as db
 
 def select_home(year, month):
   
-  query = 'SELECT '
-  query += f'(SELECT CAST(SUM(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\') budget, '
-  query += f'(SELECT CAST(SUM(amount) AS NCHAR) FROM DEPOSIT WHERE year = \'{year}\' AND month = \'{month}\') deposit, '
-  query += f'(SELECT CAST(SUM(amount) AS NCHAR) FROM PAYMENT WHERE year = \'{year}\' AND month = \'{month}\') payment, '
-  query += f'count(*) FROM PAYMENT WHERE year = \'{year}\' AND month = \'{month}\' AND advances_paid_flag = 1;'
+  query  = f'SELECT '
+  query += f'      (SELECT CAST(SUM(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\') budget, '
+  query += f'      (SELECT CAST(SUM(amount) AS NCHAR) FROM DEPOSIT WHERE year = \'{year}\' AND month = \'{month}\') deposit, '
+  query += f'      (SELECT CAST(SUM(amount) AS NCHAR) FROM PAYMENT WHERE year = \'{year}\' AND month = \'{month}\') payment, '
+  query += f'      COUNT(*) '
+  query += f'FROM  PAYMENT '
+  query += f'WHERE year = \'{year}\' '
+  query += f'  AND month = \'{month}\' '
+  query += f'  AND advances_paid_flag = 1;'
   result_row = []
   
   try:
@@ -36,7 +40,19 @@ def select_home(year, month):
 
 def select_data(year, month):
   
-  query = f'SELECT year, month, date, name, shop_name, CAST(amount AS NCHAR) FROM PAYMENT LEFT JOIN CATEGORY_MF ON category_cd = cd WHERE year = \'{year}\' AND month = \'{month}\' AND category_cd != 999 ORDER BY CAST(date AS SIGNED);;'
+  query  = f'SELECT    year, '
+  query += f'          month, '
+  query += f'          date, '
+  query += f'          name, '
+  query += f'          shop_name, '
+  query += f'          CAST(amount AS NCHAR) '
+  query += f'FROM      PAYMENT '
+  query += f'LEFT JOIN CATEGORY_MF '
+  query += f'       ON category_cd = cd '
+  query += f'WHERE     year = \'{year}\' '
+  query += f'      AND month = \'{month}\' '
+  query += f'      AND category_cd != 999 '
+  query += f'ORDER BY  CAST(date AS SIGNED);'
   result_row = []
   
   try:

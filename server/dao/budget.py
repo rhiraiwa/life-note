@@ -7,14 +7,26 @@ date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
 def insert_budget(forms):
-  delete_query = f'DELETE FROM BUDGET WHERE year = \'{forms[0]["year"]}\' and month = \'{forms[0]["month"]}\';'
+  delete_query  = f'DELETE FROM BUDGET'
+  delete_query += f'WHERE       year = \'{forms[0]["year"]}\' '
+  delete_query += f'        AND month = \'{forms[0]["month"]}\';'
 
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     cursor.execute(delete_query)
     for form in forms:
-      insert_query = f'INSERT INTO BUDGET VALUES (\'{form["year"]}\', \'{form["month"]}\', \'{form["category"]}\', \'{form["user"]}\', \'{form["budget"]}\', {date}, {time}, {date}, {time});'
+      insert_query  = f'INSERT INTO BUDGET '
+      insert_query += f'VALUES      (\'{form["year"]}\', '
+      insert_query += f'             \'{form["month"]}\', '
+      insert_query += f'             \'{form["category"]}\', '
+      insert_query += f'             \'{form["user"]}\', '
+      insert_query += f'             \'{form["budget"]}\', '
+      insert_query += f'             {date}, '
+      insert_query += f'             {time}, '
+      insert_query += f'             {date}, '
+      insert_query += f'             {time});'
+
       cursor.execute(insert_query)
     conn.commit()                   #コミット
 
@@ -34,7 +46,9 @@ def count_previous_month_budget(year, month):
     base_year = year
     base_month = month - 1
 
-  count_query = f'SELECT COUNT(*) FROM BUDGET WHERE year = \'{base_year}\' AND month = \'{base_month}\''
+  count_query  = f'SELECT COUNT(*) FROM BUDGET '
+  count_query += f'WHERE  year = \'{base_year}\' '
+  count_query += f'   AND month = \'{base_month}\';'
 
   try:
     conn = db.get_conn()            #ここでDBに接続
@@ -60,8 +74,22 @@ def inherit_budget(year, month):
     base_year = year
     base_month = month - 1
 
-  delete_query = f'DELETE FROM BUDGET WHERE year = \'{year}\' and month = \'{month}\';'
-  insert_query = f'insert into budget select \'{year}\', \'{month}\', category_cd, user_cd, budget, {date}, {time}, {date}, {time} from budget where year = \'{base_year}\' and month = \'{base_month}\';'
+  delete_query  = f'DELETE FROM BUDGET '
+  delete_query += f'WHERE       year = \'{year}\' '
+  delete_query += f'        AND month = \'{month}\';'
+  
+  insert_query  = f'INSERT INTO BUDGET '
+  insert_query += f'     SELECT \'{year}\', '
+  insert_query += f'            \'{month}\', '
+  insert_query += f'            category_cd, '
+  insert_query += f'            user_cd, budget, '
+  insert_query += f'            {date}, '
+  insert_query += f'            {time}, '
+  insert_query += f'            {date}, '
+  insert_query += f'            {time} '
+  insert_query += f'       FROM BUDGET '
+  insert_query += f'      WHERE year = \'{base_year}\' '
+  insert_query += f'        AND month = \'{base_month}\';'
 
   try:
     conn = db.get_conn()            #ここでDBに接続
@@ -79,14 +107,20 @@ def inherit_budget(year, month):
       conn.close()                # DB切断
 
 def select_budget(year, month):
-  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR) FROM BUDGET B '
-  query += 'LEFT JOIN category_mf C ON B.category_cd = C.cd '
-  query += 'LEFT JOIN user_mf U ON B.user_cd = U.cd '
-  query += f'WHERE B.year = \'{year}\' AND B.month = \'{month}\' '
-  query += 'ORDER BY CAST(B.year AS SIGNED), '
-  query += 'CAST(B.month AS SIGNED), '
-  query += 'CAST(B.category_cd AS SIGNED), '
-  query += 'CAST(B.user_cd AS SIGNED);'
+  query  = f'SELECT    C.name, '
+  query += f'          U.name, '
+  query += f'          CAST(B.budget AS NCHAR) '
+  query += f'FROM      BUDGET B '
+  query += f'LEFT JOIN category_mf C'
+  query += f'       ON B.category_cd = C.cd '
+  query += f'LEFT JOIN user_mf U '
+  query += f'       ON B.user_cd = U.cd '
+  query += f'WHERE     B.year = \'{year}\' '
+  query += f'      AND B.month = \'{month}\' '
+  query += f'ORDER BY  CAST(B.year AS SIGNED), '
+  query += f'          CAST(B.month AS SIGNED), '
+  query += f'          CAST(B.category_cd AS SIGNED), '
+  query += f'          CAST(B.user_cd AS SIGNED);'
   result_row = []
   
   try:
@@ -113,18 +147,35 @@ def select_budget(year, month):
   return output_json
 
 def budget_init(year, month):
-  query = 'SELECT C.name, U.name, CAST(B.budget AS NCHAR), '
-  query += f'(select distinct count(*) from budget where year = \'{year}\' and month = \'{month}\' group by category_cd) '
-  query += 'FROM BUDGET B '
-  query += 'LEFT JOIN category_mf C ON B.category_cd = C.cd '
-  query += 'LEFT JOIN user_mf U ON B.user_cd = U.cd '
-  query += f'WHERE B.year = \'{year}\' AND B.month = \'{month}\' '
-  query += 'ORDER BY CAST(B.year AS SIGNED), '
-  query += 'CAST(B.month AS SIGNED), '
-  query += 'CAST(B.category_cd AS SIGNED), '
-  query += 'CAST(B.user_cd AS SIGNED);'
+  query  = f'SELECT    C.name, '
+  query += f'          U.name, '
+  query += f'          CAST(B.budget AS NCHAR), '
+  query += f'          (SELECT   distinct COUNT(*) FROM BUDGET '
+  query += f'           WHERE    year = \'{year}\' '
+  query += f'                AND month = \'{month}\' '
+  query += f'           GROUP BY category_cd) '
+  query += f'FROM      BUDGET B '
+  query += f'LEFT JOIN category_mf C'
+  query += f'       ON B.category_cd = C.cd '
+  query += f'LEFT JOIN user_mf U '
+  query += f'       ON B.user_cd = U.cd '
+  query += f'WHERE     B.year = \'{year}\' '
+  query += f'      AND B.month = \'{month}\' '
+  query += f'ORDER BY  CAST(B.year AS SIGNED), '
+  query += f'          CAST(B.month AS SIGNED), '
+  query += f'          CAST(B.category_cd AS SIGNED), '
+  query += f'          CAST(B.user_cd AS SIGNED);'
   result = []
-  sum_query = f'select category_cd, name, CAST(sum(budget) AS NCHAR) from budget left join CATEGORY_MF on category_cd = cd where year = \'{year}\' and month = \'{month}\' group by category_cd;'
+
+  sum_query  = f'SELECT    category_cd,'
+  sum_query += f'          name, '
+  sum_query += f'          CAST(sum(budget) AS NCHAR)'
+  sum_query += f'FROM      BUDGET '
+  sum_query += f'LEFT JOIN CATEGORY_MF '
+  sum_query += f'       ON category_cd = cd '
+  sum_query += f'WHERE     year = \'{year}\' '
+  sum_query += f'      AND month = \'{month}\' '
+  sum_query += f'GROUPBY   category_cd;'
   sum_result= []
   
   try:
@@ -161,7 +212,11 @@ def budget_init(year, month):
   return {'budget': result_json, 'sum': result_sum_json}
 
 def select_sum_month(year, month, user):
-  query = f'SELECT CAST(sum(budget) AS NCHAR) FROM BUDGET WHERE year = \'{year}\' AND month = \'{month}\' AND user_cd = \'{user}\';'
+  query  = f'SELECT CAST(sum(budget) AS NCHAR) '
+  query += f'FROM   BUDGET '
+  query += f'WHERE  year = \'{year}\' '
+  query += f'   AND month = \'{month}\' '
+  query += f'   AND user_cd = \'{user}\';'
   
   try:
     conn = db.get_conn()            #ここでDBに接続

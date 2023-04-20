@@ -3,11 +3,24 @@ import json
 import server.dao.db_connection as db
 
 def select_result(year, month):
-  query = f'select name, budget, payment '
-  query += f'from (select category_cd, CAST(sum(budget) AS NCHAR) budget from budget where year = \'{year}\' and month = \'{month}\' group by category_cd) A '
-  query += f'left join (select category_cd, CAST(sum(amount) AS NCHAR) payment from payment where year = \'{year}\' and month = \'{month}\' group by category_cd) B '
-  query += f'on A.category_cd = B.category_cd '
-  query += f'left join CATEGORY_MF on A.category_cd = cd;'
+  query  = f'SELECT   name, '
+  query += f'         budget, '
+  query += f'         payment '
+  query += f'FROM     (select   category_cd, '
+  query += f'                   CAST(sum(budget) AS NCHAR) budget '
+  query += f'          from     budget '
+  query += f'          where    year = \'{year}\' '
+  query += f'             and   month = \'{month}\''
+  query += f'          group by category_cd) A '
+  query += f'LEFT JOIN (select   category_cd, '
+  query += f'                    CAST(sum(amount) AS NCHAR) payment '
+  query += f'           from     payment '
+  query += f'           where    year = \'{year}\' '
+  query += f'                and month = \'{month}\' '
+  query += f'           group by category_cd) B '
+  query += f'       ON A.category_cd = B.category_cd '
+  query += f'LEFT JOIN CATEGORY_MF'
+  query += f'       ON A.category_cd = cd;'
   result_row = []
   
   try:

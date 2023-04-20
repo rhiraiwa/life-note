@@ -69,11 +69,20 @@ def select_status(year, month, user):
   return output_json
 
 def select_history(year, month, user):
-  query = f'SELECT CONCAT(year, month, date, deposit_number), '
-  query += f'category_cd, name, CAST(amount AS NCHAR), DEPOSIT.insert_date, DEPOSIT.insert_time FROM DEPOSIT '
-  query += f'LEFT JOIN CATEGORY_MF ON category_cd = cd '
-  query += f'WHERE user_cd = \'{user}\' AND year = \'{year}\' AND month = \'{month}\' '
-  query += f'ORDER BY DEPOSIT.insert_date, DEPOSIT.insert_time;'
+  query  = f'SELECT    CONCAT(year, month, date, deposit_number), '
+  query += f'          category_cd, '
+  query += f'          name, '
+  query += f'          CAST(amount AS NCHAR), '
+  query += f'          DEPOSIT.insert_date, '
+  query += f'          DEPOSIT.insert_time '
+  query += f'FROM      DEPOSIT '
+  query += f'LEFT JOIN CATEGORY_MF'
+  query += f'       ON category_cd = cd '
+  query += f'WHERE     user_cd = \'{user}\' '
+  query += f'      AND year = \'{year}\' '
+  query += f'      AND month = \'{month}\' '
+  query += f'ORDER BY  DEPOSIT.insert_date, '
+  query += f'          DEPOSIT.insert_time;'
   result_row = []
 
   try:

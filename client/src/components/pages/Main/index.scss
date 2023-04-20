@@ -4,46 +4,47 @@
     height: 75vh;
     overflow-y: scroll;
     -ms-overflow-style: none;    /* IE, Edge 対応 */
+
     &::-webkit-scrollbar {
       display:none;
-  }
-
-  .sunday-row {
-    .col-day,
-    .col-date {
-      color: #F99695;
     }
-  }
 
-  .saturday-row {
-    .col-day,
-    .col-date {
-      color: #40bed1;
-    }
-  }
-
-  tr {
-    .col-checkbox {
-      width: 20px;
-    }
-    .col-date {
-      width: 30px;
-      text-align: center;
-      
-      &:not(th) {
-        cursor: pointer;
+    .sunday-row {
+      .col-day,
+      .col-date {
+        color: #F99695;
       }
     }
-    .col-day {
-      width: 35px;
-      padding-right: 5px;
-      
-      &:not(th) {
-        cursor: pointer;
+  
+    .saturday-row {
+      .col-day,
+      .col-date {
+        color: #40bed1;
+      }
+    }
+  
+    tr {
+      .col-checkbox {
+        width: 20px;
+      }
+      .col-date {
+        width: 30px;
+        text-align: center;
+        
+        &:not(th) {
+          cursor: pointer;
+        }
+      }
+      .col-day {
+        width: 35px;
+        padding-right: 5px;
+        
+        &:not(th) {
+          cursor: pointer;
+        }
       }
     }
   }
-}
 
   .home-button {
     margin: 10px 10px 10px 0;

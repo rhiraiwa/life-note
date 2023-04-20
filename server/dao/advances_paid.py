@@ -7,10 +7,18 @@ date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
 def select_advances_paid(year, month, user):
-  query = f'select name, CAST(advances_paid_amount AS NCHAR), shop_name, concat(year, \'/\', month, \'/\', date) '
-  query += f'from payment left join CATEGORY_MF on category_cd = cd '
-  query += f'where year = \'{year}\' and month = \'{month}\' and advances_paid_user_cd = \'{user}\' and advances_paid_flag = 1 '
-  query += f'ORDER BY CAST(date AS SIGNED);'
+  query =  f'SELECT    name '
+  query += f'          CAST(advances_paid_amount AS NCHAR), '
+  query += f'          shop_name, '
+  query += f'          concat(year, \'/\', month, \'/\', date) '
+  query += f'FORM      PAYMENT '
+  query += f'LEFT JOIN CATEGORY_MF '
+  query += f'       ON category_cd = cd '
+  query += f'WHERE     year = \'{year}\' '
+  query += f'      AND month = \'{month}\' '
+  query += f'      AND advances_paid_user_cd = \'{user}\' '
+  query += f'      AND advances_paid_flag = 1 '
+  query += f'ORDER BY  CAST(date AS SIGNED);'
   result_row = []
   
   try:
@@ -37,7 +45,13 @@ def select_advances_paid(year, month, user):
   return output_json
 
 def reset_advances_paid_flag(year, month, user):
-  update_query = f'UPDATE PAYMENT SET advances_paid_flag = 0 , update_date = \'{date}\', update_time = \'{time}\' WHERE year = \'{year}\' AND month = \'{month}\' AND advances_paid_user_cd = \'{user}\';'
+  update_query  = f'UPDATE PAYMENT '
+  update_query += f'SET    advances_paid_flag = 0, '
+  update_query += f'       update_date = \'{date}\', '
+  update_query += f'       update_time = \'{time}\' '
+  update_query += f'WHERE  year = \'{year}\' '
+  update_query += f'   AND month = \'{month}\' '
+  update_query += f'   AND advances_paid_user_cd = \'{user}\';'
   
   try:
     conn = db.get_conn()            #ここでDBに接続
