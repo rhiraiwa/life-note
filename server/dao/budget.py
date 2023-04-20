@@ -26,6 +26,32 @@ def insert_budget(forms):
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
+def count_previous_month_budget(year, month):
+  if month == 1:
+    base_year = year - 1
+    base_month = 12
+  else:
+    base_year = year
+    base_month = month - 1
+
+  count_query = f'SELECT COUNT(*) FROM BUDGET WHERE year = \'{base_year}\' AND month = \'{base_month}\''
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(count_query)
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+  
+  return rows[0][0]
+
 def inherit_budget(year, month):
   if month == 1:
     base_year = year - 1

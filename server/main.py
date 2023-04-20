@@ -95,11 +95,21 @@ def budget_insert():
 
   return init_json
 
+@app.route('/budget_count_previous_month', methods=['POST'])
+def budget_count_previous_month():
+  rd = json.loads(request.data)
+  count = budget.count_previous_month_budget(rd['year'], rd['month'])
+
+  if count == 0:
+    return False
+  
+  return True
+
 @app.route('/budget_inherit', methods=['POST'])
 def budget_inherit():
   rd = json.loads(request.data)
+  
   budget.inherit_budget(rd['year'], rd['month'])
-
   init_json = budget.budget_init(rd['year'], rd['month'])
 
   return init_json

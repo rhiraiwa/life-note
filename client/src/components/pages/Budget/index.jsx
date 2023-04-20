@@ -101,12 +101,14 @@ const Budget = () => {
     .then(json => {
       setBudgetlist(JSON.parse(json['budget']));
       setSumlist(JSON.parse(json['sum']));
+
       if (JSON.parse(json['budget']).length !== 0) {
         setUserCount(JSON.parse(json['budget'])[0]['userCount']);
       }
+
+      alert('予算を設定しました')
     })
     .then(setIsOpen(false))
-    .then(() => alert('予算を設定しました'))
     .catch(err => alert(err))
   }
 
@@ -125,14 +127,19 @@ const Budget = () => {
     })
     .then(response => response.json())
     .then(json => {
+      if (JSON.parse(json['budget']).length === 0) {
+        alert('前月の予算が設定されていません');
+        return;
+      }
+
       setBudgetlist(JSON.parse(json['budget']));
       setSumlist(JSON.parse(json['sum']));
+
       if (JSON.parse(json['budget']).length !== 0) {
         setUserCount(JSON.parse(json['budget'])[0]['userCount']);
       }
+      alert('予算を設定しました')
     })
-    .then(setIsOpen(false))
-    .then(() => alert('予算を設定しました'))
     .catch(err => alert(err))
   }
   
@@ -263,15 +270,13 @@ const Budget = () => {
                   key={index}
                   label={value.category_name}
                   type='text'
-                  // id={`category_${value.category_cd}_sum`}
                   value={formatComma(value.sum)}
                   isReadOnly={true}/>
               ))
             }
-            <LabelInput label='合計' type='text' id='sum' value={formatComma(allSum)} isReadOnly={true}/>
+            <LabelInput label='合計' type='text' id='all-sum' value={formatComma(allSum)} isReadOnly={true}/>
           </>
-          )
-        }
+        )}
       </div>
       {isOpen && editor}
     </FlexDiv>
