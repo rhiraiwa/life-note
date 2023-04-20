@@ -11,7 +11,7 @@ temp_path = 'client/public/receipt/temp/'
 preview_path = 'client/public/receipt/preview/'
 
 def insert_payment(year, month, today, category, shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note, filename):
-  count_query = f'select count(*) from PAYMENT where year = {year} and month = {month} and date = {today};'
+  count_query = f'select case when max(payment_number) is NULL then 0 else max(payment_number) + 1 end from PAYMENT where year = {year} and month = {month} and date = {today};'
 
   try:
     conn = db.get_conn()            #ここでDBに接続

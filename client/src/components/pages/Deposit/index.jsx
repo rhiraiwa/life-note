@@ -5,7 +5,7 @@ import YearMonthChanger from "../../molecules/YearMonthChanger";
 import undo from '../../../img/undo.png';
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
-import { formatDate, formatMoney, formatTime } from "../../utils/"
+import { formatDate, formatMoney, formatTime, formatComma } from "../../utils/"
 
 const Deposit = () => {
 
@@ -56,6 +56,32 @@ const Deposit = () => {
         "user": deposit.user,
         "category": category,
         "amount": deposit.amount
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      setStatuslist(JSON.parse(json['status']));
+      setHistorylist(JSON.parse(json['history']));
+    })
+    .then(setDeposit({...deposit, amount: ''}))
+    .catch(err => alert(err))
+  }
+
+  const undoDeposit = (category, date, amount, key) => {
+    if (!window.confirm(`${formatDate(date)}の${category}, ${formatComma(amount)}円　の入金を取り消しますか？`)) {
+      return;
+    }
+    
+    fetch('http://localhost:5000/deposit_undo', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": deposit.user,
+        "key": key
       }),
       headers: {
         "Content-type": "application/json; charset=utf-8"
@@ -145,8 +171,10 @@ const Deposit = () => {
                       <td className='col-amount'>{formatMoney(history.deposit)}</td>
                       <td className='col-year-month-date'>{formatDate(history.insert_date)}</td>
                       <td className='col-year-month-date'>{formatTime(history.insert_time)}</td>
-                      <td className='col-image-button'><img src={undo} alt='undo'/></td>
-                    </tr>                    
+                      <td className='col-image-button'>
+                        <img src={undo} alt='undo' onClick={()=>undoDeposit(history.category_name, history.insert_date, history.deposit, history.key)}/>
+                      </td>
+                    </tr>
                   ))
                 }
             </tbody>

@@ -148,6 +148,15 @@ def deposit_init():
 
   return {'status': status, 'history': history}
 
+@app.route('/deposit_undo', methods=['POST'])
+def deposit_undo():
+  rd = json.loads(request.data)
+  deposit.undo_deposit(rd['key'])
+  status = deposit.select_status(rd['year'], rd['month'], rd['user'])
+  history = deposit.select_history(rd['year'], rd['month'], rd['user'])
+
+  return {'status': status, 'history': history}
+
 # 支払入力
 @app.route('/payment_insert', methods=['POST'])
 def payment_insert():
