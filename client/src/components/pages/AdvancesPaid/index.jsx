@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
@@ -9,17 +9,17 @@ import { formatMoney } from "../../utils";
 const AdvancesPaid = () => {
 
   const {userlist} = useMasterFileData();
-  const [advancesPaidlist, setAdvancesPaidlist] = React.useState([]);
-  const [sum, setSum] = React.useState(0);
+  const [advancesPaidlist, setAdvancesPaidlist] = useState([]);
+  const [sum, setSum] = useState(0);
 
   const date = new Date();
-  const [selected, setSelected] = React.useState({
+  const [selected, setSelected] = useState({
     year: date.getFullYear(),
     month: date. getMonth(),
-    user: ''
+    user: userlist[0].cd
   })
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('http://localhost:5000/advances_paid_select', {
       method: 'POST',
       body: JSON.stringify({
@@ -38,7 +38,7 @@ const AdvancesPaid = () => {
     .catch(err => alert(err))
   }, [selected]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     let sum = 0;
 
     for (let i = 0; i < advancesPaidlist.length; i++) {
@@ -81,7 +81,6 @@ const AdvancesPaid = () => {
           <div>
             <label>ユーザー</label>
             <select value={selected.user} onChange={(e)=>setSelected({...selected, user: e.target.value})}>
-              <option value=''>選択してください</option>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>

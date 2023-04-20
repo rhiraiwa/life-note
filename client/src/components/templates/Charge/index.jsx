@@ -10,7 +10,7 @@ const Charge = ({year, month}) => {
     year: year,
     month: month,
     date: '',
-    user: '',
+    user: userlist[0].cd,
     amount: ''
   })
 
@@ -35,7 +35,6 @@ const Charge = ({year, month}) => {
       <div id='charge-user'>
         <label>ユーザー</label>
         <select value={form.user} onChange={(e)=>setForm({...form, user: e.target.value})}>
-          <option value=''>選択してください</option>
           {
             userlist.map((user, index) => (
               <option key={index} value={user.cd}>{user.name}</option>

@@ -17,8 +17,8 @@ const Deposit = () => {
 
   const {userlist, categorylist} = useMasterFileData();
   const [deposit, setDeposit] = React.useState({
-    user: '',
-    category: '',
+    user: userlist[0].cd,
+    category: categorylist[0].cd,
     amount: ''
   });
   const [statuslist, setStatuslist] = React.useState([]);
@@ -78,7 +78,6 @@ const Deposit = () => {
           <div>
             <label>ユーザー</label>
             <select value={deposit.user} onChange={(e)=>setDeposit({...deposit, user: e.target.value})}>
-              <option value=''>選択してください</option>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>

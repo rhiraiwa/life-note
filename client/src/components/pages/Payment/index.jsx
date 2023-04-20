@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
@@ -12,26 +12,26 @@ const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [initialdate] = React.useState(location.state);
+  const [initialdate] = useState(location.state);
 
   const {userlist, categorylist} = useMasterFileData();
-  const [isDisable, setIsDisable] = React.useState(true);
-  const [form, setForm] = React.useState({
+  const [isDisable, setIsDisable] = useState(true);
+  const [form, setForm] = useState({
     year: initialdate? initialdate.year : '',
     month: initialdate? initialdate.month : '',
     date: initialdate? initialdate.date : '',
-    category: '',
+    category: categorylist[0].cd,
     shopName: '',
     amount: '',
     isAdvancePaid: 0,
-    advancePaidUser: '',
+    advancePaidUser: userlist[0].cd,
     advancePaidAmount: '',
     note: '',
     filename: ''
   })
 
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [preview, setPreview] = React.useState('');
+  const [isOpen, setIsOpen] = useState(false);
+  const [preview, setPreview] = useState('');
 
   const handleAdvancePaid = () => {
     setIsDisable(!isDisable)
@@ -100,7 +100,6 @@ const Payment = () => {
           <div className='label-input'>
             <label>カテゴリ</label>
             <select value={form.category} onChange={(e)=>setForm({...form, category: e.target.value})}>
-              <option value=''>選択してください</option>
               {
                 categorylist.map((category, index) => (
                   <option key={index} value={category.cd}>{category.name}</option>
@@ -118,7 +117,6 @@ const Payment = () => {
           <div className='label-input'>
             <label>ユーザー</label>
             <select value={form.advancePaidUser} onChange={(e)=>setForm({...form, advancePaidUser: e.target.value})} disabled={isDisable}>
-              <option value=''>選択してください</option>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>
