@@ -202,7 +202,7 @@ const Main = () => {
       let deposit = 0;
       let payment = 0;
       let balance = 0;
-      let advancesPaid = false;
+      let advancesPaid = 0;
       if (JSON.parse(json['refarance'])[0].budget !== null) budget = JSON.parse(json['refarance'])[0].budget
       if (JSON.parse(json['refarance'])[0].deposit !== null) deposit = JSON.parse(json['refarance'])[0].deposit
       if (JSON.parse(json['refarance'])[0].payment !== null) payment = JSON.parse(json['refarance'])[0].payment

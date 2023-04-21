@@ -200,6 +200,13 @@ def advances_paid_flag_reset():
 
   return {'data': table_data}
 
+@app.route('/refund_flag_handle', methods=['POST'])
+def refund_flag_handle():
+  rd = json.loads(request.data)
+  table_data = advances_paid.change_refund_flag(rd['year'], rd['month'], rd['user'], rd['key'], rd['flag'])
+
+  return {'data': table_data}
+
 # 画像処理
 @app.route('/image_processing', methods=['POST'])
 def image_processing():

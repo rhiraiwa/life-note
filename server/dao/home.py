@@ -12,7 +12,8 @@ def select_home(year, month):
   query += f'FROM  PAYMENT '
   query += f'WHERE year = \'{year}\' '
   query += f'  AND month = \'{month}\' '
-  query += f'  AND advances_paid_flag = 1;'
+  query += f'  AND advances_paid_flag = 1 '
+  query += f'  AND refund_flag = 0;'
   result_row = []
   
   try:

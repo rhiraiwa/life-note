@@ -28,20 +28,23 @@
   #return-area {
     margin-top: 30px;
 
-    #advances-paid-list {
-      margin-right: 50px;
-    }
+    .col-refund {
+      width: 60px;
+      text-align: center;
+      padding-top: 6px;
 
-    .label-input {
-      margin-top: 22px;
-
-      label {
-        width: 50px;
+      img {
+        max-width: 20px;
       }
     }
 
-    button {
-      margin: 20px 10px;
+    .disabled-image-button {
+      background-color: #AAA;
+      box-shadow: none;
+
+      &:hover {
+        cursor: initial;
+      }
     }
   }
 }

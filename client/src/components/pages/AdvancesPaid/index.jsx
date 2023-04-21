@@ -5,6 +5,9 @@ import YearMonthChanger from "../../molecules/YearMonthChanger";
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
 import { formatComma, formatMoney } from "../../utils";
+import refund from '../../../img/refund.png';
+import undo from '../../../img/undo.png';
+import check from '../../../img/check.png';
 
 const AdvancesPaid = () => {
 
@@ -50,14 +53,6 @@ const AdvancesPaid = () => {
     setSum(sum);
   }, [advancesPaidlist]);
 
-  // const setAdvancesPaid = (advancesPaid) => {
-  //   document.getElementById('advances-paid_input').value = advancesPaid;
-  // }
-
-  // const clear = () => {
-  //   document.getElementById('advances-paid_input').value = '';
-  // }
-
   const resetAdvancesPaidFlag = () => {
     fetch('http://localhost:5000/advances_paid_flag_reset', {
       method: 'POST',
@@ -75,6 +70,33 @@ const AdvancesPaid = () => {
       setAdvancesPaidlist(JSON.parse(json['data']))
     })
     .then(() => alert('返金処理を登録しました'))
+    .catch(err => alert(err))
+  }
+
+  const handleRefundFlag = (key, amount, flag) => {
+    let message = flag === 1? 'を返金しますか' : 'の返金を取り消しますか'
+    if (!window.confirm(`${formatComma(amount)}円　${message}？`)) {
+      return;
+    }
+
+    fetch('http://localhost:5000/refund_flag_handle', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": selected.year,
+        "month": selected.month + 1,
+        "user": selected.user,
+        "key": key,
+        "flag": flag
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      setAdvancesPaidlist(JSON.parse(json['data']))
+    })
+    .then(() => alert('返金処理を取り消しました'))
     .catch(err => alert(err))
   }
 
@@ -109,7 +131,9 @@ const AdvancesPaid = () => {
                 <th className='col-amount'>立替額</th>
                 <th className='col-shop-name'>店名</th>
                 <th className='col-year-month-date'>立替日</th>
-                <th>返金</th>
+                <th className='col-image-button'>返金</th>
+                <th className='col-image-button'></th>
+                {/* <th className='col-image-button'></th> */}
               </tr>
             </thead>
             <tbody>
@@ -122,24 +146,34 @@ const AdvancesPaid = () => {
                     <td className='col-year-month-date'>{history.payment_date}</td>
                     {
                       history.refund_flag === 1 ?
-                        <td>済</td>
-                      : <td>未</td>
+                      <>
+                        <td className='col-refund'>
+                          <img src={check} alt='check'/>
+                        </td>
+                        {/* <td className='col-image-button'>
+                          <img className='disabled-image-button' src={refund} alt='edit'/>
+                        </td> */}
+                        <td className='col-image-button'>
+                          <img onClick={()=>handleRefundFlag(history.key, history.amount, 0)} src={undo} alt='delete'/>
+                        </td>
+                      </>
+                      :
+                      <>
+                        <td className='col-refund'></td>
+                        <td className='col-image-button'>
+                          <img onClick={()=>handleRefundFlag(history.key, history.amount, 1)} src={refund} alt='edit'/>
+                        </td>
+                        {/* <td className='col-image-button'>
+                          <img className='disabled-image-button' src={undo} alt='delete'/>
+                        </td> */}
+                      </>
                     }
-                    {/* <td>{history.refund_flag === 1? '' : '済'}</td> */}
-                    {/* <td><button className='button-primary'>返金</button></td> */}
-                  </tr>                  
+                  </tr>
                 ))
               }
             </tbody>
           </table>
         </div>
-        {/* <div>
-          <LabelInput id='advances-paid' label='立替額' type='text' isReadOnly={true}/>
-          <FlexDiv>
-            <button className='button-primary'>返金</button>
-            <button className='button-cancel' onClick={clear}>キャンセル</button>
-          </FlexDiv>
-        </div> */}
       </FlexDiv>
     </div>
   );
