@@ -7,6 +7,7 @@ import Modal from '../../orgasms/Modal';
 import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
+import del from '../../../img/delete.png';
 import './index.scss';
 import { formatComma, formatMoney } from '../../utils';
 
@@ -22,6 +23,7 @@ const Table = ({year, month, data}) => {
           <th className='col-category'>カテゴリ</th>
           <th className='col-shop-name'>店名</th>
           <th className='col-amount'>金額</th>
+          <th className='col-image-button'></th>
         </tr>
       </thead>
       <tbody>
@@ -121,6 +123,24 @@ const countDate = (rows) => {
 const formatRow = (original, count, year, month, navigate) => {
   const days = ['日', '月', '火', '水', '木', '金', '土'];
 
+  const undoPayment = (key) => {
+
+    if (!window.confirm('伝票を削除しますか？')) return;
+
+    fetch('http://localhost:5000/home_undo', {
+      method: 'POST',
+      body: JSON.stringify({
+        "key": key
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(() => window.location.reload())
+    .catch(err => alert(err))
+  }
+
   let rows = [];
   let index = 1;
   let day = '';
@@ -146,6 +166,11 @@ const formatRow = (original, count, year, month, navigate) => {
           <td className='col-category'>{original[i].category_name}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
+              <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
+            )}
+          </td>
         </tr>
       )
       count[index] = 0;
@@ -156,6 +181,9 @@ const formatRow = (original, count, year, month, navigate) => {
           <td className='col-category'>{original[i].category_name}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
+          </td>
         </tr>
       )
     }

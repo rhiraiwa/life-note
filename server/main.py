@@ -130,6 +130,13 @@ def home():
 
   return {'refarance': refarance, 'data': data}
 
+@app.route('/home_undo', methods=['POST'])
+def home_undo():
+  rd = json.loads(request.data)
+  home_refarance.undo_home(rd['key'])
+
+  return {'home_undo': 'done'}
+
 # 入金入力
 @app.route('/deposit_insert', methods=['POST'])
 def deposit_insert():
