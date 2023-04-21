@@ -173,7 +173,7 @@ def charge_history_insert():
   rd = json.loads(request.data)
   rd = rd['form']
   charge = rd['amount']
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, 'WAONカードチャージ', 0, 1, rd['amount'], rd['user'], f'{charge}円')
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, 'WAONカードチャージ', 0, 1, rd['amount'], rd['user'], f'{charge}円', '')
 
   return {'payment_insert': 'done'}
 
@@ -196,9 +196,9 @@ def advances_paid_select():
 @app.route('/advances_paid_flag_reset', methods=['POST'])
 def advances_paid_flag_reset():
   rd = json.loads(request.data)
-  advances_paid.reset_advances_paid_flag(rd['year'], rd['month'], rd['user'])
+  table_data = advances_paid.reset_advances_paid_flag(rd['year'], rd['month'], rd['user'])
 
-  return {'advances_paid_flag_reset': 'done'}
+  return {'data': table_data}
 
 # 画像処理
 @app.route('/image_processing', methods=['POST'])

@@ -11,6 +11,7 @@ CREATE TABLE LIFE_NOTE.PAYMENT (
   advances_paid_flag     TINYINT,
   advances_paid_amount   DECIMAL(9,0),
   advances_paid_user_cd  VARCHAR(15),
+  refund_flag            TINYINT,
   note                   NVARCHAR(100),
   insert_date            VARCHAR(8),
   insert_time            VARCHAR(6),

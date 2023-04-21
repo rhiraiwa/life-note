@@ -7,10 +7,10 @@ date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
 
 def insert_budget(forms):
-  delete_query  = f'DELETE FROM BUDGET'
+  delete_query  = f'DELETE FROM BUDGET '
   delete_query += f'WHERE       year = \'{forms[0]["year"]}\' '
   delete_query += f'        AND month = \'{forms[0]["month"]}\';'
-
+  
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
@@ -175,7 +175,7 @@ def budget_init(year, month):
   sum_query += f'       ON category_cd = cd '
   sum_query += f'WHERE     year = \'{year}\' '
   sum_query += f'      AND month = \'{month}\' '
-  sum_query += f'GROUPBY   category_cd;'
+  sum_query += f'GROUP BY  category_cd;'
   sum_result= []
   
   try:
