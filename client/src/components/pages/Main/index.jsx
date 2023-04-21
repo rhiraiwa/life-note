@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import FlexDiv from '../../atoms/FlexDiv';
 import LabelInput from '../../molecules/LabelInput';
@@ -143,7 +143,7 @@ const formatRow = (original, count, year, month, navigate) => {
           <td rowSpan={count[index.toString()]} className='col-day' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
           </td>
-          <td className='col-category'>{original[i].category}</td>
+          <td className='col-category'>{original[i].category_name}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
         </tr>
@@ -153,7 +153,7 @@ const formatRow = (original, count, year, month, navigate) => {
     else {
       rows.push(
         <tr key={i}>
-          <td className='col-category'>{original[i].category}</td>
+          <td className='col-category'>{original[i].category_name}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
         </tr>
@@ -167,13 +167,13 @@ const formatRow = (original, count, year, month, navigate) => {
 const Main = () => {
 
   const date = new Date();
-  const [selected, setSelected] = React.useState({
+  const [selected, setSelected] = useState({
     year: date.getFullYear(),
     month: date. getMonth()
   })
 
-  const [isOpen, setIsOpen] = React.useState(false);
-  const [reference, setReference] = React.useState({
+  const [isOpen, setIsOpen] = useState(false);
+  const [reference, setReference] = useState({
     budget: '',
     deposit: '',
     payment: '',
@@ -181,9 +181,11 @@ const Main = () => {
     advancesPaid: 0
   })
 
-  const [data, setData] = React.useState([])
+  const [data, setData] = useState([]);
+  const [noFilter, setNoFilter] = useState([]);
+  const [filter, setFilter] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setReference({...reference, budget: ''});
 
     fetch('http://localhost:5000/home', {
@@ -209,16 +211,38 @@ const Main = () => {
       if (JSON.parse(json['refarance'])[0].advances_paid !== null) advancesPaid = JSON.parse(json['refarance'])[0].advances_paid
       balance = deposit - payment;
       setReference({...reference, budget: budget, deposit: deposit, payment: payment, balance: balance, advancesPaid: advancesPaid});
-      setData(JSON.parse(json['data']))
+      setNoFilter(JSON.parse(json['data']));
+
+      let filter = [];
+      for(let i = 0; i < JSON.parse(json['data']).length; i++) {
+        
+        if (JSON.parse(json['data'])[i].category_cd === 999) continue;
+
+        filter.push(JSON.parse(json['data'])[i]);
+      }
+
+      setFilter(filter);
+      setData(filter);
     })
     .catch(err => alert(err))
   }, [selected]);
+
+  const handleFilter = () => {
+    let checkbox = document.getElementById('display-charge');
+    let data = checkbox.checked? noFilter : filter;
+
+    setData(data);
+  }
 
   return (
     <>
       <FlexDiv id='main'>
         <div>
-          <YearMonthChanger state={{selected, setSelected}}/>
+            <FlexDiv id='display-handler'>
+              <YearMonthChanger state={{selected, setSelected}}/>
+              <input type='checkbox' id='display-charge' onClick={handleFilter}/>
+              <label htmlFor='display-charge'>チャージを含む</label>
+            </FlexDiv>
           <div id='home-table-area'>
             <Table year={selected.year} month={selected.month} data={data}/>
           </div>

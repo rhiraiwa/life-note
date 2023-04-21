@@ -44,6 +44,7 @@ def select_data(year, month):
   query  = f'SELECT    year, '
   query += f'          month, '
   query += f'          date, '
+  query += f'          cd, '
   query += f'          name, '
   query += f'          shop_name, '
   query += f'          CAST(amount AS NCHAR) '
@@ -52,7 +53,7 @@ def select_data(year, month):
   query += f'       ON category_cd = cd '
   query += f'WHERE     year = \'{year}\' '
   query += f'      AND month = \'{month}\' '
-  query += f'      AND category_cd != 999 '
+  # query += f'      AND category_cd != 999 '
   query += f'ORDER BY  CAST(date AS SIGNED);'
   result_row = []
   
@@ -64,7 +65,7 @@ def select_data(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('year', 'month', 'date', 'category', 'shop_name', 'amount')
+      label_tuple = ('year', 'month', 'date', 'category_cd', 'category_name', 'shop_name', 'amount')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 

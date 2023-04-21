@@ -173,7 +173,7 @@ def charge_history_insert():
   rd = json.loads(request.data)
   rd = rd['form']
   charge = rd['amount']
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, 'WAONカードチャージ', 0, 1, rd['amount'], rd['user'], f'{charge}円', '')
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, f'{charge}円', 0, 1, rd['amount'], rd['user'], f'{charge}円', '')
 
   return {'payment_insert': 'done'}
 

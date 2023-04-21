@@ -1,4 +1,13 @@
 #main {
+  #display-handler {
+    input {
+      margin-left: auto;
+    }
+
+    label {
+      user-select: none;
+    }
+  }
 
   #home-table-area {
     height: 75vh;
