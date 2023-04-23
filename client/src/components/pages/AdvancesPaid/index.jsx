@@ -74,8 +74,9 @@ const AdvancesPaid = () => {
   }
 
   const handleRefundFlag = (key, amount, flag) => {
-    let message = flag === 1? 'を返金しますか' : 'の返金を取り消しますか'
-    if (!window.confirm(`${formatComma(amount)}円　${message}？`)) {
+    let confirmMessage = flag === 1? 'を返金しますか' : 'の返金を取り消しますか'
+    let afterMessage = flag === 1? '返金処理を登録しました' : '返金を取り消しました'
+    if (!window.confirm(`${formatComma(amount)}円　${confirmMessage}？`)) {
       return;
     }
 
@@ -96,7 +97,7 @@ const AdvancesPaid = () => {
     .then(json => {
       setAdvancesPaidlist(JSON.parse(json['data']))
     })
-    .then(() => alert('返金処理を取り消しました'))
+    .then(() => alert(afterMessage))
     .catch(err => alert(err))
   }
 

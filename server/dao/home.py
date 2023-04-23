@@ -45,7 +45,7 @@ def select_data(year, month):
   query += f'          year, '
   query += f'          month, '
   query += f'          date, '
-  query += f'          cd, '
+  query += f'          category_cd, '
   query += f'          name, '
   query += f'          shop_name, '
   query += f'          CAST(amount AS NCHAR) '
