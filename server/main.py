@@ -17,24 +17,21 @@ def user_select():
 @app.route('/user_insert', methods=['POST'])
 def user_insert():
   rd = json.loads(request.data)
-  user_maintenance.insert_mf(rd['username'])
-  table_data = user_maintenance.select_mf()
+  table_data = user_maintenance.insert_mf(rd['username'])
 
   return {'data': table_data}
 
 @app.route('/user_edit', methods=['POST'])
 def user_edit():
   rd = json.loads(request.data)
-  user_maintenance.edit_mf(rd['cd'], rd['name'])
-  table_data = user_maintenance.select_mf()
+  table_data = user_maintenance.edit_mf(rd['cd'], rd['name'])
 
   return {'data': table_data}
 
 @app.route('/user_delete', methods=['POST'])
 def user_delete():
   rd = json.loads(request.data)
-  user_maintenance.delete_mf(rd['usercd'])
-  table_data = user_maintenance.select_mf()
+  table_data = user_maintenance.delete_mf(rd['usercd'])
 
   return {'data': table_data}
 
@@ -48,24 +45,21 @@ def category_select():
 @app.route('/category_insert', methods=['POST'])
 def category_insert():
   rd = json.loads(request.data)
-  category_maintenance.insert_mf(rd['categoryname'])
-  table_data = category_maintenance.select_mf()
+  table_data = category_maintenance.insert_mf(rd['categoryname'])
 
   return {'data': table_data}
 
 @app.route('/category_edit', methods=['POST'])
 def category_edit():
   rd = json.loads(request.data)
-  category_maintenance.edit_mf(rd['cd'], rd['name'])
-  table_data = category_maintenance.select_mf()
+  table_data = category_maintenance.edit_mf(rd['cd'], rd['name'])
 
   return {'data': table_data}
 
 @app.route('/category_delete', methods=['POST'])
 def category_delete():
   rd = json.loads(request.data)
-  category_maintenance.delete_mf(rd['categorycd'])
-  table_data = category_maintenance.select_mf()
+  table_data = category_maintenance.delete_mf(rd['categorycd'])
 
   return {'data': table_data}
 
