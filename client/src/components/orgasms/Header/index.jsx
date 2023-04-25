@@ -1,11 +1,12 @@
+import { useState } from 'react';
 import FlexDiv from '../../atoms/FlexDiv';
+import Calculator from '../../templates/Calculator';
 import calc from '../../../img/calc.png';
 import './index.scss';
-import Calculator from '../../templates/Calculator';
-import React from 'react';
 
 const Header = ({title}) => {
-  const [isOpen, setIsOpen] = React.useState(false);
+  
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <FlexDiv id='header'>

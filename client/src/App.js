@@ -1,5 +1,6 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useMasterFileData } from "./context/MasterFileContext";
 import PageTemplate from "./components/templates/PageTemplate";
 import Main from "./components/pages/Main";
 import Budget from "./components/pages/Budget";
@@ -7,20 +8,42 @@ import Deposit from "./components/pages/Deposit";
 import Payment from "./components/pages/Payment";
 import AdvancesPaid from "./components/pages/AdvancesPaid";
 import Result from "./components/pages/Result";
-import CategoryMaintenance from "./components/pages/CategoryMaintenance";
 import UserMaintenance from "./components/pages/UserMaintenance"
-import { useMasterFileData } from "./context/MasterFileContext";
+import CategoryMaintenance from "./components/pages/CategoryMaintenance";
 
 function App() {
 
-  const {userlist, setUserlist, categorylist, setCategorylist} = useMasterFileData();
+  const {setUserlist, setCategorylist} = useMasterFileData();
+  const [elements, setElements] = useState({
+    main: <UserMaintenance/>,
+    budget: <></>,
+    deposit: <></>,
+    payment: <></>,
+    advancesPaid: <></>,
+    result: <></>
+  })
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('http://localhost:5000/category_and_user_select', { method: 'POST' })
     .then(response => response.json())
     .then(json => {
-      setCategorylist(JSON.parse(json['category']))
-      setUserlist(JSON.parse(json['user']))
+      let user = JSON.parse(json['user']);
+      let category = JSON.parse(json['category']);
+
+      setUserlist(user);
+      setCategorylist(category);
+      
+      if (user.length !== 0 && category.length !== 0) {
+        setElements({
+          ...elements,
+          main: <Main/>,
+          budget: <Budget/>,
+          deposit: <Deposit/>,
+          payment: <Payment/>,
+          advancesPaid: <AdvancesPaid/>,
+          result: <Result/>
+        })
+      }
     })
     .catch(err => alert(err))
   },[]);
@@ -28,57 +51,36 @@ function App() {
   return (
     <div className="App">
       <Routes>
-        {
-          userlist.length !== 0 && categorylist.length !== 0 &&
-          <>
-            <Route path='/' element={
-              <PageTemplate title='ホーム'>
-                <Main/>
-              </PageTemplate>
-            }/>
-            <Route path='/Budget' element={
-              <PageTemplate title='予算管理'>
-                <Budget/>
-              </PageTemplate>
-            }/>
-            <Route path='/Deposit' element={
-              <PageTemplate title='入金入力'>
-                <Deposit/>
-              </PageTemplate>
-            }/>
-            <Route path='/Payment' element={
-              <PageTemplate title='支払入力'>
-                <Payment/>
-              </PageTemplate>
-            }/>
-            <Route path='/AdvancesPaid' element={
-              <PageTemplate title='立替管理'>
-                <AdvancesPaid/>
-              </PageTemplate>
-            }/>
-            <Route path='/Result' element={
-              <PageTemplate title='実績照会'>
-                <Result/>
-              </PageTemplate>
-            }/>
-          </>
-        }
-        {
-          userlist.length === 0 && categorylist.length === 0 &&
-          <>
-            <Route path='/' element={
-              <PageTemplate title='ユーザーマスタメンテナンス'>
-                <UserMaintenance/>
-              </PageTemplate>
-            }/>
-            {/* ↓書きたくないが、書かないとデバッグモードで警告が出る */}
-            <Route path='/Budget' element={<></>}/>
-            <Route path='/Deposit' element={<></>}/>
-            <Route path='/Payment' element={<></>}/>
-            <Route path='/AdvancesPaid' element={<></>}/>
-            <Route path='/Result' element={<></>}/>
-          </>
-        }
+        <Route path='/' element={
+          <PageTemplate title='ホーム'>
+            {elements.main}
+          </PageTemplate>
+        }/>
+        <Route path='/Budget' element={
+          <PageTemplate title='予算管理'>
+            {elements.budget}
+          </PageTemplate>
+        }/>
+        <Route path='/Deposit' element={
+          <PageTemplate title='入金入力'>
+            {elements.deposit}
+          </PageTemplate>
+        }/>
+        <Route path='/Payment' element={
+          <PageTemplate title='支払入力'>
+            {elements.payment}
+          </PageTemplate>
+        }/>
+        <Route path='/AdvancesPaid' element={
+          <PageTemplate title='立替管理'>
+            {elements.advancesPaid}
+          </PageTemplate>
+        }/>
+        <Route path='/Result' element={
+          <PageTemplate title='実績照会'>
+            {elements.result}
+          </PageTemplate>
+        }/>
         <Route path='/UserMaintenance' element={
           <PageTemplate title='ユーザーマスタメンテナンス'>
             <UserMaintenance/>
