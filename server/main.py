@@ -36,6 +36,19 @@ def user_delete():
   return {'data': table_data}
 
 # カテゴリマスタメンテナンス
+@app.route('/middle_class_select', methods=['POST'])
+def middle_class_select():
+  table_data = category_maintenance.select_middle_class()
+
+  return {'data': table_data}
+
+@app.route('/middle_class_insert', methods=['POST'])
+def middle_class_insert():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.insert_middle_class(rd['largeClassCd'], rd['middleClassName'])
+  
+  return {'data': table_data}
+
 @app.route('/category_select', methods=['POST'])
 def category_select():
   table_data = category_maintenance.select_mf()

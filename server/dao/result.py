@@ -19,7 +19,7 @@ def select_result(year, month):
   query += f'                and month = \'{month}\' '
   query += f'           group by category_cd) B '
   query += f'       ON A.category_cd = B.category_cd '
-  query += f'LEFT JOIN CATEGORY_MF'
+  query += f'LEFT JOIN LARGE_CLASS_MF'
   query += f'       ON A.category_cd = cd;'
   result_row = []
   

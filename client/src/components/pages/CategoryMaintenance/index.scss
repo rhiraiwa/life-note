@@ -1,5 +1,5 @@
 #category-maintenance {
-  #category-maintenance-input {
+  .category-maintenance-input {
     margin: 30px 0;
     
     label {
@@ -21,5 +21,10 @@
     
   .col-category {
     width: 200px;
+  }
+
+  select {
+    height: 26px;
+    border-right: none;
   }
 }

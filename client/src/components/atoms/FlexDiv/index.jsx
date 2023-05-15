@@ -1,8 +1,8 @@
 import './index.scss';
 
-const FlexDiv = ({id, children}) => {
+const FlexDiv = ({className, id, children}) => {
   return (
-    <div className="flex-div" id={id}>
+    <div className={`flex-div ${className}`} id={id}>
       {children}
     </div>
   )

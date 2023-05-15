@@ -50,7 +50,7 @@ def select_data(year, month):
   query += f'          shop_name, '
   query += f'          CAST(amount AS NCHAR) '
   query += f'FROM      PAYMENT '
-  query += f'LEFT JOIN CATEGORY_MF '
+  query += f'LEFT JOIN LARGE_CLASS_MF '
   query += f'       ON category_cd = cd '
   query += f'WHERE     year = \'{year}\' '
   query += f'      AND month = \'{month}\' '
