@@ -90,10 +90,10 @@ def select_middle_class():
   query += '          CASE WHEN B.cd IS NULL THEN \'\' ELSE B.cd END, '
   query += '          CASE WHEN B.name IS NULL THEN \'\' ELSE B.name END '
   query += 'FROM      large_class_mf A '
-  query += 'LEFT JOIN middle_class_mf B '
+  query += 'LEFT JOIN (select * from middle_class_mf where delete_flag = 0) B '
   query += '       ON A.cd = B.large_class_cd '
   query += 'WHERE     A.delete_flag = 0 '
-  query += '      AND (B.delete_flag = 0 OR B.delete_flag IS NULL)'
+  query += '      AND (B.delete_flag = 0 OR B.delete_flag IS NULL) '
   query += 'ORDER BY  A.cd, B.cd;'
   result_row = []
   
@@ -135,6 +135,26 @@ def insert_middle_class(large_class, name):
   query += f'        {date}, '
   query += f'        {time}, '
   query += f'        0);'
+
+  output_json = base_process(query)
+  return output_json
+
+def edit_middle_class(cd, name):
+  query  = f'UPDATE MIDDLE_CLASS_MF '
+  query += f'SET    name = \'{name}\', '
+  query += f'       update_date = {date}, '
+  query += f'       update_time = {time} '
+  query += f'WHERE  cd = {cd};'
+
+  output_json = base_process(query)
+  return output_json
+
+def delete_middle_class(cd):
+  query  = f'UPDATE MIDDLE_CLASS_MF '
+  query += f'SET    delete_flag = 1, '
+  query += f'       update_date = {date}, '
+  query += f'       update_time = {time} '
+  query += f'WHERE  cd = {cd};'
 
   output_json = base_process(query)
   return output_json

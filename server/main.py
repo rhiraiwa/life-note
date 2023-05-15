@@ -49,6 +49,20 @@ def middle_class_insert():
   
   return {'data': table_data}
 
+@app.route('/middle_class_edit', methods=['POST'])
+def middle_class_edit():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.edit_middle_class(rd['cd'], rd['name'])
+
+  return {'data': table_data}
+
+@app.route('/middle_class_delete', methods=['POST'])
+def middle_class_delete():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.delete_middle_class(rd['cd'])
+
+  return {'data': table_data}
+
 @app.route('/category_select', methods=['POST'])
 def category_select():
   table_data = category_maintenance.select_mf()
@@ -72,7 +86,7 @@ def category_edit():
 @app.route('/category_delete', methods=['POST'])
 def category_delete():
   rd = json.loads(request.data)
-  table_data = category_maintenance.delete_mf(rd['categorycd'])
+  table_data = category_maintenance.delete_mf(rd['cd'])
 
   return {'data': table_data}
 

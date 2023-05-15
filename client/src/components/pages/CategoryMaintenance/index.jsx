@@ -62,21 +62,21 @@ const CategoryMaintenance = () => {
     })
     .then(response => response.json())
     .then(json => setCategorylist(JSON.parse(json['data'])))
-    .then(setLargeClass(''))
+    // .then(setLargeClass(''))
     .then(setMiddleClassName(''))
     .then(alert('登録しました')) //いらないかも
     .catch(err => alert(err))
   }
 
-  const deleteCategory = (cd, name) => {
+  const deleteCategory = (url, cd, name) => {
 
     let isCancel = !window.confirm(`${cd}：${name} を削除しますか？`);
     if (isCancel) return;
 
-    fetch('http://localhost:5000/category_delete', {
+    fetch(`http://localhost:5000/${url}`, {
       method: 'POST',
       body: JSON.stringify({
-        "categorycd": cd
+        "cd": cd
       }),
       headers: {
         "Content-type": "application/json; charset=utf-8"
@@ -89,9 +89,9 @@ const CategoryMaintenance = () => {
     .catch(err => alert(err))
   }
 
-  const editerOpen = (cd, name) => {
+  const editerOpen = (url, cd, name) => {
     setIsOpen(true);
-    setEditor(<NameEditor cd={cd} name={name} close={()=>setIsOpen(false)} url='category_edit' reload={(list)=>setCategorylist(list)}/>);
+    setEditor(<NameEditor cd={cd} name={name} close={()=>setIsOpen(false)} url={url} reload={(list)=>setCategorylist(list)}/>);
   }
 
   return (
@@ -140,12 +140,12 @@ const CategoryMaintenance = () => {
                       <td className='col-image-button' rowSpan={middleClassList.filter((m) => {
                         return m.large_class_cd === category.cd;
                       }).length}>
-                        <img onClick={()=>editerOpen(category.cd, category.name)} src={edit} alt='edit'/>
+                        <img onClick={()=>editerOpen('category_edit', category.cd, category.name)} src={edit} alt='edit'/>
                       </td>
                       <td className='col-image-button' rowSpan={middleClassList.filter((m) => {
                         return m.large_class_cd === category.cd;
                       }).length}>
-                        <img onClick={()=>deleteCategory(category.cd, category.name)} src={del} alt='delete'/>
+                        <img onClick={()=>deleteCategory('category_delete', category.cd, category.name)} src={del} alt='delete'/>
                       </td>
                     </>
                   )}
@@ -158,13 +158,13 @@ const CategoryMaintenance = () => {
                   <td className='col-image-button'>
                     {
                       middleClass.middle_class_name !== '' &&
-                        <img onClick={()=>editerOpen(category.cd, category.name)} src={edit} alt='edit'/>
+                        <img onClick={()=>editerOpen('middle_class_edit', middleClass.middle_class_cd, middleClass.middle_class_name)} src={edit} alt='edit'/>
                     }
                   </td>
                   <td className='col-image-button'>
                     {
                       middleClass.middle_class_name !== '' &&
-                      <img onClick={()=>deleteCategory(category.cd, category.name)} src={del} alt='delete'/>
+                      <img onClick={()=>deleteCategory('middle_class_delete', middleClass.middle_class_cd, middleClass.middle_class_name)} src={del} alt='delete'/>
                     }
                   </td>
                 </tr>
