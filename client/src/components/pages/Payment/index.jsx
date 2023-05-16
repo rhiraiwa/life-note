@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
@@ -28,6 +28,12 @@ const Payment = () => {
     filename: ''
   })
   const [rowCount, setRowCount] = useState(8);
+  const [rows, setRows] = useState([]);
+
+  useEffect(() => {
+    // setRows(getRows());
+    setDetailForms(getDetailForms());
+  }, [])
 
   const handleAdvancePaid = () => {
     setIsDisable(!isDisable)
@@ -58,6 +64,8 @@ const Payment = () => {
     navigate('/');
   }
 
+  const [detailForms, setDetailForms] = useState([]);
+
   const Row = ({idx}) => {
 
     const calcPrice = (idx) => {
@@ -65,13 +73,13 @@ const Payment = () => {
       let discount = document.getElementById(`discount-${idx}`).value;
       let taxRate = document.getElementById(`tax-rate-${idx}`).value;
       let itemCount = document.getElementById(`item-count-${idx}`).value;
-      let price = '';
+      let wPrice = '';
 
       if (unitPrice !== '' && itemCount !== '') {
-        price = (unitPrice - discount) * taxRate * itemCount;
+        wPrice = (unitPrice - discount) * taxRate * itemCount;
       }
 
-      document.getElementById(`price-${idx}`).value = parseInt(price);
+      document.getElementById(`price-${idx}`).value = parseInt(wPrice);
     }
 
     return (
@@ -95,7 +103,7 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-class'>
-          <input type='text' id={`item-class-${idx}`}/>
+          <input type='text' id={`item-class-${idx}`} value={detailForms[idx].itemClass} onChange={(e)=>setDetailForms({...detailForms[idx], itemClass: e.target.value})}/>
         </td>
         <td className='col-item'>
           <input type='text' id={`item-name-${idx}`}/>
@@ -123,12 +131,44 @@ const Payment = () => {
     )
   }
 
-  const getRows = () => {
-    let rows = [];
+  const getDetailForms = () => {
+    let forms = [];
     for (let i = 0; i < rowCount; i++) {
-      rows.push(<Row key={i} idx={i}/>)
+      forms.push({
+        detailNumber: i,
+        largeClass: '',
+        middleClass: '',
+        itemClass: '',
+        itemName: '',
+        unitPrice: '',
+        discount: '',
+        taxRate: 1.08,
+        itemCount: '',
+        price: ''
+      })
     }
-    return rows;
+    return forms;
+  }
+
+  // const getRows = () => {
+  //   let rows = [];
+  //   for (let i = 0; i < rowCount; i++) {
+  //     rows.push(<Row key={i} idx={i}/>)
+  //   }
+  //   return rows;
+  // }
+
+  const addRows = () => {
+    let wRows = [];
+    let wRow;
+
+    for (let i = 0; i < rows.length; i++) {
+      wRow = document.getElementById(`row-${i}`);
+      wRows.push(wRow);
+    }
+    
+    wRows.push(<Row key={rows.length} idx={rows.length}/>);
+    setRows(wRows);
   }
 
   return (
@@ -172,8 +212,10 @@ const Payment = () => {
             <th className='col-payment'>金額</th>
           </tr>
         </thead>
-        <tbody>
-          {getRows()}
+        <tbody id='test'>
+          {detailForms.map((row, idx) => 
+            <Row key={idx} idx={idx}/>
+          ) }
         </tbody>
       </table>
       <FlexDiv id='note-area'>
@@ -181,7 +223,7 @@ const Payment = () => {
         <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})}/>
       </FlexDiv>
       <FlexDiv id='payment-button-area'>
-        <button className='button-cancel' onClick={insert_payment}>行の追加</button>
+        <button className='button-cancel' onClick={addRows}>行の追加</button>
         <button className='button-primary' onClick={insert_payment}>登録</button>
       </FlexDiv>
     </>
