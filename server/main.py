@@ -235,18 +235,18 @@ def refund_flag_handle():
 
   return {'data': table_data}
 
-# 画像処理
-@app.route('/image_processing', methods=['POST'])
-def image_processing():
-  filename = camera.camera_main()
+# # 画像処理
+# @app.route('/image_processing', methods=['POST'])
+# def image_processing():
+#   filename = camera.camera_main()
 
-  return {'filename': filename}
+#   return {'filename': filename}
 
-@app.route('/image_web', methods=['POST'])
-def image_web():
-  rd = json.loads(request.data)
-  # filename = camera.web(rd['filename'])
-  camera.web(rd['filename'])
+# @app.route('/image_web', methods=['POST'])
+# def image_web():
+#   rd = json.loads(request.data)
+#   # filename = camera.web(rd['filename'])
+#   camera.web(rd['filename'])
 
-  # return {'filename': filename}
-  return {'web': 'done'}
+#   # return {'filename': filename}
+#   return {'web': 'done'}

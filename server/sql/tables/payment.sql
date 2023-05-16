@@ -5,7 +5,6 @@ CREATE TABLE LIFE_NOTE.PAYMENT (
   month                  VARCHAR(2)    NOT NULL,
   date                   VARCHAR(2)    NOT NULL,
   payment_number         SMALLINT      NOT NULL,
-  category_cd            SMALLINT      NOT NULL,
   shop_name              VARCHAR(50),
   amount                 DECIMAL(9,0)  NOT NULL,
   advances_paid_flag     TINYINT,

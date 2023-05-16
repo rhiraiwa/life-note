@@ -45,13 +45,13 @@ def select_data(year, month):
   query += f'          year, '
   query += f'          month, '
   query += f'          date, '
-  query += f'          category_cd, '
-  query += f'          name, '
+  # query += f'          category_cd, '
+  # query += f'          name, '
   query += f'          shop_name, '
   query += f'          CAST(amount AS NCHAR) '
   query += f'FROM      PAYMENT '
-  query += f'LEFT JOIN LARGE_CLASS_MF '
-  query += f'       ON category_cd = cd '
+  # query += f'LEFT JOIN LARGE_CLASS_MF '
+  # query += f'       ON category_cd = cd '
   query += f'WHERE     year = \'{year}\' '
   query += f'      AND month = \'{month}\' '
   query += f'ORDER BY  CAST(date AS SIGNED);'
@@ -65,7 +65,8 @@ def select_data(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('key', 'year', 'month', 'date', 'category_cd', 'category_name', 'shop_name', 'amount')
+      # label_tuple = ('key', 'year', 'month', 'date', 'category_cd', 'category_name', 'shop_name', 'amount')
+      label_tuple = ('key', 'year', 'month', 'date', 'shop_name', 'amount')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 

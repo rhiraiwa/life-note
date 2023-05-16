@@ -31,7 +31,7 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     insert_query += f'        \'{month}\', '
     insert_query += f'        \'{today}\', '
     insert_query += f'        {rows[0][0]}, '
-    insert_query += f'        \'{category}\', '
+    # insert_query += f'        \'{category}\', '
     insert_query += f'        \'{shop}\', '
     insert_query += f'        {amount}, '
     insert_query += f'        \'{advance_paid_flag}\', '
@@ -46,15 +46,15 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     insert_query += f'        0);'
 
     #画像保存
-    store_path = f'client/public/receipt/stored/{year}{month}{today}{rows[0][0]}/'
+    # store_path = f'client/public/receipt/stored/{year}{month}{today}{rows[0][0]}/'
     
-    if os.path.exists(store_path):  # 必要かどうか分からない（修正処理が実装されれば必要か）
-      shutil.rmtree(store_path)
+    # if os.path.exists(store_path):  # 必要かどうか分からない（修正処理が実装されれば必要か）
+    #   shutil.rmtree(store_path)
 
-    if filename != '':
-      os.mkdir(store_path)
-      os.replace(preview_path + filename, store_path + filename)
-      os.remove(temp_path + filename)
+    # if filename != '':
+    #   os.mkdir(store_path)
+    #   os.replace(preview_path + filename, store_path + filename)
+    #   os.remove(temp_path + filename)
 
     cursor.execute(insert_query)
     conn.commit()                   #コミット
