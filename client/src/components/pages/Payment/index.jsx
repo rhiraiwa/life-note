@@ -27,11 +27,10 @@ const Payment = () => {
     note: '',
     filename: ''
   })
-  const [rowCount, setRowCount] = useState(8);
-  const [rows, setRows] = useState([]);
+
+  const initialRowCount = 10;
 
   useEffect(() => {
-    // setRows(getRows());
     setDetailForms(getDetailForms());
   }, [])
 
@@ -68,18 +67,34 @@ const Payment = () => {
 
   const Row = ({idx}) => {
 
-    const calcPrice = (idx) => {
-      let unitPrice = document.getElementById(`unit-price-${idx}`).value;
-      let discount = document.getElementById(`discount-${idx}`).value;
-      let taxRate = document.getElementById(`tax-rate-${idx}`).value;
-      let itemCount = document.getElementById(`item-count-${idx}`).value;
+    const [detailForm, setDetailForm] = useState({
+      detailNumber: idx,
+      largeClass: detailForms[idx].largeClass,
+      middleClass: detailForms[idx].middleClass,
+      itemClass: detailForms[idx].itemClass,
+      itemName: detailForms[idx].itemName,
+      unitPrice: detailForms[idx].unitPrice,
+      discount: detailForms[idx].discount,
+      taxRate: detailForms[idx].taxRate,
+      itemCount: detailForms[idx].itemCount,
+      price: detailForms[idx].price
+    })
+
+    const calcPrice = (e) => {
+      let target = e.target.name;
+      let value = e.target.value;
+
+      let unitPrice = target==='unitPrice'? value : detailForm.unitPrice;
+      let discount = target==='discount'? value : detailForm.discount;
+      let taxRate = target==='taxRate'? value : detailForm.taxRate;
+      let itemCount = target==='itemCount'? value : detailForm.itemCount;
       let wPrice = '';
 
       if (unitPrice !== '' && itemCount !== '') {
         wPrice = (unitPrice - discount) * taxRate * itemCount;
+        wPrice = parseInt(wPrice);
       }
-
-      document.getElementById(`price-${idx}`).value = parseInt(wPrice);
+      setDetailForm({...detailForm, [target]: value, price: wPrice});
     }
 
     return (
@@ -103,29 +118,34 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-class'>
-          <input type='text' id={`item-class-${idx}`} value={detailForms[idx].itemClass} onChange={(e)=>setDetailForms({...detailForms[idx], itemClass: e.target.value})}/>
+          <input type='text'
+                 id={`item-class-${idx}`}
+                 value={detailForm.itemClass} 
+                 onChange={(e)=>setDetailForm({...detailForm, itemClass: e.target.value})}
+                 onBlur={()=>setDetailForms(detailForms.map((form, index) => (index === idx ? detailForm : form)))}
+                 />
         </td>
         <td className='col-item'>
           <input type='text' id={`item-name-${idx}`}/>
         </td>
-        <td className='col-payment' onChange={()=>calcPrice(idx)}>
-          <input type='text' id={`unit-price-${idx}`}/>
+        <td className='col-payment'>
+          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)}/>
         </td>
-        <td className='col-payment' onChange={()=>calcPrice(idx)}>
-          <input type='text' id={`discount-${idx}`}/>
+        <td className='col-payment'>
+          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)}/>
         </td>
-        <td className='col-tax-rate' onChange={()=>calcPrice(idx)}>
-          <select id={`tax-rate-${idx}`}>
+        <td className='col-tax-rate'>
+          <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
             <option value={1.08}>8%</option>
             <option value={1.10}>10%</option>
             <option value={1.00}>税込</option>
           </select>
         </td>
         <td className='col-item-count'>
-          <input type='text' id={`item-count-${idx}`} onChange={()=>calcPrice(idx)}/>
+          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)}/>
         </td>
         <td className='col-payment'>
-          <input type='text' id={`price-${idx}`} readOnly/>
+          <input type='text' id={`price-${idx}`} value={detailForm.price} readOnly/>
         </td>
       </tr>
     )
@@ -133,7 +153,7 @@ const Payment = () => {
 
   const getDetailForms = () => {
     let forms = [];
-    for (let i = 0; i < rowCount; i++) {
+    for (let i = 0; i < initialRowCount; i++) {
       forms.push({
         detailNumber: i,
         largeClass: '',
@@ -150,25 +170,20 @@ const Payment = () => {
     return forms;
   }
 
-  // const getRows = () => {
-  //   let rows = [];
-  //   for (let i = 0; i < rowCount; i++) {
-  //     rows.push(<Row key={i} idx={i}/>)
-  //   }
-  //   return rows;
-  // }
-
   const addRows = () => {
-    let wRows = [];
-    let wRow;
-
-    for (let i = 0; i < rows.length; i++) {
-      wRow = document.getElementById(`row-${i}`);
-      wRows.push(wRow);
-    }
-    
-    wRows.push(<Row key={rows.length} idx={rows.length}/>);
-    setRows(wRows);
+    setDetailForms([
+      ...detailForms, {
+      detailNumber: detailForms.length,
+      largeClass: '',
+      middleClass: '',
+      itemClass: '',
+      itemName: '',
+      unitPrice: '',
+      discount: '',
+      taxRate: 1.08,
+      itemCount: '',
+      price: ''
+    }]);
   }
 
   return (
@@ -215,7 +230,7 @@ const Payment = () => {
         <tbody id='test'>
           {detailForms.map((row, idx) => 
             <Row key={idx} idx={idx}/>
-          ) }
+          )}
         </tbody>
       </table>
       <FlexDiv id='note-area'>
