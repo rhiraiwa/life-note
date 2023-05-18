@@ -136,8 +136,8 @@ const Payment = () => {
         </td>
         <td className='col-tax-rate'>
           <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
-            <option value={1.08}>8%</option>
             <option value={1.10}>10%</option>
+            <option value={1.08}>8%</option>
             <option value={1.00}>税込</option>
           </select>
         </td>
@@ -162,7 +162,7 @@ const Payment = () => {
         itemName: '',
         unitPrice: '',
         discount: '',
-        taxRate: 1.08,
+        taxRate: 1.10,
         itemCount: '',
         price: ''
       })
@@ -180,7 +180,7 @@ const Payment = () => {
       itemName: '',
       unitPrice: '',
       discount: '',
-      taxRate: 1.08,
+      taxRate: 1.10,
       itemCount: '',
       price: ''
     }]);
@@ -196,7 +196,6 @@ const Payment = () => {
             <LabelInput id='payment-date' label='/' type='text' value={form.date} setValue={(e)=>setForm({...form, date: e.target.value})}/>
           </FlexDiv>
           <LabelInput id='payment-shop-name' label='店名' type='text' value={form.shopName} setValue={(e)=>setForm({...form, shopName: e.target.value})}/>
-          <LabelInput id='payment-amount' label='金額' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
         </div>
         <div className='payment-input-area'>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
@@ -212,6 +211,9 @@ const Payment = () => {
           </div>
           <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={form.advancePaidAmount} setValue={(e)=>setForm({...form, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
         </div>
+        <div>
+          <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
+        </div>
       </FlexDiv>
       <table id='detail-table'>
         <thead>
@@ -225,22 +227,33 @@ const Payment = () => {
             <th className='col-tax-rate'>税率</th>
             <th className='col-item-count'>数量</th>
             <th className='col-payment'>金額</th>
+            <th>
+          <button className='button-cancel' onClick={addRows}>行追加＋</button></th>
           </tr>
         </thead>
         <tbody id='test'>
           {detailForms.map((row, idx) => 
             <Row key={idx} idx={idx}/>
           )}
+          <tr>
+            <td colSpan={7}></td>
+            <td id='sum-label'>合計</td>
+            <td id='sum-amount'>1,000</td>
+            <td>
+          <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button></td>
+          </tr>
         </tbody>
       </table>
-      <FlexDiv id='note-area'>
-        <label>備考</label>
-        <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})}/>
-      </FlexDiv>
-      <FlexDiv id='payment-button-area'>
-        <button className='button-cancel' onClick={addRows}>行の追加</button>
-        <button className='button-primary' onClick={insert_payment}>登録</button>
-      </FlexDiv>
+      {/* <FlexDiv id='note-area'>
+        <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
+        <div id='sum-area'>
+        <FlexDiv id='payment-button-area'>
+          <button className='button-cancel' onClick={addRows}>行追加＋</button>
+          <button className='button-primary' onClick={insert_payment}>登録</button>
+          <LabelInput id='payment-amount' label='合計' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
+        </FlexDiv>
+        </div>
+      </FlexDiv> */}
     </>
   );
 }

@@ -64,10 +64,14 @@
   //   }
   // }
 
+  button {
+    margin :5px;
+  }
+
   .col-class {
     width: 100px;
     text-align: center;
-    input {
+    input, select {
       width: 100px;
     }
   }
@@ -91,28 +95,54 @@
       text-align: right;
     }
   }
-}
 
-#note-area {
-  margin: 10px 0;
-
-  label {
-    width: 80px;
-    float: left;
-    padding-right: 10px;
-    text-align:justify;
-    text-align-last:justify;
-    height: 26px;
+  #sum-label {
+    text-align: center;
   }
 
-  textarea {
-    width: 500px;
-    height: 60px;
+  #sum-amount {
+    text-align: right;
+  }
+
+  #button-payment-registar {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
-#payment-button-area {
-  button {
-    margin-right: 20px;
-  }
-}
+// #note-area {
+//   margin: 10px 0;
+
+//   label {
+//     width: 80px;
+//     float: left;
+//     padding-right: 10px;
+//     text-align:justify;
+//     text-align-last:justify;
+//     height: 26px;
+//   }
+
+//   textarea {
+//     width: 300px;
+//     height: 60px;
+//   }
+
+//   #sum-area {
+//     width: 500px;
+
+//     #payment-amount {
+//       display: block;
+//       margin-left: auto;
+
+//       #payment-amount_input {
+//         width: 60px;
+//       }
+//     }
+//   }
+
+//   #payment-button-area {
+//     button {
+//       margin-right: 20px;
+//     }
+//   }
+// }
