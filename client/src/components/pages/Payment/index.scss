@@ -41,29 +41,9 @@
       margin-left: 5px;
     }    
   }
-
-  // #payment-receipt-preview {
-  //   width: 50vw;
-  //   height: 70vh;
-  //   border-left: 1px solid #AAAAAA;
-  //   margin-left: 25px;
-  //   padding-left: 25px;
-  
-  //   img{
-  //     width: 100%;
-  //     height: 100%;
-  //     object-fit: scale-down;
-  //   }
-  // }
 }
 
 #detail-table {
-  // tbody {
-  //   input {
-  //     width: 80%;
-  //   }
-  // }
-
   button {
     margin :5px;
   }
@@ -96,6 +76,17 @@
     }
   }
 
+  .col-button {
+    button {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .payment-img {
+    margin-left: 10px;
+  }
+
   #sum-label {
     text-align: center;
   }
@@ -104,45 +95,9 @@
     text-align: right;
   }
 
-  #button-payment-registar {
-    margin-left: auto;
-    margin-right: auto;
+  #payment-note {
+    margin-top: 7px;
+    width:665px;
+    height: 55px;
   }
 }
-
-// #note-area {
-//   margin: 10px 0;
-
-//   label {
-//     width: 80px;
-//     float: left;
-//     padding-right: 10px;
-//     text-align:justify;
-//     text-align-last:justify;
-//     height: 26px;
-//   }
-
-//   textarea {
-//     width: 300px;
-//     height: 60px;
-//   }
-
-//   #sum-area {
-//     width: 500px;
-
-//     #payment-amount {
-//       display: block;
-//       margin-left: auto;
-
-//       #payment-amount_input {
-//         width: 60px;
-//       }
-//     }
-//   }
-
-//   #payment-button-area {
-//     button {
-//       margin-right: 20px;
-//     }
-//   }
-// }

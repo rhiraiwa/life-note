@@ -4,6 +4,8 @@ import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
+import clear from '../../../img/undo.png';
+import del from '../../../img/delete.png';
 
 const Payment = () => {
 
@@ -147,6 +149,12 @@ const Payment = () => {
         <td className='col-payment'>
           <input type='text' id={`price-${idx}`} value={detailForm.price} readOnly/>
         </td>
+        <td className='col-image-button'>
+          <img onClick={()=>alert('click clear')} src={clear} alt='clear' className='payment-img'/>
+        </td>
+        <td className='col-image-button'>
+          <img onClick={()=>alert('click delete')} src={del} alt='delete' className='payment-img'/>
+        </td>
       </tr>
     )
   }
@@ -211,9 +219,6 @@ const Payment = () => {
           </div>
           <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={form.advancePaidAmount} setValue={(e)=>setForm({...form, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
         </div>
-        <div>
-          <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
-        </div>
       </FlexDiv>
       <table id='detail-table'>
         <thead>
@@ -227,8 +232,9 @@ const Payment = () => {
             <th className='col-tax-rate'>税率</th>
             <th className='col-item-count'>数量</th>
             <th className='col-payment'>金額</th>
-            <th>
-          <button className='button-cancel' onClick={addRows}>行追加＋</button></th>
+            <th colSpan={2} className='col-button'>
+              <button className='button-cancel' onClick={addRows}>行＋</button>
+            </th>
           </tr>
         </thead>
         <tbody id='test'>
@@ -236,24 +242,17 @@ const Payment = () => {
             <Row key={idx} idx={idx}/>
           )}
           <tr>
-            <td colSpan={7}></td>
+            <td colSpan={7}>
+              <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
+            </td>
             <td id='sum-label'>合計</td>
             <td id='sum-amount'>1,000</td>
-            <td>
-          <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button></td>
+            <td colSpan={2} className='col-button'>
+              <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+            </td>
           </tr>
         </tbody>
       </table>
-      {/* <FlexDiv id='note-area'>
-        <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
-        <div id='sum-area'>
-        <FlexDiv id='payment-button-area'>
-          <button className='button-cancel' onClick={addRows}>行追加＋</button>
-          <button className='button-primary' onClick={insert_payment}>登録</button>
-          <LabelInput id='payment-amount' label='合計' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
-        </FlexDiv>
-        </div>
-      </FlexDiv> */}
     </>
   );
 }
