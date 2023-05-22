@@ -67,6 +67,29 @@ const Payment = () => {
 
   const [detailForms, setDetailForms] = useState([]);
 
+  const getSum = () => {
+    let rows = getCurrentRow();
+    setDetailForms(rows);
+    calcSum();
+  }
+
+  const calcSum = () => {
+    let sum = 0;
+    let value = 0;
+
+    for (let i = 0; i < detailForms.length; i++) {
+      console.log(`i:${i}`)
+      console.log(`sum:${sum}`)
+      console.log(`value:${value}`)
+      value = Number(document.getElementById(`price-${0}`).value);
+      sum += value;
+      // sum += Number(detailForms[i].price);
+    }
+    
+    console.log(`allsum:${sum}`)
+    setForm({...form, amount: sum});
+  }
+
   const Row = ({idx}) => {
 
     const [detailForm, setDetailForm] = useState({
@@ -97,12 +120,13 @@ const Payment = () => {
         wPrice = parseInt(wPrice);
       }
       setDetailForm({...detailForm, [target]: value, price: wPrice});
+      // calcSum();
     }
 
     return (
       <tr key={idx} id={`row-${idx}`}>
         <td className='col-class'>
-          <select id={`large-class-${idx}`}>
+          <select id={`large-class-${idx}`} value={detailForm.largeClass} onChange={(e)=>setDetailForm({...detailForm, largeClass: e.target.value})}>
             {
               categorylist.map((category, index) => (
                 <option key={index} value={category.cd}>{category.name}</option>
@@ -111,7 +135,7 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-class'>
-          <select id={`middle-class-${idx}`}>
+          <select id={`middle-class-${idx}`} value={detailForm.middleClass} onChange={(e)=>setDetailForm({...detailForm, middleClass: e.target.value})}>
             {
               categorylist.map((category, index) => (
                 <option key={index} value={category.cd}>{category.name}</option>
@@ -124,11 +148,14 @@ const Payment = () => {
                  id={`item-class-${idx}`}
                  value={detailForm.itemClass} 
                  onChange={(e)=>setDetailForm({...detailForm, itemClass: e.target.value})}
-                 onBlur={()=>setDetailForms(detailForms.map((form, index) => (index === idx ? detailForm : form)))}
                  />
         </td>
         <td className='col-item'>
-          <input type='text' id={`item-name-${idx}`}/>
+          <input type='text' 
+                 id={`item-name-${idx}`}
+                 value={detailForm.itemName} 
+                 onChange={(e)=>setDetailForm({...detailForm, itemName: e.target.value})}
+                 />
         </td>
         <td className='col-payment'>
           <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)}/>
@@ -147,7 +174,7 @@ const Payment = () => {
           <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)}/>
         </td>
         <td className='col-payment'>
-          <input type='text' id={`price-${idx}`} value={detailForm.price} readOnly/>
+          <input type='text' id={`price-${idx}`} value={detailForm.price} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
         </td>
         <td className='col-image-button'>
           <img onClick={()=>alert('click clear')} src={clear} alt='clear' className='payment-img'/>
@@ -178,9 +205,46 @@ const Payment = () => {
     return forms;
   }
 
+  const getCurrentRow = () => {
+    let forms = [];
+
+    for (let i = 0; i < detailForms.length; i++) {
+
+      let form = {
+        detailNumber: 0,
+        largeClass: '',
+        middleClass: '',
+        itemClass: '',
+        itemName: '',
+        unitPrice: '',
+        discount: '',
+        taxRate: 1.10,
+        itemCount: '',
+        price: ''
+      }
+
+      form.detailNumber = i;
+      form.largeClass = document.getElementById(`large-class-${i}`).value;
+      form.middleClass = document.getElementById(`middle-class-${i}`).value;
+      form.itemClass = document.getElementById(`item-class-${i}`).value;
+      form.itemName = document.getElementById(`item-name-${i}`).value;
+      form.unitPrice = document.getElementById(`unit-price-${i}`).value;
+      form.discount = document.getElementById(`discount-${i}`).value;
+      form.taxRate = document.getElementById(`tax-rate-${i}`).value;
+      form.itemCount = document.getElementById(`item-count-${i}`).value;
+      form.price =  document.getElementById(`price-${i}`).value;
+
+      forms.push(form);
+    }
+
+    return forms;
+  }
+
   const addRows = () => {
+    let forms = getCurrentRow();
+
     setDetailForms([
-      ...detailForms, {
+      ...forms, {
       detailNumber: detailForms.length,
       largeClass: '',
       middleClass: '',
@@ -245,8 +309,8 @@ const Payment = () => {
             <td colSpan={7}>
               <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
             </td>
-            <td id='sum-label'>合計</td>
-            <td id='sum-amount'>1,000</td>
+            <td id='sum-label'><button onClick={getSum}>合計</button></td>
+            <td id='sum-amount'>{form.amount.toLocaleString()}</td>
             <td colSpan={2} className='col-button'>
               <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
             </td>
