@@ -34,9 +34,15 @@ def select_status(year, month, user):
   query += f'          BUDGET.year, '
   query += f'          BUDGET.month '
   query += f'FROM      BUDGET '
-  query += f'LEFT JOIN DEPOSIT '
-  query += f'       ON DEPOSIT.category_cd = BUDGET.category_cd '
-  query += f'      AND DEPOSIT.user_cd = BUDGET.user_cd '
+  query += f'LEFT JOIN (SELECT category_cd, '
+  query += f'                  user_cd, '
+  query += f'                  amount '
+  query += f'           FROM   DEPOSIT '
+  query += f'           WHERE  year = \'{year}\' '
+  query += f'              AND month = \'{month}\' '
+  query += f'              AND user_cd = \'{user}\' ) A'
+  query += f'       ON A.category_cd = BUDGET.category_cd '
+  query += f'      AND A.user_cd = BUDGET.user_cd '
   query += f'LEFT JOIN LARGE_CLASS_MF '
   query += f'       ON BUDGET.category_cd = cd '
   query += f'WHERE     BUDGET.year = \'{year}\' '
@@ -53,7 +59,7 @@ def select_status(year, month, user):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('category_cd', 'category_name', 'budget', 'deposit')
+      label_tuple = ('category_cd', 'category_name', 'budget', 'deposit', 'year', 'month')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 

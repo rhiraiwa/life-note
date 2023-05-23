@@ -49,7 +49,8 @@ const getCompleteRow = (data, year, month, navigate) => {
             "date":j.toString(),
             // "category":"",
             "shop_name":"",
-            "amount":""
+            "amount":"",
+            "advancesPaidAmount":""
           }
         )
       }
@@ -64,7 +65,8 @@ const getCompleteRow = (data, year, month, navigate) => {
           "date":i.toString(),
           // "category":"",
           "shop_name":"",
-          "amount":""
+          "amount":"",
+          "advancesPaidAmount":""
         }
       )
     }
@@ -167,7 +169,7 @@ const formatRow = (original, count, year, month, navigate) => {
           </td>
           {/* <td className='col-category'>{original[i].category_name}</td> */}
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
               <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
@@ -187,7 +189,7 @@ const formatRow = (original, count, year, month, navigate) => {
         <tr key={i}>
           {/* <td className='col-category'>{original[i].category_name}</td> */}
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
               <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
@@ -256,7 +258,7 @@ const Main = () => {
       let filter = [];
       for(let i = 0; i < JSON.parse(json['data']).length; i++) {
         
-        if (JSON.parse(json['data'])[i].category_cd === 999) continue;
+        if (JSON.parse(json['data'])[i].shop_name === 'チャージ') continue;
 
         filter.push(JSON.parse(json['data'])[i]);
       }

@@ -80,12 +80,20 @@ const Payment = () => {
   }
 
   const insert_payment = () => {
+    let detail = [];
+    let work = getCurrentRows();
+    for (let i = 0; i < work.length; i++) {
+      if (work[i].price === '') continue;
+      if (work[i].discount === '') work[i].discount = 0;
+      detail.push(work[i]);
+    }
+
     fetch('http://localhost:5000/payment_insert', {
       method: 'POST',
       body: JSON.stringify({
         "header": header,
         "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
-        "detail": getCurrentRows()
+        "detail": detail
       }),
       headers: {
         "Content-type": "application/json; charset=utf-8"
