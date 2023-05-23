@@ -15,6 +15,7 @@ const Payment = () => {
   const [initialdate] = useState(location.state);
 
   const {userlist, categorylist} = useMasterFileData();
+  const [middleClasslist, setMiddleClasslist] = useState([]);
   const [isDisable, setIsDisable] = useState(true);
   const [header, setHeader] = useState({
     year: initialdate? initialdate.year : '',
@@ -53,6 +54,14 @@ const Payment = () => {
   }
 
   useEffect(() => {
+    fetch('http://localhost:5000/middle_class_select', {method: 'POST'})
+    .then(response => response.json())
+    .then(json => {
+      let middleClass = JSON.parse(json['data']);
+      setMiddleClasslist(middleClass);
+    })
+    .catch(err => alert(err))
+
     setDetail(getInitialDetails());
   }, [])
 
@@ -114,6 +123,18 @@ const Payment = () => {
       price: detail[idx].price
     })
 
+    const [filter, setFilter] = useState([]);
+
+    useEffect(() => {
+      let filter = [];
+      for (let i = 0; i < middleClasslist.length; i++) {
+        if (middleClasslist[i].large_class_cd === Number(detailForm.largeClass)) {
+          filter.push(middleClasslist[i]);
+        }
+      }
+      setFilter(filter);
+    }, [detailForm.largeClass])
+
     //明細：「金額」計算　（Tab移動が壊れるためdetailにはsetStateしない）
     const calcPrice = (e) => {
       let target = e.target.name;
@@ -148,8 +169,8 @@ const Payment = () => {
         <td className='col-class'>
           <select id={`middle-class-${idx}`} value={detailForm.middleClass} onChange={(e)=>setDetailForm({...detailForm, middleClass: e.target.value})}>
             {
-              categorylist.map((category, index) => (
-                <option key={index} value={category.cd}>{category.name}</option>
+              filter.map((middleClass, index) => (
+                <option key={index} value={middleClass.middle_class_cd}>{middleClass.middle_class_name}</option>
               ))
             }
           </select>
