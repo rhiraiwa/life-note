@@ -16,7 +16,7 @@ const Payment = () => {
 
   const {userlist, categorylist} = useMasterFileData();
   const [isDisable, setIsDisable] = useState(true);
-  const [form, setForm] = useState({
+  const [header, setHeader] = useState({
     year: initialdate? initialdate.year : '',
     month: initialdate? initialdate.month : '',
     date: initialdate? initialdate.date : '',
@@ -29,11 +29,31 @@ const Payment = () => {
     note: '',
     detail: []
   })
+  const [detail, setDetail] = useState([]);
 
   const initialRowCount = 10;
+  
+  const getInitialDetails = () => {
+    let details = [];
+    for (let i = 0; i < initialRowCount; i++) {
+      details.push({
+        detailNumber: i,
+        largeClass: '',
+        middleClass: '',
+        itemClass: '',
+        itemName: '',
+        unitPrice: '',
+        discount: '',
+        taxRate: 1.10,
+        itemCount: '',
+        price: ''
+      })
+    }
+    return details;
+  }
 
   useEffect(() => {
-    setForm({...form, detail: getDetailForms()});
+    setDetail(getInitialDetails());
   }, [])
 
   const handleAdvancePaid = () => {
@@ -42,18 +62,19 @@ const Payment = () => {
     let checkbox = document.getElementById('payment-advances-paid-check_input');
 
     if (!checkbox.checked) {
-      setForm({...form, isAdvancePaid: 0, advancePaidUser: '', advancePaidAmount: ''});
+      setHeader({...header, isAdvancePaid: 0, advancePaidUser: '', advancePaidAmount: ''});
       return;
     }
 
-    setForm({...form, isAdvancePaid: 1});
+    setHeader({...header, isAdvancePaid: 1});
   }
 
   const insert_payment = () => {
     // fetch('http://localhost:5000/payment_insert', {
     //   method: 'POST',
     //   body: JSON.stringify({
-    //     "form": form
+    //     "header": header,
+    //     "detail": getCurrentRows()
     //   }),
     //   headers: {
     //     "Content-type": "application/json; charset=utf-8"
@@ -63,15 +84,14 @@ const Payment = () => {
     // .catch(err => alert(err))
 
     // navigate('/');
-    // setForm({...form, detail: getDetailForms()});
-    console.log(getCurrentRow());
   }
 
+  // ヘッダー：「合計」計算　（detailの入力内容は保存されていないためsetStateしない）
   const calcSum = (idx, price) => {
     let sum = 0;
     let value = 0;
 
-    for (let i = 0; i < form.detail.length; i++) {
+    for (let i = 0; i < detail.length; i++) {
       value = i === idx? price : Number(document.getElementById(`price-${i}`).value);
       sum += value;
     }
@@ -83,17 +103,18 @@ const Payment = () => {
 
     const [detailForm, setDetailForm] = useState({
       detailNumber: idx,
-      largeClass: form.detail[idx].largeClass,
-      middleClass: form.detail[idx].middleClass,
-      itemClass: form.detail[idx].itemClass,
-      itemName: form.detail[idx].itemName,
-      unitPrice: form.detail[idx].unitPrice,
-      discount: form.detail[idx].discount,
-      taxRate: form.detail[idx].taxRate,
-      itemCount: form.detail[idx].itemCount,
-      price: form.detail[idx].price
+      largeClass: detail[idx].largeClass,
+      middleClass: detail[idx].middleClass,
+      itemClass: detail[idx].itemClass,
+      itemName: detail[idx].itemName,
+      unitPrice: detail[idx].unitPrice,
+      discount: detail[idx].discount,
+      taxRate: detail[idx].taxRate,
+      itemCount: detail[idx].itemCount,
+      price: detail[idx].price
     })
 
+    //明細：「金額」計算　（Tab移動が壊れるためdetailにはsetStateしない）
     const calcPrice = (e) => {
       let target = e.target.name;
       let value = e.target.value;
@@ -167,40 +188,21 @@ const Payment = () => {
           <input type='text' id={`price-${idx}`} value={detailForm.price} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
         </td>
         <td className='col-image-button'>
-          <img onClick={()=>alert('click clear')} src={clear} alt='clear' className='payment-img'/>
+          <img onClick={()=>resetRow(idx)} src={clear} alt='clear' className='payment-img'/>
         </td>
         <td className='col-image-button'>
-          <img onClick={()=>alert('click delete')} src={del} alt='delete' className='payment-img'/>
+          <img onClick={()=>deleteRow(idx)} src={del} alt='delete' className='payment-img'/>
         </td>
       </tr>
     )
   }
 
-  const getDetailForms = () => {
-    let forms = [];
-    for (let i = 0; i < initialRowCount; i++) {
-      forms.push({
-        detailNumber: i,
-        largeClass: '',
-        middleClass: '',
-        itemClass: '',
-        itemName: '',
-        unitPrice: '',
-        discount: '',
-        taxRate: 1.10,
-        itemCount: '',
-        price: ''
-      })
-    }
-    return forms;
-  }
+  const getCurrentRows = () => {
+    let rows = [];
 
-  const getCurrentRow = () => {
-    let forms = [];
+    for (let i = 0; i < detail.length; i++) {
 
-    for (let i = 0; i < form.detail.length; i++) {
-
-      let form = {
+      let row = {
         detailNumber: 0,
         largeClass: '',
         middleClass: '',
@@ -213,30 +215,29 @@ const Payment = () => {
         price: ''
       }
 
-      form.detailNumber = i;
-      form.largeClass = document.getElementById(`large-class-${i}`).value;
-      form.middleClass = document.getElementById(`middle-class-${i}`).value;
-      form.itemClass = document.getElementById(`item-class-${i}`).value;
-      form.itemName = document.getElementById(`item-name-${i}`).value;
-      form.unitPrice = document.getElementById(`unit-price-${i}`).value;
-      form.discount = document.getElementById(`discount-${i}`).value;
-      form.taxRate = document.getElementById(`tax-rate-${i}`).value;
-      form.itemCount = document.getElementById(`item-count-${i}`).value;
-      form.price =  document.getElementById(`price-${i}`).value;
+      row.detailNumber = i;
+      row.largeClass = document.getElementById(`large-class-${i}`).value;
+      row.middleClass = document.getElementById(`middle-class-${i}`).value;
+      row.itemClass = document.getElementById(`item-class-${i}`).value;
+      row.itemName = document.getElementById(`item-name-${i}`).value;
+      row.unitPrice = document.getElementById(`unit-price-${i}`).value;
+      row.discount = document.getElementById(`discount-${i}`).value;
+      row.taxRate = document.getElementById(`tax-rate-${i}`).value;
+      row.itemCount = document.getElementById(`item-count-${i}`).value;
+      row.price =  document.getElementById(`price-${i}`).value;
 
-      forms.push(form);
+      rows.push(row);
     }
 
-    return forms;
+    return rows;
   }
 
-  const addRows = () => {
-    let forms = getCurrentRow();
+  const addRow = () => {
+    let rows = getCurrentRows();
 
-    setForm({
-      ...form, detail:[
-      ...forms, {
-      detailNumber: form.detail.length,
+    setDetail([
+      ...rows, {
+      detailNumber: detail.length,
       largeClass: '',
       middleClass: '',
       itemClass: '',
@@ -246,7 +247,82 @@ const Payment = () => {
       taxRate: 1.10,
       itemCount: '',
       price: ''
-    }]});
+    }]);
+  }
+
+  const resetRow = (rowNo) => {
+    let rows = [];
+
+    for (let i = 0; i < detail.length; i++) {
+
+      let row = {
+        detailNumber: 0,
+        largeClass: '',
+        middleClass: '',
+        itemClass: '',
+        itemName: '',
+        unitPrice: '',
+        discount: '',
+        taxRate: 1.10,
+        itemCount: '',
+        price: ''
+      }
+
+      if (i !== rowNo) {
+        row.detailNumber = i;
+        row.largeClass = document.getElementById(`large-class-${i}`).value;
+        row.middleClass = document.getElementById(`middle-class-${i}`).value;
+        row.itemClass = document.getElementById(`item-class-${i}`).value;
+        row.itemName = document.getElementById(`item-name-${i}`).value;
+        row.unitPrice = document.getElementById(`unit-price-${i}`).value;
+        row.discount = document.getElementById(`discount-${i}`).value;
+        row.taxRate = document.getElementById(`tax-rate-${i}`).value;
+        row.itemCount = document.getElementById(`item-count-${i}`).value;
+        row.price =  document.getElementById(`price-${i}`).value;
+      }
+
+      rows.push(row);
+    }
+
+    setDetail(rows);
+  }
+
+  
+  const deleteRow = (rowNo) => {
+    let rows = [];
+
+    for (let i = 0; i < detail.length; i++) {
+      
+      if (i === rowNo) continue;
+      
+      let row = {
+        detailNumber: 0,
+        largeClass: '',
+        middleClass: '',
+        itemClass: '',
+        itemName: '',
+        unitPrice: '',
+        discount: '',
+        taxRate: 1.10,
+        itemCount: '',
+        price: ''
+      }
+
+      row.detailNumber = i > rowNo? i - 1: i;
+      row.largeClass = document.getElementById(`large-class-${i}`).value;
+      row.middleClass = document.getElementById(`middle-class-${i}`).value;
+      row.itemClass = document.getElementById(`item-class-${i}`).value;
+      row.itemName = document.getElementById(`item-name-${i}`).value;
+      row.unitPrice = document.getElementById(`unit-price-${i}`).value;
+      row.discount = document.getElementById(`discount-${i}`).value;
+      row.taxRate = document.getElementById(`tax-rate-${i}`).value;
+      row.itemCount = document.getElementById(`item-count-${i}`).value;
+      row.price =  document.getElementById(`price-${i}`).value;
+
+      rows.push(row);
+    }
+
+    setDetail(rows);
   }
 
   return (
@@ -254,17 +330,17 @@ const Payment = () => {
       <FlexDiv id='payment'>
         <div className='payment-input-area'>
           <FlexDiv id='payment-year-month-date'>
-            <LabelInput id='payment-year' label='' type='text' value={form.year} setValue={(e)=>setForm({...form, year: e.target.value})}/>
-            <LabelInput id='payment-month' label='/' type='text' value={form.month} setValue={(e)=>setForm({...form, month: e.target.value})}/>
-            <LabelInput id='payment-date' label='/' type='text' value={form.date} setValue={(e)=>setForm({...form, date: e.target.value})}/>
+            <LabelInput id='payment-year' label='' type='text' value={header.year} setValue={(e)=>setHeader({...header, year: e.target.value})}/>
+            <LabelInput id='payment-month' label='/' type='text' value={header.month} setValue={(e)=>setHeader({...header, month: e.target.value})}/>
+            <LabelInput id='payment-date' label='/' type='text' value={header.date} setValue={(e)=>setHeader({...header, date: e.target.value})}/>
           </FlexDiv>
-          <LabelInput id='payment-shop-name' label='店名' type='text' value={form.shopName} setValue={(e)=>setForm({...form, shopName: e.target.value})}/>
+          <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})}/>
         </div>
         <div className='payment-input-area'>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
           <div className='label-input'>
             <label>ユーザー</label>
-            <select value={form.advancePaidUser} onChange={(e)=>setForm({...form, advancePaidUser: e.target.value})} disabled={isDisable}>
+            <select value={header.advancePaidUser} onChange={(e)=>setHeader({...header, advancePaidUser: e.target.value})} disabled={isDisable}>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>
@@ -272,7 +348,7 @@ const Payment = () => {
               }
             </select>
           </div>
-          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={form.advancePaidAmount} setValue={(e)=>setForm({...form, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
+          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
         </div>
       </FlexDiv>
       <table id='detail-table'>
@@ -288,21 +364,21 @@ const Payment = () => {
             <th className='col-item-count'>数量</th>
             <th className='col-payment'>金額</th>
             <th colSpan={2} className='col-button'>
-              <button className='button-cancel' onClick={addRows}>行＋</button>
+              <button className='button-cancel' onClick={addRow}>行＋</button>
             </th>
           </tr>
         </thead>
         <tbody id='test'>
-          {form.detail.map((row, idx) => 
+          {detail.map((row, idx) => 
             <Row key={idx} idx={idx}/>
           )}
           <tr>
             <td colSpan={7}>
-              <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
+              <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考"/>
             </td>
             <td id='sum-label'><label>合計</label></td>
             <td id='sum-amount' className='col-payment'>
-              <input type="text" id="sum-amount-input"/>
+              <input type="text" id="sum-amount-input" readOnly/>
             </td>
             <td colSpan={2} className='col-button'>
               <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
