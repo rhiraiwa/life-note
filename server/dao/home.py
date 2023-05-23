@@ -45,6 +45,7 @@ def select_data(year, month):
   query += f'          year, '
   query += f'          month, '
   query += f'          date, '
+  query += f'          payment_number, '
   # query += f'          category_cd, '
   # query += f'          name, '
   query += f'          shop_name, '
@@ -66,7 +67,7 @@ def select_data(year, month):
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
       # label_tuple = ('key', 'year', 'month', 'date', 'category_cd', 'category_name', 'shop_name', 'amount')
-      label_tuple = ('key', 'year', 'month', 'date', 'shop_name', 'amount')
+      label_tuple = ('key', 'year', 'month', 'date', 'payment_number', 'shop_name', 'amount')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 

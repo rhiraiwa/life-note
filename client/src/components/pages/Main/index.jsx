@@ -8,6 +8,7 @@ import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
 import del from '../../../img/delete.png';
+import recipt from '../../../img/recipt.png';
 import './index.scss';
 import { formatComma, formatMoney } from '../../utils';
 
@@ -20,9 +21,10 @@ const Table = ({year, month, data}) => {
         <tr>
           <th className='col-checkbox'></th>
           <th colSpan={2} className='col-date'>日</th>
-          <th className='col-category'>カテゴリ</th>
+          {/* <th className='col-category'>カテゴリ</th> */}
           <th className='col-shop-name'>店名</th>
           <th className='col-amount'>金額</th>
+          <th className='col-image-button'></th>
           <th className='col-image-button'></th>
         </tr>
       </thead>
@@ -45,7 +47,7 @@ const getCompleteRow = (data, year, month, navigate) => {
         rows.push(
           {
             "date":j.toString(),
-            "category":"",
+            // "category":"",
             "shop_name":"",
             "amount":""
           }
@@ -60,7 +62,7 @@ const getCompleteRow = (data, year, month, navigate) => {
       rows.push(
         {
           "date":i.toString(),
-          "category":"",
+          // "category":"",
           "shop_name":"",
           "amount":""
         }
@@ -163,9 +165,14 @@ const formatRow = (original, count, year, month, navigate) => {
           <td rowSpan={count[index.toString()]} className='col-day' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
           </td>
-          <td className='col-category'>{original[i].category_name}</td>
+          {/* <td className='col-category'>{original[i].category_name}</td> */}
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
+            )}
+          </td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
               <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
@@ -178,9 +185,14 @@ const formatRow = (original, count, year, month, navigate) => {
     else {
       rows.push(
         <tr key={i}>
-          <td className='col-category'>{original[i].category_name}</td>
+          {/* <td className='col-category'>{original[i].category_name}</td> */}
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
+            )}
+          </td>
           <td className='col-image-button'>
             <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
           </td>
