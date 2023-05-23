@@ -27,13 +27,13 @@ const Payment = () => {
     advancePaidUser: userlist[0].cd,
     advancePaidAmount: '',
     note: '',
-    filename: ''
+    detail: []
   })
 
   const initialRowCount = 10;
 
   useEffect(() => {
-    setDetailForms(getDetailForms());
+    setForm({...form, detail: getDetailForms()});
   }, [])
 
   const handleAdvancePaid = () => {
@@ -50,59 +50,48 @@ const Payment = () => {
   }
 
   const insert_payment = () => {
-    fetch('http://localhost:5000/payment_insert', {
-      method: 'POST',
-      body: JSON.stringify({
-        "form": form
-      }),
-      headers: {
-        "Content-type": "application/json; charset=utf-8"
-      }
-    })
-    .then(response => response.json())
-    .catch(err => alert(err))
+    // fetch('http://localhost:5000/payment_insert', {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     "form": form
+    //   }),
+    //   headers: {
+    //     "Content-type": "application/json; charset=utf-8"
+    //   }
+    // })
+    // .then(response => response.json())
+    // .catch(err => alert(err))
 
-    navigate('/');
+    // navigate('/');
+    // setForm({...form, detail: getDetailForms()});
+    console.log(getCurrentRow());
   }
 
-  const [detailForms, setDetailForms] = useState([]);
-
-  const getSum = () => {
-    let rows = getCurrentRow();
-    setDetailForms(rows);
-    calcSum();
-  }
-
-  const calcSum = () => {
+  const calcSum = (idx, price) => {
     let sum = 0;
     let value = 0;
 
-    for (let i = 0; i < detailForms.length; i++) {
-      console.log(`i:${i}`)
-      console.log(`sum:${sum}`)
-      console.log(`value:${value}`)
-      value = Number(document.getElementById(`price-${0}`).value);
+    for (let i = 0; i < form.detail.length; i++) {
+      value = i === idx? price : Number(document.getElementById(`price-${i}`).value);
       sum += value;
-      // sum += Number(detailForms[i].price);
     }
     
-    console.log(`allsum:${sum}`)
-    setForm({...form, amount: sum});
+    document.getElementById('sum-amount-input').value = sum.toLocaleString();
   }
 
   const Row = ({idx}) => {
 
     const [detailForm, setDetailForm] = useState({
       detailNumber: idx,
-      largeClass: detailForms[idx].largeClass,
-      middleClass: detailForms[idx].middleClass,
-      itemClass: detailForms[idx].itemClass,
-      itemName: detailForms[idx].itemName,
-      unitPrice: detailForms[idx].unitPrice,
-      discount: detailForms[idx].discount,
-      taxRate: detailForms[idx].taxRate,
-      itemCount: detailForms[idx].itemCount,
-      price: detailForms[idx].price
+      largeClass: form.detail[idx].largeClass,
+      middleClass: form.detail[idx].middleClass,
+      itemClass: form.detail[idx].itemClass,
+      itemName: form.detail[idx].itemName,
+      unitPrice: form.detail[idx].unitPrice,
+      discount: form.detail[idx].discount,
+      taxRate: form.detail[idx].taxRate,
+      itemCount: form.detail[idx].itemCount,
+      price: form.detail[idx].price
     })
 
     const calcPrice = (e) => {
@@ -120,7 +109,8 @@ const Payment = () => {
         wPrice = parseInt(wPrice);
       }
       setDetailForm({...detailForm, [target]: value, price: wPrice});
-      // calcSum();
+
+      calcSum(idx, wPrice);
     }
 
     return (
@@ -208,7 +198,7 @@ const Payment = () => {
   const getCurrentRow = () => {
     let forms = [];
 
-    for (let i = 0; i < detailForms.length; i++) {
+    for (let i = 0; i < form.detail.length; i++) {
 
       let form = {
         detailNumber: 0,
@@ -243,9 +233,10 @@ const Payment = () => {
   const addRows = () => {
     let forms = getCurrentRow();
 
-    setDetailForms([
+    setForm({
+      ...form, detail:[
       ...forms, {
-      detailNumber: detailForms.length,
+      detailNumber: form.detail.length,
       largeClass: '',
       middleClass: '',
       itemClass: '',
@@ -255,7 +246,7 @@ const Payment = () => {
       taxRate: 1.10,
       itemCount: '',
       price: ''
-    }]);
+    }]});
   }
 
   return (
@@ -302,15 +293,17 @@ const Payment = () => {
           </tr>
         </thead>
         <tbody id='test'>
-          {detailForms.map((row, idx) => 
+          {form.detail.map((row, idx) => 
             <Row key={idx} idx={idx}/>
           )}
           <tr>
             <td colSpan={7}>
               <textarea id='payment-note' value={form.note} onChange={(e)=>setForm({...form, note: e.target.value})} placeholder="備 考"/>
             </td>
-            <td id='sum-label'><button onClick={getSum}>合計</button></td>
-            <td id='sum-amount'>{form.amount.toLocaleString()}</td>
+            <td id='sum-label'><label>合計</label></td>
+            <td id='sum-amount' className='col-payment'>
+              <input type="text" id="sum-amount-input"/>
+            </td>
             <td colSpan={2} className='col-button'>
               <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
             </td>
