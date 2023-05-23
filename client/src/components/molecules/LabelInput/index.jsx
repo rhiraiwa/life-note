@@ -1,6 +1,6 @@
 import './index.scss';
 
-const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value, setValue, clickEvent}) => {
+const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value, setValue, clickEvent, focusEvent}) => {
   return (
     <div className='label-input' id={id}>
       <label htmlFor={`${id}_input`}>{label}</label>
@@ -11,6 +11,7 @@ const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value,
              readOnly={isReadOnly}
              disabled={isDisabled}
              onClick={clickEvent}
+             onFocus={focusEvent}
              tabIndex={isReadOnly? -1 : ''}
              />  
     </div>

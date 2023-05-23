@@ -66,6 +66,7 @@ const Payment = () => {
   }, [])
 
   const handleAdvancePaid = () => {
+    setDetail(getCurrentRows());
     setIsDisable(!isDisable)
 
     let checkbox = document.getElementById('payment-advances-paid-check_input');
@@ -79,20 +80,21 @@ const Payment = () => {
   }
 
   const insert_payment = () => {
-    // fetch('http://localhost:5000/payment_insert', {
-    //   method: 'POST',
-    //   body: JSON.stringify({
-    //     "header": header,
-    //     "detail": getCurrentRows()
-    //   }),
-    //   headers: {
-    //     "Content-type": "application/json; charset=utf-8"
-    //   }
-    // })
-    // .then(response => response.json())
-    // .catch(err => alert(err))
+    fetch('http://localhost:5000/payment_insert', {
+      method: 'POST',
+      body: JSON.stringify({
+        "header": header,
+        "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
+        "detail": getCurrentRows()
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .catch(err => alert(err))
 
-    // navigate('/');
+    navigate('/');
   }
 
   // ヘッダー：「合計」計算　（detailの入力内容は保存されていないためsetStateしない）
@@ -346,22 +348,26 @@ const Payment = () => {
     setDetail(rows);
   }
 
+  const focusOnHeader = () => {
+    setDetail(getCurrentRows());
+  }
+
   return (
     <>
       <FlexDiv id='payment'>
         <div className='payment-input-area'>
           <FlexDiv id='payment-year-month-date'>
-            <LabelInput id='payment-year' label='' type='text' value={header.year} setValue={(e)=>setHeader({...header, year: e.target.value})}/>
-            <LabelInput id='payment-month' label='/' type='text' value={header.month} setValue={(e)=>setHeader({...header, month: e.target.value})}/>
-            <LabelInput id='payment-date' label='/' type='text' value={header.date} setValue={(e)=>setHeader({...header, date: e.target.value})}/>
+            <LabelInput id='payment-year' label='' type='text' value={header.year} setValue={(e)=>setHeader({...header, year: e.target.value})} focusEvent={focusOnHeader}/>
+            <LabelInput id='payment-month' label='/' type='text' value={header.month} setValue={(e)=>setHeader({...header, month: e.target.value})} focusEvent={focusOnHeader}/>
+            <LabelInput id='payment-date' label='/' type='text' value={header.date} setValue={(e)=>setHeader({...header, date: e.target.value})} focusEvent={focusOnHeader}/>
           </FlexDiv>
-          <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})}/>
+          <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})} focusEvent={focusOnHeader}/>
         </div>
         <div className='payment-input-area'>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
           <div className='label-input'>
             <label>ユーザー</label>
-            <select value={header.advancePaidUser} onChange={(e)=>setHeader({...header, advancePaidUser: e.target.value})} disabled={isDisable}>
+            <select value={header.advancePaidUser} onChange={(e)=>setHeader({...header, advancePaidUser: e.target.value})} disabled={isDisable} onFocus={focusOnHeader}>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>
@@ -369,7 +375,7 @@ const Payment = () => {
               }
             </select>
           </div>
-          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
+          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
         </div>
       </FlexDiv>
       <table id='detail-table'>
@@ -395,7 +401,7 @@ const Payment = () => {
           )}
           <tr>
             <td colSpan={7}>
-              <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考"/>
+              <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考" onFocus={focusOnHeader}/>
             </td>
             <td id='sum-label'><label>合計</label></td>
             <td id='sum-amount' className='col-payment'>

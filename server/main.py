@@ -189,9 +189,12 @@ def deposit_undo():
 @app.route('/payment_insert', methods=['POST'])
 def payment_insert():
   rd = json.loads(request.data)
-  rd = rd['form']
-  rd['advancePaidAmount'] = rd['advancePaidAmount'] if rd['advancePaidAmount'] != '' else 0
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'], rd['filename'])
+  header = rd['header']
+  sum = rd['sum']
+  detail = rd['detail']
+  header['advancePaidAmount'] = header['advancePaidAmount'] if header['advancePaidAmount'] != '' else 0
+  no = payment.insert_payment(header['year'], header['month'], header['date'], header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'])
+  payment.insert_detail(header['year'], header['month'], header['date'], no, detail)
 
   return {'payment_insert': 'done'}
 

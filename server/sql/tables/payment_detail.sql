@@ -11,7 +11,7 @@ CREATE TABLE LIFE_NOTE.PAYMENT_DETAIL (
   item_class             VARCHAR(50),
   item_name              VARCHAR(50),
   unit_price             DECIMAL(9,0)  NOT NULL,
-  tax_rate               SMALLINT,
+  tax_rate               FLOAT,
   discount               DECIMAL(9,0),
   item_count             SMALLINT      NOT NULL,
   price                  DECIMAL(9,0)  NOT NULL,
