@@ -12,7 +12,7 @@ import recipt from '../../../img/recipt.png';
 import './index.scss';
 import { formatComma, formatMoney } from '../../utils';
 
-const Table = ({year, month, data}) => {
+const Table = ({year, month, data, selectRow, setSelectRow}) => {
   const navigate = useNavigate();
 
   return (
@@ -21,7 +21,6 @@ const Table = ({year, month, data}) => {
         <tr>
           <th className='col-checkbox'></th>
           <th colSpan={2} className='col-date'>日</th>
-          {/* <th className='col-category'>カテゴリ</th> */}
           <th className='col-shop-name'>店名</th>
           <th className='col-amount'>金額</th>
           <th className='col-image-button'></th>
@@ -29,13 +28,13 @@ const Table = ({year, month, data}) => {
         </tr>
       </thead>
       <tbody>
-        {getCompleteRow(data, year, month, navigate)}
+        {getCompleteRow(data, year, month, selectRow, setSelectRow, navigate)}
       </tbody>
     </table>
   );
 }
 
-const getCompleteRow = (data, year, month, navigate) => {
+const getCompleteRow = (data, year, month, selectRow, setSelectRow, navigate) => {
 
   const lastDate = new Date(year, month + 1, 0).getDate();
   
@@ -47,7 +46,6 @@ const getCompleteRow = (data, year, month, navigate) => {
         rows.push(
           {
             "date":j.toString(),
-            // "category":"",
             "shop_name":"",
             "amount":"",
             "advancesPaidAmount":""
@@ -63,7 +61,6 @@ const getCompleteRow = (data, year, month, navigate) => {
       rows.push(
         {
           "date":i.toString(),
-          // "category":"",
           "shop_name":"",
           "amount":"",
           "advancesPaidAmount":""
@@ -73,7 +70,7 @@ const getCompleteRow = (data, year, month, navigate) => {
   }
 
   let countMap = countDate(rows);
-  let displayRows = formatRow(rows, countMap, year, month, navigate);
+  let displayRows = formatRow(rows, countMap, year, month, selectRow, setSelectRow, navigate);
 
   return displayRows;
 }
@@ -124,7 +121,7 @@ const countDate = (rows) => {
   return countMap;
 }
 
-const formatRow = (original, count, year, month, navigate) => {
+const formatRow = (original, count, year, month, selectRow, setSelectRow, navigate) => {
   const days = ['日', '月', '火', '水', '木', '金', '土'];
 
   const undoPayment = (key) => {
@@ -158,8 +155,10 @@ const formatRow = (original, count, year, month, navigate) => {
       else if (day === 6) className = 'saturday-row';
       else className  = 'other-day-row';
 
+      if (selectRow !== undefined && original[i].key === selectRow) className += ' selected-row';
+
       rows.push(
-        <tr key={i} className={className}>
+        <tr key={i} className={className} onClick={()=>setSelectRow(original[i].key)}>
           <td rowSpan={count[index.toString()]} className='col-checkbox'>
             <input type='checkbox'/>
           </td>
@@ -167,7 +166,6 @@ const formatRow = (original, count, year, month, navigate) => {
           <td rowSpan={count[index.toString()]} className='col-day' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
           </td>
-          {/* <td className='col-category'>{original[i].category_name}</td> */}
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
@@ -186,8 +184,7 @@ const formatRow = (original, count, year, month, navigate) => {
      }
     else {
       rows.push(
-        <tr key={i}>
-          {/* <td className='col-category'>{original[i].category_name}</td> */}
+        <tr key={i} className={className} onClick={()=>setSelectRow(original[i].key)}>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
@@ -226,6 +223,9 @@ const Main = () => {
   const [data, setData] = useState([]);
   const [noFilter, setNoFilter] = useState([]);
   const [filter, setFilter] = useState([]);
+
+  const [selectRow, setSelectRow] = useState('');
+  const [detail, setDetail] = useState([]);
 
   useEffect(() => {
     setReference({...reference, budget: ''});
@@ -269,6 +269,23 @@ const Main = () => {
     .catch(err => alert(err))
   }, [selected]);
 
+  useEffect(() => {
+    console.log(selectRow);
+    if (selectRow === undefined || selectRow === '') return;
+    fetch('http://localhost:5000/detail_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "key": selectRow,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {setDetail(JSON.parse(json['detail']))})
+    .catch(err => alert(err))
+  }, [selectRow])
+
   const handleFilter = () => {
     let checkbox = document.getElementById('display-charge');
     let data = checkbox.checked? noFilter : filter;
@@ -286,7 +303,7 @@ const Main = () => {
               <label htmlFor='display-charge'>チャージを含む</label>
             </FlexDiv>
           <div id='home-table-area'>
-            <Table year={selected.year} month={selected.month} data={data}/>
+            <Table year={selected.year} month={selected.month} data={data} selectRow={selectRow} setSelectRow={setSelectRow}/>
           </div>
           <FlexDiv>
             <button className='button-primary home-button' onClick={()=>setIsOpen(true)}>
@@ -297,6 +314,33 @@ const Main = () => {
             <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
           </FlexDiv>
         </div>
+        {
+          selectRow !== '' &&
+          selectRow !== undefined &&
+          detail.length !== 0 &&
+          <div>
+            <table id='sub-table'>
+              <thead>
+                <tr>
+                  <th className='col-shop-name'>商品名</th>
+                  <th className='col-count'>数量</th>
+                  <th className='col-amount'>金額</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  detail.map((value) => (
+                    <tr>
+                      <td className='col-shop-name'>{value.name}</td>
+                      <td className='col-count'>{value.count}</td>
+                      <td className='col-amount'>{formatMoney(value.price)}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        }
         <div id='flex-right'>
           <LabelInput label='予算' type='text' isReadOnly={true} value={formatComma(reference.budget)}/>
           <LabelInput label='入金' type='text' isReadOnly={true} value={formatComma(reference.deposit)}/>

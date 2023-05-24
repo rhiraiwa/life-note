@@ -7,8 +7,6 @@ import shutil
 # 現在時間取得SQL
 date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
-# temp_path = 'client/public/receipt/temp/'
-# preview_path = 'client/public/receipt/preview/'
 
 def insert_payment(year, month, today, shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note):
   count_query  = f'SELECT CASE '
@@ -43,17 +41,6 @@ def insert_payment(year, month, today, shop, amount, advance_paid_flag, advance_
     insert_query += f'        {date}, '
     insert_query += f'        {time}, '
     insert_query += f'        0);'
-
-    #画像保存
-    # store_path = f'client/public/receipt/stored/{year}{month}{today}{rows[0][0]}/'
-    
-    # if os.path.exists(store_path):  # 必要かどうか分からない（修正処理が実装されれば必要か）
-    #   shutil.rmtree(store_path)
-
-    # if filename != '':
-    #   os.mkdir(store_path)
-    #   os.replace(preview_path + filename, store_path + filename)
-    #   os.remove(temp_path + filename)
 
     cursor.execute(insert_query)
     conn.commit()                   #コミット
@@ -106,3 +93,39 @@ def insert_detail(year, month, today, payment_no, details):
     if conn != None:
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
+
+def select_detail(key):
+  query  = f'SELECT    item_name, '
+  query += f'          CAST(item_count AS NCHAR), '
+  query += f'          CAST(price AS NCHAR) '
+  # query += f'          date, '
+  # query += f'          payment_number, '
+  # query += f'          shop_name, '
+  # query += f'          CAST(amount AS NCHAR), '
+  # query += f'          CAST(advances_paid_amount AS NCHAR) '
+  query += f'FROM      PAYMENT_DETAIL '
+  query += f'WHERE     CONCAT(year, month, date, payment_number) = \'{key}\' '
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('name', 'count', 'price')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json

@@ -67,7 +67,7 @@ body {
       }
     }
     .col-amount {
-      width: 110px;
+      min-width: 110px;
 
       &:not(th) {
         text-align: right;

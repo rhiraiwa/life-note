@@ -31,6 +31,12 @@
         color: #40bed1;
       }
     }
+
+    .selected-row {
+      td {
+        background-color: #ffdcdb;
+      }
+    }
   
     tr {
       .col-checkbox {
@@ -119,6 +125,15 @@
           }
         }
       }
+    }
+  }
+
+  #sub-table {
+    margin: 29px 20px;
+
+    .col-count {
+      min-width: 50px;
+      text-align: center;
     }
   }
 }

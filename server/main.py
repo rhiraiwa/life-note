@@ -198,6 +198,14 @@ def payment_insert():
 
   return {'payment_insert': 'done'}
 
+# 明細照会（簡易）
+@app.route('/detail_select', methods=['POST'])
+def detail_select():
+  rd = json.loads(request.data)
+  table_data = payment.select_detail(rd['key'])
+
+  return {'detail': table_data}
+
 # WAONカードチャージ
 @app.route('/charge_history_insert', methods=['POST'])
 def charge_history_insert():
