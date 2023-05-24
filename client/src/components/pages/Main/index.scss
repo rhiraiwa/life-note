@@ -34,7 +34,9 @@
 
     .selected-row {
       td {
-        background-color: #ffdcdb;
+        &:not(.col-checkbox , .col-date, .col-day) {
+          background-color: #ffdcdb;
+        }
       }
     }
   

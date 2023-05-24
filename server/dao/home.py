@@ -55,6 +55,10 @@ def select_data(year, month):
   query += f'ORDER BY  CAST(date AS SIGNED);'
   result_row = []
   
+  print('==============================================================')
+  print(query)
+  print('==============================================================')
+
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得

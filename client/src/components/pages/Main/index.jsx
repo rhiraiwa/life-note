@@ -46,6 +46,7 @@ const getCompleteRow = (data, year, month, selectRow, setSelectRow, navigate) =>
         rows.push(
           {
             "date":j.toString(),
+            "payment_number":"",
             "shop_name":"",
             "amount":"",
             "advancesPaidAmount":""
@@ -61,6 +62,7 @@ const getCompleteRow = (data, year, month, selectRow, setSelectRow, navigate) =>
       rows.push(
         {
           "date":i.toString(),
+          "payment_number":"",
           "shop_name":"",
           "amount":"",
           "advancesPaidAmount":""
@@ -183,8 +185,12 @@ const formatRow = (original, count, year, month, selectRow, setSelectRow, naviga
       count[index] = 0;
      }
     else {
+      
+      let className2
+      if (selectRow !== undefined && original[i].key === selectRow) className2 = 'selected-row';
+
       rows.push(
-        <tr key={i} className={className} onClick={()=>setSelectRow(original[i].key)}>
+        <tr key={i} className={className2} onClick={()=>setSelectRow(original[i].key)}>
           <td className='col-shop-name'>{original[i].shop_name}</td>
           <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
@@ -270,8 +276,9 @@ const Main = () => {
   }, [selected]);
 
   useEffect(() => {
-    console.log(selectRow);
+
     if (selectRow === undefined || selectRow === '') return;
+
     fetch('http://localhost:5000/detail_select', {
       method: 'POST',
       body: JSON.stringify({
@@ -329,8 +336,8 @@ const Main = () => {
               </thead>
               <tbody>
                 {
-                  detail.map((value) => (
-                    <tr>
+                  detail.map((value, index) => (
+                    <tr key={index}>
                       <td className='col-shop-name'>{value.name}</td>
                       <td className='col-count'>{value.count}</td>
                       <td className='col-amount'>{formatMoney(value.price)}</td>
