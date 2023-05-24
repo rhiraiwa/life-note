@@ -8,7 +8,7 @@ import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
 import del from '../../../img/delete.png';
-import recipt from '../../../img/recipt.png';
+import edit from '../../../img/edit.png';
 import './index.scss';
 import { formatComma, formatMoney } from '../../utils';
 
@@ -172,7 +172,7 @@ const formatRow = (original, count, year, month, selectRow, setSelectRow, naviga
           <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
-              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, key: original[i].key, header: original[i] }})} src={edit} alt='edit'/>
             )}
           </td>
           <td className='col-image-button'>
@@ -195,7 +195,7 @@ const formatRow = (original, count, year, month, selectRow, setSelectRow, naviga
           <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
-              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, no: original[i].payment_number }})} src={recipt} alt='recipt'/>
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, key: original[i].key, header: original[i] }})} src={edit} alt='edit'/>
             )}
           </td>
           <td className='col-image-button'>
@@ -289,7 +289,7 @@ const Main = () => {
       }
     })
     .then(response => response.json())
-    .then(json => {setDetail(JSON.parse(json['detail']))})
+    .then(json => setDetail(JSON.parse(json['detail'])))
     .catch(err => alert(err))
   }, [selectRow])
 
@@ -338,8 +338,8 @@ const Main = () => {
                 {
                   detail.map((value, index) => (
                     <tr key={index}>
-                      <td className='col-shop-name'>{value.name}</td>
-                      <td className='col-count'>{value.count}</td>
+                      <td className='col-shop-name'>{value.itemName}</td>
+                      <td className='col-count'>{value.itemCount}</td>
                       <td className='col-amount'>{formatMoney(value.price)}</td>
                     </tr>
                   ))

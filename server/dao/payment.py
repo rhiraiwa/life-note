@@ -94,15 +94,77 @@ def insert_detail(year, month, today, payment_no, details):
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
+def edit_payment(shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note, key):
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    insert_query  = f'UPDATE PAYMENT '
+    insert_query += f'SET    shop_name = \'{shop}\', '
+    insert_query += f'       amount = {amount}, '
+    insert_query += f'       advances_paid_flag = \'{advance_paid_flag}\', '
+    insert_query += f'       advances_paid_amount = {advance_paid_amount}, '
+    insert_query += f'       advances_paid_user_cd = \'{advance_paid_user}\', '
+    insert_query += f'       note = \'{note}\', '
+    insert_query += f'       update_date = {date}, '
+    insert_query += f'       update_time = {time} '
+    insert_query += f'WHERE  CONCAT(year, month, date, payment_number) = \'{key}\';'
+
+    cursor.execute(insert_query)
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+def edit_detail(details, key):
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    for detail in details:
+      insert_query  = f'UPDATE  PAYMENT_DETAIL '
+      insert_query += f'SET     large_class_cd = {detail["largeClass"]}, '
+      insert_query += f'        middle_class_cd = {detail["middleClass"]}, '
+      insert_query += f'        item_class = \'{detail["itemClass"]}\', '
+      insert_query += f'        item_name = \'{detail["itemName"]}\', '
+      insert_query += f'        unit_price = {detail["unitPrice"]}, '
+      insert_query += f'        tax_rate = {detail["taxRate"]}, '
+      insert_query += f'        discount = {detail["discount"]}, '
+      insert_query += f'        item_count = {detail["itemCount"]}, '
+      insert_query += f'        price = {detail["price"]}, '
+      insert_query += f'        update_date = {date}, '
+      insert_query += f'        update_time = {time} '
+      insert_query += f'WHERE   CONCAT(year, month, date, payment_number) = \'{key}\''
+      insert_query += f'  AND   detail_number = \'{detail["detailNumber"]}\''
+
+      cursor.execute(insert_query)
+
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
 def select_detail(key):
-  query  = f'SELECT    item_name, '
+  query  = f'SELECT    CAST(detail_number AS NCHAR), '
+  query += f'          CAST(large_class_cd AS NCHAR), '
+  query += f'          CAST(middle_class_cd AS NCHAR), '
+  query += f'          CAST(item_class AS NCHAR), '
+  query += f'          CAST(item_name AS NCHAR), '
+  query += f'          CAST(unit_price AS NCHAR), '
+  query += f'          CAST(discount AS NCHAR), '
+  query += f'          CAST(tax_rate AS NCHAR), '
   query += f'          CAST(item_count AS NCHAR), '
   query += f'          CAST(price AS NCHAR) '
-  # query += f'          date, '
-  # query += f'          payment_number, '
-  # query += f'          shop_name, '
-  # query += f'          CAST(amount AS NCHAR), '
-  # query += f'          CAST(advances_paid_amount AS NCHAR) '
   query += f'FROM      PAYMENT_DETAIL '
   query += f'WHERE     CONCAT(year, month, date, payment_number) = \'{key}\' '
   result_row = []
@@ -115,7 +177,7 @@ def select_detail(key):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('name', 'count', 'price')
+      label_tuple = ('detailNumber', 'largeClass', 'middleClass', 'itemClass', 'itemName', 'unitPrice', 'discount', 'taxRate', 'itemCount', 'price')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 

@@ -12,27 +12,60 @@ const Payment = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [initialdate] = useState(location.state);
+  const [initial] = useState(location.state);
 
   const {userlist, categorylist} = useMasterFileData();
   const [middleClasslist, setMiddleClasslist] = useState([]);
   const [isDisable, setIsDisable] = useState(true);
-  const [header, setHeader] = useState({
-    year: initialdate? initialdate.year : '',
-    month: initialdate? initialdate.month : '',
-    date: initialdate? initialdate.date : '',
-    category: categorylist[0].cd,
-    shopName: '',
-    amount: '',
-    isAdvancePaid: 0,
-    advancePaidUser: userlist[0].cd,
-    advancePaidAmount: '',
-    note: '',
-    detail: []
-  })
+  
+  const [header, setHeader] = useState([])
   const [detail, setDetail] = useState([]);
 
   const initialRowCount = 10;
+
+  const getInitialHeader = () => {
+    let year = '';
+    let month = '';
+    let date = '';
+    let shopName = '';
+    let amount = '';
+    let isAdvancePaid = 0;
+    let advancePaidUser = userlist[0].cd;
+    let advancePaidAmount = '';
+    let note = '';
+
+    if (initial) {
+      year = initial.year;
+      month = initial.month;
+      date = initial.date;
+      if (initial.header) {
+        shopName = initial.header.shop_name;
+        amount = initial.header.amount;
+        isAdvancePaid = initial.header.advancesPaidFlag;
+        advancePaidAmount = initial.header.advancesPaidAmount;
+        advancePaidUser = initial.header.advancesPaidUserCd;
+        note = initial.header.note;
+      }
+    }
+    setHeader({
+      year: year,
+      month: month,
+      date: date,
+      shopName: shopName,
+      amount: amount,
+      isAdvancePaid: isAdvancePaid,
+      advancePaidUser: advancePaidUser,
+      advancePaidAmount: advancePaidAmount,
+      note: note
+    });
+
+    if (isAdvancePaid === '1') {
+      document.getElementById('payment-advances-paid-check_input').checked = true;
+      setIsDisable(false);
+    }
+
+    document.getElementById('sum-amount-input').value = Number(amount).toLocaleString();
+  }
   
   const getInitialDetails = () => {
     let details = [];
@@ -50,7 +83,7 @@ const Payment = () => {
         price: ''
       })
     }
-    return details;
+    setDetail(details);
   }
 
   useEffect(() => {
@@ -62,7 +95,26 @@ const Payment = () => {
     })
     .catch(err => alert(err))
 
-    setDetail(getInitialDetails());
+    getInitialHeader();
+    getInitialDetails();
+  }, [])
+
+  useEffect(() => {
+    if (!initial) return;
+    if (initial.key === undefined) return;
+    console.log(initial.key);
+    fetch('http://localhost:5000/detail_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "key": initial.key,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {setDetail(JSON.parse(json['detail']))})
+    .catch(err => alert(err))
   }, [])
 
   const handleAdvancePaid = () => {
@@ -94,6 +146,33 @@ const Payment = () => {
         "header": header,
         "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
         "detail": detail
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .catch(err => alert(err))
+
+    navigate('/');
+  }
+
+  const edit_payment = () => {
+    let detail = [];
+    let work = getCurrentRows();
+    for (let i = 0; i < work.length; i++) {
+      if (work[i].price === '') continue;
+      if (work[i].discount === '') work[i].discount = 0;
+      detail.push(work[i]);
+    }
+
+    fetch('http://localhost:5000/payment_edit', {
+      method: 'POST',
+      body: JSON.stringify({
+        "header": header,
+        "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
+        "detail": detail,
+        "key": initial.header.key
       }),
       headers: {
         "Content-type": "application/json; charset=utf-8"
@@ -413,10 +492,21 @@ const Payment = () => {
             </td>
             <td id='sum-label'><label>合計</label></td>
             <td id='sum-amount' className='col-payment'>
-              <input type="text" id="sum-amount-input" readOnly/>
+              <input type="text" id="sum-amount-input" readOnly tabIndex={-1}/>
             </td>
             <td colSpan={2} className='col-button'>
-              <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+              {
+                initial ? 
+                  initial.header ? 
+                  <>
+                    <button className='button-primary' id='button-payment-registar' onClick={edit_payment}>修正</button>
+                    <button className='button-cancel' id='button-payment-registar' onClick={()=>navigate('/')}>戻る</button>
+                  </>
+                  :
+                  <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+                : 
+                  <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+              }
             </td>
           </tr>
         </tbody>
