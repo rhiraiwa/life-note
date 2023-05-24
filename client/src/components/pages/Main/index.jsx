@@ -325,7 +325,7 @@ const Main = () => {
           selectRow !== '' &&
           selectRow !== undefined &&
           detail.length !== 0 &&
-          <div>
+          <div id='sub-table-area'>
             <table id='sub-table'>
               <thead>
                 <tr>

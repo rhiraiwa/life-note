@@ -130,12 +130,16 @@
     }
   }
 
-  #sub-table {
-    margin: 29px 20px;
+  #sub-table-area {
+    height: 75vh;
 
-    .col-count {
-      min-width: 50px;
-      text-align: center;
+    #sub-table {
+      margin: 29px 20px;
+
+      .col-count {
+        min-width: 50px;
+        text-align: center;
+      }
     }
   }
 }
