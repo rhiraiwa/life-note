@@ -60,6 +60,15 @@
           cursor: pointer;
         }
       }
+
+
+      &:hover {
+        td {
+          &:not(.col-checkbox , .col-date, .col-day) {
+            background-color: #dbfeff;
+          }
+        }
+      }
     }
   }
 
@@ -139,6 +148,14 @@
       .col-count {
         min-width: 50px;
         text-align: center;
+      }
+
+      tr {
+        &:hover {
+          td {
+            background-color: #dbfeff;
+          }
+        }
       }
     }
   }
