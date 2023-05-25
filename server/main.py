@@ -226,8 +226,26 @@ def charge_history_insert():
   rd = rd['form']
   charge = rd['amount']
   payment.insert_payment(rd['year'], rd['month'], rd['date'], f'チャージ', 0, 1, rd['amount'], rd['user'], f'\\{charge}')
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
 
-  return {'payment_insert': 'done'}
+# WAONチャージ履歴取得
+@app.route('/charge_history_select', methods=['POST'])
+def charge_history_select():
+  rd = json.loads(request.data)
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
+
+# WAONチャージ履歴取得
+@app.route('/charge_history_delete', methods=['POST'])
+def charge_history_delete():
+  rd = json.loads(request.data)
+  home_refarance.undo_home(rd['key'])
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
 
 # 実績照会画面
 @app.route('/result_select', methods=['POST'])
@@ -258,19 +276,3 @@ def refund_flag_handle():
   table_data = advances_paid.change_refund_flag(rd['year'], rd['month'], rd['user'], rd['key'], rd['flag'])
 
   return {'data': table_data}
-
-# # 画像処理
-# @app.route('/image_processing', methods=['POST'])
-# def image_processing():
-#   filename = camera.camera_main()
-
-#   return {'filename': filename}
-
-# @app.route('/image_web', methods=['POST'])
-# def image_web():
-#   rd = json.loads(request.data)
-#   # filename = camera.web(rd['filename'])
-#   camera.web(rd['filename'])
-
-#   # return {'filename': filename}
-#   return {'web': 'done'}

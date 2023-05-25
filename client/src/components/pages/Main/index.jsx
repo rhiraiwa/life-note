@@ -234,6 +234,9 @@ const Main = () => {
   const [detail, setDetail] = useState([]);
 
   useEffect(() => {
+
+    if (isOpen) return;
+
     setReference({...reference, budget: ''});
 
     fetch('http://localhost:5000/home', {
@@ -273,7 +276,7 @@ const Main = () => {
       setData(filter);
     })
     .catch(err => alert(err))
-  }, [selected]);
+  }, [selected, isOpen]);
 
   useEffect(() => {
 
@@ -317,7 +320,6 @@ const Main = () => {
               <img src={money} alt='money'/>
               WAON
             </button>
-            {/* <button className='button-primary home-button'>一括チャージ</button> */}
             <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
           </FlexDiv>
         </div>

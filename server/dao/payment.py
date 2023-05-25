@@ -191,3 +191,39 @@ def select_detail(key):
 
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
+
+def select_waon(year, month):
+  query  = f'SELECT    date, '
+  query += f'          CAST(advances_paid_amount AS NCHAR), '
+  query += f'          name, '
+  query += f'          CONCAT(year, month, date, payment_number) '
+  query += f'FROM      PAYMENT '
+  query += f'LEFT JOIN USER_MF '
+  query += f'       ON advances_paid_user_cd = cd '
+  query += f'WHERE     year = \'{year}\' '
+  query += f'      AND month = \'{month}\' '
+  query += f'      AND shop_name = \'チャージ\' '
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('date', 'amount', 'user', 'key')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json
