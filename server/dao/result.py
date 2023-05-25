@@ -83,3 +83,45 @@ def select_pie_chart(year, month, large_class_cd):
 
   output_json = json.dumps(result_row, ensure_ascii=False)
   return output_json
+
+def select_detail_result(year, month, large_class_cd, middle_class_cd):
+  query  = f'SELECT    H.year, '
+  query += f'          H.month, '
+  query += f'          H.date, '
+  query += f'          shop_name, '
+  query += f'          item_name, '
+  query += f'          item_count, '
+  query += f'          CAST(price AS NCHAR) '
+  query += f'FROM      PAYMENT H '
+  query += f'LEFT JOIN PAYMENT_DETAIL D '
+  query += f'       ON concat(H.year, H.month, H.date, H.payment_number) = '
+  query += f'          concat(D.year, D.month, D.date, D.payment_number) '
+  query += f'WHERE     H.year = \'{year}\' '
+  query += f'      AND H.month = \'{month}\' '
+  query += f'      AND D.large_class_cd = {large_class_cd} '
+  query += f'      AND D.middle_class_cd = {middle_class_cd} '
+  query += f'ORDER BY  H.date, shop_name; '
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('year', 'month', 'date', 'shop', 'name', 'count', 'price')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json

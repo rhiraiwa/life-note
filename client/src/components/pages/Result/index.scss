@@ -1,7 +1,38 @@
 #result {
+  #main-table-area {
+    width: 500px;
+  }
   #sum-row {
     .col-category {
       color: #F99695;
     }
   }
+}
+
+#result-detail-table {
+  margin-top: 29px;
+  margin-left: 30px;
+
+  .col-result-date {
+    width: 50px;
+    text-align: center;
+  }
+  .col-shop {
+    width: 150px;
+  }
+  .col-item-name {
+    width: 150px;
+  }
+  .col-count {
+    width: 50px;
+    text-align: center;
+  }
+}
+
+#pie-chart-area {
+  margin-top: 30px;
+  background-color: #FFFFFF;
+  width: 500px;
+  height: 300px;
+  // border: 1px dotted #676F74;
 }

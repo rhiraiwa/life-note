@@ -255,6 +255,14 @@ def result_select():
 
   return {'data': table_data}
 
+# 実績照会画面明細取得
+@app.route('/detail_result_select', methods=['POST'])
+def detail_result_select():
+  rd = json.loads(request.data)
+  table_data = result.select_detail_result(rd['year'], rd['month'], rd['large_class_cd'], rd['middle_class_cd'])
+
+  return {'data': table_data}
+
 # 円グラフのデータ取得
 @app.route('/pie_chart_select', methods=['POST'])
 def pie_chart_select():

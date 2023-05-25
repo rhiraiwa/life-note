@@ -19,8 +19,11 @@ const Result = () => {
 
   const [pieChartData, setPieChartData] = useState({
     data: [],
-    cdList: []
+    cdList: [],
+    largeClassCd: ''
   });
+
+  const [detail, setDetail] = useState([]);
 
   useEffect(() => {
     fetch('http://localhost:5000/result_select', {
@@ -77,47 +80,85 @@ const Result = () => {
           middleClassCd: jd[i].middleClassCd
         });
       }
-      setPieChartData({...pieChartData, data: data, cdList: cdList});
+      setPieChartData({...pieChartData, data: data, cdList: cdList, largeClassCd: largeClassCd});
     })
     .catch(err => alert(err))
   }
 
   return (
     <div id='result'>
-      <YearMonthChanger state={{selected, setSelected}}/>
-      <FlexDiv id='main-table'>
-        <table>
-          <thead>
-            <tr>
-              <th className='col-category'>カテゴリ</th>
-              <th className='col-amount'>予算</th>
-              <th className='col-amount'>実績</th>
-              <th className='col-amount'>収支</th>
-            </tr>
-          </thead>
-          <tbody>
-            {
-              resultlist.map((result, index) => (
-                <tr key={index} onClick={()=>getPieChartData(result.categoryCd)}>
-                  <td className='col-category'>{result.category}</td>
-                  <td className='col-amount'>{formatMoney(result.budget)}</td>
-                  <td className='col-amount'>{formatMoney(result.payment)}</td>
-                  <td className='col-amount'>{formatMoney(result.budget - result.payment)}</td>
-                </tr>
-              ))
-            }
-            <tr id='sum-row'>
-              <td className='col-category'>合計</td>
-              <td className='col-amount'>{formatMoney(sum.budget)}</td>
-              <td className='col-amount'>{formatMoney(sum.payment)}</td>
-              <td className='col-amount'>{formatMoney(sum.budget - sum.payment)}</td>
-            </tr>
-          </tbody>
-        </table>
-        <div id='pie-chart-area' style={{width:'300px', height:'300px'}}>
-          <ExPieChart data={pieChartData.data} cdList={pieChartData.cdList}/>
+      <FlexDiv>
+        <div id='main-table-area'>
+          <YearMonthChanger state={{selected, setSelected}}/>
+          <table id='main-table'>
+            <thead>
+              <tr>
+                <th className='col-category'>カテゴリ</th>
+                <th className='col-amount'>予算</th>
+                <th className='col-amount'>実績</th>
+                <th className='col-amount'>収支</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                resultlist.map((result, index) => (
+                  <tr key={index} onClick={()=>getPieChartData(result.categoryCd)}>
+                    <td className='col-category'>{result.category}</td>
+                    <td className='col-amount'>{formatMoney(result.budget)}</td>
+                    <td className='col-amount'>{formatMoney(result.payment)}</td>
+                    <td className='col-amount'>{formatMoney(result.budget - result.payment)}</td>
+                  </tr>
+                ))
+              }
+              <tr id='sum-row'>
+                <td className='col-category'>合計</td>
+                <td className='col-amount'>{formatMoney(sum.budget)}</td>
+                <td className='col-amount'>{formatMoney(sum.payment)}</td>
+                <td className='col-amount'>{formatMoney(sum.budget - sum.payment)}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id='result-detail-area'>
+          {
+            detail.length !== 0 && (
+              <table id='result-detail-table'>
+                <thead>
+                  <tr>
+                    <th className='col-result-date'>日付</th>
+                    <th className='col-shop'>店名</th>
+                    <th className='col-item-name'>商品名</th>
+                    <th className='col-count'>数量</th>
+                    <th className='col-amount'>金額</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    detail.map((value, index) => (
+                      <tr key={index}>
+                        <td className='col-result-date'>{value.date}</td>
+                        <td className='col-shop'>{value.shop}</td>
+                        <td className='col-item-name'>{value.name}</td>
+                        <td className='col-count'>{value.count}</td>
+                        <td className='col-amount'>{formatMoney(value.price)}</td>
+                      </tr>
+                    ))
+                  }
+                </tbody>
+              </table>
+            )
+          }
         </div>
       </FlexDiv>
+      <div id='pie-chart-area'>
+        <ExPieChart year={selected.year}
+                    month={selected.month} 
+                    data={pieChartData.data} 
+                    cdList={pieChartData.cdList} 
+                    largeClassCd={pieChartData.largeClassCd}
+                    setDetail={setDetail}
+                    />
+      </div>
     </div>
   );
 }

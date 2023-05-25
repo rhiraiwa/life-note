@@ -1,33 +1,54 @@
 import { useEffect } from 'react';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-const ExPieChart = ({data, cdList}) => {
+const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail}) => {
 
   //円グラフの各領域の色を定義
   const COLORS = [
     '#3f8799',
     '#993f3f',
-    // '#3f87f4',
-    // '#3f995d',
-    // '#42993f'
+    '#3f87f4',
+    '#3f995d',
+    '#425555'
   ];
 
-    const RADIAN = Math.PI / 180;
+  const RADIAN = Math.PI / 180;
 
-    //円グラフのラベルの内容や表示場所を定義
-    const renderCustomizedLabel = ({cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
-      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
-      const x = cx + radius * Math.cos(-midAngle * RADIAN);
-      const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  //円グラフのラベルの内容や表示場所を定義
+  const renderCustomizedLabel = ({cx, cy, midAngle, innerRadius, outerRadius, percent, index }) => {
+    const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+  
+    return (
+      <text x={x} y={y} fill="#000" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+        {`${(percent * 100).toFixed(0)}%`}
+        {/* {`${data[index].name}`} */}
+      </text>
+    );
+  };
     
-      return (
-        <text x={x} y={y} fill="#000" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
-          {`${(percent * 100).toFixed(0)}%`}
-          {/* {`${data[index].name}`} */}
-        </text>
-      );
-    };
-    
+  const getDetail = (middleClassCd) => {
+    fetch('http://localhost:5000/detail_result_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "year": year,
+        "month": month + 1,
+        "large_class_cd": largeClassCd,
+        "middle_class_cd": middleClassCd
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => {
+      let jd = JSON.parse(json['data']);
+      console.log(jd);
+      setDetail(jd);
+    })
+    .catch(err => alert(err))
+  }
 
   return (
     <>
@@ -48,7 +69,7 @@ const ExPieChart = ({data, cdList}) => {
         >
           { //円グラフの色を各領域ごとに分けるように指定
             cdList.map((entry, index) =>
-            <Cell fill={COLORS[index % COLORS.length]} onClick={()=>alert(entry.middleClassCd)} style={{userSelect:'none'}} tabIndex={-1}/>)
+            <Cell key={index} fill={COLORS[index % COLORS.length]} onClick={()=>getDetail(entry.middleClassCd)} style={{userSelect:'none', cursor:'pointer'}} tabIndex={-1}/>)
           }
         </Pie>
         <Legend/>
