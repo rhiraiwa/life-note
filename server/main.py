@@ -255,6 +255,14 @@ def result_select():
 
   return {'data': table_data}
 
+# 円グラフのデータ取得
+@app.route('/pie_chart_select', methods=['POST'])
+def pie_chart_select():
+  rd = json.loads(request.data)
+  table_data = result.select_pie_chart(rd['year'], rd['month'], rd['large_class_cd'])
+
+  return {'data': table_data}
+
 # 立替管理
 @app.route('/advances_paid_select', methods=['POST'])
 def advances_paid_select():
