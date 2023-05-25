@@ -17,6 +17,8 @@ const Result = () => {
     payment: 0
   })
 
+  const [selectRow, setSelectRow] = useState('');
+
   const [pieChartData, setPieChartData] = useState({
     data: [],
     cdList: [],

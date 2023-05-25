@@ -193,13 +193,13 @@ def payment_insert():
   sum = rd['sum']
   detail = rd['detail']
   header['advancePaidAmount'] = header['advancePaidAmount'] if header['advancePaidAmount'] != '' else 0
-  payment.insert_payment(header['year'], header['month'], header['date'], header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'])
+  no = payment.insert_payment(header['year'], header['month'], header['date'], header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'])
   payment.insert_detail(header['year'], header['month'], header['date'], no, detail)
 
   return {'payment_insert': 'done'}
 
 @app.route('/payment_edit', methods=['POST'])
-def payment_editt():
+def payment_edit():
   rd = json.loads(request.data)
   header = rd['header']
   sum = rd['sum']

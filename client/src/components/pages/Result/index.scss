@@ -1,6 +1,14 @@
 #result {
   #main-table-area {
     width: 500px;
+    
+    tr {
+      &:hover {
+        td {
+            background-color: #dbfeff;
+        }
+      }
+    }
   }
   #sum-row {
     .col-category {
@@ -12,20 +20,28 @@
 #result-detail-table {
   margin-top: 29px;
   margin-left: 30px;
+  
+  tr {
+    .col-result-date {
+      width: 50px;
+      text-align: center;
+    }
+    .col-shop {
+      width: 150px;
+    }
+    .col-item-name {
+      width: 150px;
+    }
+    .col-count {
+      width: 50px;
+      text-align: center;
+    }
 
-  .col-result-date {
-    width: 50px;
-    text-align: center;
-  }
-  .col-shop {
-    width: 150px;
-  }
-  .col-item-name {
-    width: 150px;
-  }
-  .col-count {
-    width: 50px;
-    text-align: center;
+    &:hover {
+      td {
+          background-color: #dbfeff;
+      }
+    }
   }
 }
 
