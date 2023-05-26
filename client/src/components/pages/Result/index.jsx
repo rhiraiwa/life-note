@@ -4,6 +4,7 @@ import './index.scss';
 import { formatMoney } from "../../utils";
 import FlexDiv from "../../atoms/FlexDiv";
 import ExPieChart from "../../orgasms/ExPieChart";
+import ExLineChart from "../../orgasms/ExLineChart";
 
 const Result = () => {
   const date = new Date();
@@ -111,38 +112,49 @@ const Result = () => {
   return (
     <div id='result'>
       <FlexDiv>
-        <div id='main-table-area'>
-          <YearMonthChanger state={{selected, setSelected}}/>
-          <table id='main-table'>
-            <thead>
-              <tr>
-                <th className='col-category'>カテゴリ</th>
-                <th className='col-amount'>予算</th>
-                <th className='col-amount'>実績</th>
-                <th className='col-amount'>収支</th>
-              </tr>
-            </thead>
-            <tbody>
-              {
-                resultlist.map((result, index) => (
-                  <tr className={result.categoryCd === pieChartData.largeClassCd? 'selected' : ''}
-                      key={index}
-                      onClick={()=>setSelectRow({...selectRow, largeClassCd:result.categoryCd, largeClassName:result.category})}>
-                    <td className='col-category'>{result.category}</td>
-                    <td className='col-amount'>{formatMoney(result.budget)}</td>
-                    <td className='col-amount'>{formatMoney(result.payment)}</td>
-                    <td className='col-amount'>{formatMoney(result.budget - result.payment)}</td>
-                  </tr>
-                ))
-              }
-              <tr id='sum-row'>
-                <td className='col-category'>合計</td>
-                <td className='col-amount'>{formatMoney(sum.budget)}</td>
-                <td className='col-amount'>{formatMoney(sum.payment)}</td>
-                <td className='col-amount'>{formatMoney(sum.budget - sum.payment)}</td>
-              </tr>
-            </tbody>
-          </table>
+          <div id='main-table-area'>
+            <YearMonthChanger state={{selected, setSelected}}/>
+            <table id='main-table'>
+              <thead>
+                <tr>
+                  <th className='col-category'>カテゴリ</th>
+                  <th className='col-amount'>予算</th>
+                  <th className='col-amount'>実績</th>
+                  <th className='col-amount'>収支</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  resultlist.map((result, index) => (
+                    <tr className={result.categoryCd === pieChartData.largeClassCd? 'selected' : ''}
+                        key={index}
+                        onClick={()=>setSelectRow({...selectRow, largeClassCd:result.categoryCd, largeClassName:result.category})}>
+                      <td className='col-category'>{result.category}</td>
+                      <td className='col-amount'>{formatMoney(result.budget)}</td>
+                      <td className='col-amount'>{formatMoney(result.payment)}</td>
+                      <td className='col-amount'>{formatMoney(result.budget - result.payment)}</td>
+                    </tr>
+                  ))
+                }
+                <tr id='sum-row'>
+                  <td className='col-category'>合計</td>
+                  <td className='col-amount'>{formatMoney(sum.budget)}</td>
+                  <td className='col-amount'>{formatMoney(sum.payment)}</td>
+                  <td className='col-amount'>{formatMoney(sum.budget - sum.payment)}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        <div id='pie-chart-area'>
+          <ExPieChart year={selected.year}
+                      month={selected.month} 
+                      data={pieChartData.data} 
+                      cdList={pieChartData.cdList} 
+                      largeClassCd={pieChartData.largeClassCd}
+                      setDetail={setDetail}
+                      selectRow={selectRow}
+                      setSelectRow={setSelectRow}
+                      />
         </div>
         <div id='result-detail-area'>
           {
@@ -178,16 +190,8 @@ const Result = () => {
           }
         </div>
       </FlexDiv>
-      <div id='pie-chart-area'>
-        <ExPieChart year={selected.year}
-                    month={selected.month} 
-                    data={pieChartData.data} 
-                    cdList={pieChartData.cdList} 
-                    largeClassCd={pieChartData.largeClassCd}
-                    setDetail={setDetail}
-                    selectRow={selectRow}
-                    setSelectRow={setSelectRow}
-                    />
+      <div id='line-chart-area'>
+        <ExLineChart/>
       </div>
     </div>
   );
