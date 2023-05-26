@@ -13,6 +13,7 @@ const LabelInput = ({label, type, isReadOnly=false, isDisabled=false, id, value,
              onClick={clickEvent}
              onFocus={focusEvent}
              tabIndex={isReadOnly? -1 : ''}
+             autoComplete='off'
              />  
     </div>
   );

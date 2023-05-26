@@ -269,6 +269,7 @@ const Payment = () => {
                  id={`item-class-${idx}`}
                  value={detailForm.itemClass} 
                  onChange={(e)=>setDetailForm({...detailForm, itemClass: e.target.value})}
+                 autoComplete='off'
                  />
         </td>
         <td className='col-item'>
@@ -276,13 +277,14 @@ const Payment = () => {
                  id={`item-name-${idx}`}
                  value={detailForm.itemName} 
                  onChange={(e)=>setDetailForm({...detailForm, itemName: e.target.value})}
+                 autoComplete='off'
                  />
         </td>
         <td className='col-payment'>
-          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)}/>
+          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-payment'>
-          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)}/>
+          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-tax-rate'>
           <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
@@ -292,7 +294,7 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-item-count'>
-          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)}/>
+          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-payment'>
           <input type='text' id={`price-${idx}`} value={detailForm.price} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
@@ -465,52 +467,54 @@ const Payment = () => {
           <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
         </div>
       </FlexDiv>
-      <table id='detail-table'>
-        <thead>
-          <tr>
-            <th className='col-class'>大分類</th>
-            <th className='col-class'>中分類</th>
-            <th className='col-class'>商品分類</th>
-            <th className='col-item'>商品名</th>
-            <th className='col-payment'>単価</th>
-            <th className='col-payment'>割引</th>
-            <th className='col-tax-rate'>税率</th>
-            <th className='col-item-count'>数量</th>
-            <th className='col-payment'>金額</th>
-            <th colSpan={2} className='col-button'>
-              <button className='button-cancel' onClick={addRow}>行＋</button>
-            </th>
-          </tr>
-        </thead>
-        <tbody id='test'>
-          {detail.map((row, idx) => 
-            <Row key={idx} idx={idx}/>
-          )}
-          <tr>
-            <td colSpan={7}>
-              <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考" onFocus={focusOnHeader}/>
-            </td>
-            <td id='sum-label'><label>合計</label></td>
-            <td id='sum-amount' className='col-payment'>
-              <input type="text" id="sum-amount-input" readOnly tabIndex={-1}/>
-            </td>
-            <td colSpan={2} className='col-button'>
-              {
-                initial ? 
-                  initial.header ? 
-                  <>
-                    <button className='button-primary' id='button-payment-registar' onClick={edit_payment}>修正</button>
-                    <button className='button-cancel' id='button-payment-registar' onClick={()=>navigate('/')}>戻る</button>
-                  </>
-                  :
-                  <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
-                : 
-                  <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
-              }
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div id='detail-table-area'>
+        <table id='detail-table'>
+          <thead>
+            <tr>
+              <th className='col-class'>大分類</th>
+              <th className='col-class'>中分類</th>
+              <th className='col-class'>商品分類</th>
+              <th className='col-item'>商品名</th>
+              <th className='col-payment'>単価</th>
+              <th className='col-payment'>割引</th>
+              <th className='col-tax-rate'>税率</th>
+              <th className='col-item-count'>数量</th>
+              <th className='col-payment'>金額</th>
+              <th colSpan={2} className='col-button'>
+                <button className='button-cancel' onClick={addRow}>行＋</button>
+              </th>
+            </tr>
+          </thead>
+          <tbody id='test'>
+            {detail.map((row, idx) => 
+              <Row key={idx} idx={idx}/>
+            )}
+            <tr>
+              <td colSpan={7}>
+                <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考" onFocus={focusOnHeader} autoComplete='off'/>
+              </td>
+              <td id='sum-label'><label>合計</label></td>
+              <td id='sum-amount' className='col-payment'>
+                <input type="text" id="sum-amount-input" readOnly tabIndex={-1}/>
+              </td>
+              <td colSpan={2} className='col-button'>
+                {
+                  initial ? 
+                    initial.header ? 
+                    <>
+                      <button className='button-primary' id='button-payment-registar' onClick={edit_payment}>修正</button>
+                      <button className='button-cancel' id='button-payment-registar' onClick={()=>navigate('/')}>戻る</button>
+                    </>
+                    :
+                    <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+                  : 
+                    <button className='button-primary' id='button-payment-registar' onClick={insert_payment}>登録</button>
+                }
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </>
   );
 }

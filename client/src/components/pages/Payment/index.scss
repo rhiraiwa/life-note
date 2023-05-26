@@ -42,62 +42,91 @@
     }    
   }
 }
+#detail-table-area {
+  height: 80vh;
+  overflow-y: scroll;
+  -ms-overflow-style: none;    /* IE, Edge 対応 */
 
-#detail-table {
-  button {
-    margin :5px;
+  &::-webkit-scrollbar {
+    display:none;
   }
 
-  .col-class {
-    width: 100px;
-    text-align: center;
-    input, select {
-      width: 100px;
-    }
-  }
+  #detail-table {
 
-  .col-tax-rate {
-    width: 10px;
-  }
-
-  .col-item-count {
-    width: 50px;
-    input {
-      width: 50px;
-      text-align: right;
-    }
-  }
-
-  .col-payment {
-    width: 60px;
-    input {
-      width: 60px;
-      text-align: right;
-    }
-  }
-
-  .col-button {
     button {
-      margin-left: auto;
-      margin-right: auto;
+      margin :5px;
     }
-  }
-
-  .payment-img {
-    margin-left: 10px;
-  }
-
-  #sum-label {
-    text-align: center;
-  }
-
-  #sum-amount {
-    text-align: right;
-  }
-
-  #payment-note {
-    margin-top: 7px;
-    width:665px;
-    height: 55px;
+    
+    td {
+      height: 30px;
+  
+      input {
+        &:not(#sum-amount-input) {
+          height: 100%;
+          padding-top: 0;
+        }
+        border: none;
+        user-select: none;
+      }
+  
+      select {
+        height: 100%;
+        border: none;
+      }
+    }
+  
+    .col-class {
+      width: 100px;
+      text-align: center;
+      input, select {
+        width: 100px;
+      }
+    }
+  
+    .col-tax-rate {
+      width: 10px;
+    }
+  
+    .col-item-count {
+      min-width: 50px;
+      input {
+        width: 50px;
+        text-align: right;
+      }
+    }
+  
+    .col-payment {
+      min-width: 60px;
+      input {
+        width: 60px;
+        text-align: right;
+        padding-right: 5px;
+      }
+    }
+  
+    .col-button {
+      button {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  
+    .payment-img {
+      margin-left: 10px;
+    }
+  
+    #sum-label {
+      text-align: center;
+    }
+  
+    #sum-amount {
+      text-align: right;
+    }
+  
+    #payment-note {
+      margin-top: 7px;
+      width:665px;
+      height: 55px;
+    }
   }
 }
