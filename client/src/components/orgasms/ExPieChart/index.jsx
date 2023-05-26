@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { PieChart, Pie, Sector, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
 
-const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail}) => {
+const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail, selectRow, setSelectRow}) => {
 
   //円グラフの各領域の色を定義
   const COLORS = [
@@ -28,7 +28,10 @@ const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail}) => {
     );
   };
     
-  const getDetail = (middleClassCd) => {
+  const getDetail = (middleClassName, middleClassCd) => {
+    
+    setSelectRow({...selectRow, middleClassName: middleClassName})
+
     fetch('http://localhost:5000/detail_result_select', {
       method: 'POST',
       body: JSON.stringify({
@@ -42,11 +45,7 @@ const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail}) => {
       }
     })
     .then(response => response.json())
-    .then(json => {
-      let jd = JSON.parse(json['data']);
-      console.log(jd);
-      setDetail(jd);
-    })
+    .then(json => setDetail(JSON.parse(json['data'])))
     .catch(err => alert(err))
   }
 
@@ -69,7 +68,7 @@ const ExPieChart = ({year, month, data, cdList, largeClassCd, setDetail}) => {
         >
           { //円グラフの色を各領域ごとに分けるように指定
             cdList.map((entry, index) =>
-            <Cell key={index} fill={COLORS[index % COLORS.length]} onClick={()=>getDetail(entry.middleClassCd)} style={{userSelect:'none', cursor:'pointer'}} tabIndex={-1}/>)
+            <Cell key={index} fill={COLORS[index % COLORS.length]} onClick={()=>getDetail(entry.middleClassName, entry.middleClassCd)} style={{userSelect:'none', cursor:'pointer'}} tabIndex={-1}/>)
           }
         </Pie>
         <Legend/>

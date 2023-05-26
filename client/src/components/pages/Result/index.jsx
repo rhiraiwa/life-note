@@ -17,7 +17,11 @@ const Result = () => {
     payment: 0
   })
 
-  const [selectRow, setSelectRow] = useState('');
+  const [selectRow, setSelectRow] = useState({
+    largeClassCd: '',
+    largeClassName: '',
+    middleClassName: ''
+  });
 
   const [pieChartData, setPieChartData] = useState({
     data: [],
@@ -41,6 +45,15 @@ const Result = () => {
     .then(response => response.json())
     .then(json => {setResultlist(JSON.parse(json['data']))})
     .catch(err => alert(err))
+
+    setPieChartData({
+      data: [],
+      cdList: [],
+      largeClassCd: ''
+    })
+
+    setDetail([]);
+
   }, [selected]);
 
   useEffect(() => {
@@ -53,13 +66,20 @@ const Result = () => {
     setSum({...sum, budget: budgetSum, payment: paymentSum});
   }, [resultlist]);
 
-  const getPieChartData = (largeClassCd) => {
+  useEffect(() => {
+    
+    if (selectRow.largeClassCd === '' || selectRow.largeClassCd === undefined || selectRow.largeClassCd === null) {
+      return;
+    }
+
+    if (selectRow.largeClassCd !== pieChartData.largeClassCd) setDetail([]);
+
     fetch('http://localhost:5000/pie_chart_select', {
       method: 'POST',
       body: JSON.stringify({
         "year": selected.year,
         "month": selected.month + 1,
-        "large_class_cd": largeClassCd
+        "large_class_cd": selectRow.largeClassCd
       }),
       headers: {
         "Content-type": "application/json; charset=utf-8"
@@ -79,13 +99,14 @@ const Result = () => {
         })
 
         cdList.push({
+          middleClassName: jd[i].middleClassName,
           middleClassCd: jd[i].middleClassCd
         });
       }
-      setPieChartData({...pieChartData, data: data, cdList: cdList, largeClassCd: largeClassCd});
+      setPieChartData({...pieChartData, data: data, cdList: cdList, largeClassCd: selectRow.largeClassCd});
     })
     .catch(err => alert(err))
-  }
+  },[selectRow])
 
   return (
     <div id='result'>
@@ -104,7 +125,9 @@ const Result = () => {
             <tbody>
               {
                 resultlist.map((result, index) => (
-                  <tr key={index} onClick={()=>getPieChartData(result.categoryCd)}>
+                  <tr className={result.categoryCd === pieChartData.largeClassCd? 'selected' : ''}
+                      key={index}
+                      onClick={()=>setSelectRow({...selectRow, largeClassCd:result.categoryCd, largeClassName:result.category})}>
                     <td className='col-category'>{result.category}</td>
                     <td className='col-amount'>{formatMoney(result.budget)}</td>
                     <td className='col-amount'>{formatMoney(result.payment)}</td>
@@ -124,30 +147,33 @@ const Result = () => {
         <div id='result-detail-area'>
           {
             detail.length !== 0 && (
-              <table id='result-detail-table'>
-                <thead>
-                  <tr>
-                    <th className='col-result-date'>日付</th>
-                    <th className='col-shop'>店名</th>
-                    <th className='col-item-name'>商品名</th>
-                    <th className='col-count'>数量</th>
-                    <th className='col-amount'>金額</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {
-                    detail.map((value, index) => (
-                      <tr key={index}>
-                        <td className='col-result-date'>{value.date}</td>
-                        <td className='col-shop'>{value.shop}</td>
-                        <td className='col-item-name'>{value.name}</td>
-                        <td className='col-count'>{value.count}</td>
-                        <td className='col-amount'>{formatMoney(value.price)}</td>
-                      </tr>
-                    ))
-                  }
-                </tbody>
-              </table>
+              <>
+                <label id='selected-detail-label'>{`${selectRow.largeClassName} - ${selectRow.middleClassName}`}</label>
+                <table id='result-detail-table'>
+                  <thead>
+                    <tr>
+                      <th className='col-result-date'>日付</th>
+                      <th className='col-shop'>店名</th>
+                      <th className='col-item-name'>商品名</th>
+                      <th className='col-count'>数量</th>
+                      <th className='col-amount'>金額</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {
+                      detail.map((value, index) => (
+                        <tr key={index}>
+                          <td className='col-result-date'>{value.date}</td>
+                          <td className='col-shop'>{value.shop}</td>
+                          <td className='col-item-name'>{value.name}</td>
+                          <td className='col-count'>{value.count}</td>
+                          <td className='col-amount'>{formatMoney(value.price)}</td>
+                        </tr>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </>
             )
           }
         </div>
@@ -159,6 +185,8 @@ const Result = () => {
                     cdList={pieChartData.cdList} 
                     largeClassCd={pieChartData.largeClassCd}
                     setDetail={setDetail}
+                    selectRow={selectRow}
+                    setSelectRow={setSelectRow}
                     />
       </div>
     </div>

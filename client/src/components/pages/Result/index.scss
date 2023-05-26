@@ -2,6 +2,12 @@
   #main-table-area {
     width: 500px;
     
+    .selected {
+      td {
+        background-color: #ffdcdb;
+      }
+    }
+
     tr {
       &:hover {
         td {
@@ -17,8 +23,11 @@
   }
 }
 
+#selected-detail-label {
+  margin-left: 30px;
+}
 #result-detail-table {
-  margin-top: 29px;
+  margin-top: 5px;
   margin-left: 30px;
   
   tr {
