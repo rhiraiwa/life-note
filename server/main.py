@@ -2,6 +2,7 @@ from server import app
 from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment, result, advances_paid
 from server.model import camera
 from flask import request, json
+import subprocess
 
 @app.route('/')
 def index():
@@ -292,3 +293,9 @@ def refund_flag_handle():
   table_data = advances_paid.change_refund_flag(rd['year'], rd['month'], rd['user'], rd['key'], rd['flag'])
 
   return {'data': table_data}
+
+@app.route('/calc', methods=['POST'])
+def exeCalc():
+  subprocess.Popen(['start', r'C:\Windows\WinSxS\\amd64_microsoft-windows-calc_31bf3856ad364e35_10.0.19041.1_none_5faf0ebeba197e78\\calc.exe'], shell=True)
+
+  return {'calculator': 'open'}
