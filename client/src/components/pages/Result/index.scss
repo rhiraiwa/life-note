@@ -1,6 +1,6 @@
 #result {
   #main-table-area {
-    width: 45vw;
+    width: 535px;
     
     .selected {
       td {
@@ -57,7 +57,7 @@
 #pie-chart-area {
   margin-top: 30px;
   background-color: #FFFFFF;
-  width: 40vw;
+  width: 250px;
   height: 30vh;
   // border: 1px dotted #676F74;
 }
@@ -65,7 +65,7 @@
 #line-chart-area {
   margin-top: 30px;
   background-color: #FFFFFF;
-  width: 85vw;
+  // width: 95%;
   height: 300px;
   // border: 1px dotted #676F74;
 }

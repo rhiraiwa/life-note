@@ -68,7 +68,10 @@ def insert_detail(year, month, today, payment_no, details):
       insert_query += f'        {payment_no}, '
       insert_query += f'        {detail["detailNumber"]}, '
       insert_query += f'        {detail["largeClass"]}, '
-      insert_query += f'        {detail["middleClass"]}, '
+      if detail["middleClass"] == None:
+        insert_query += f'        NULL, '
+      else:
+        insert_query += f'        {detail["middleClass"]}, '
       insert_query += f'        \'{detail["itemClass"]}\', '
       insert_query += f'        \'{detail["itemName"]}\', '
       insert_query += f'        {detail["unitPrice"]}, '
@@ -81,7 +84,7 @@ def insert_detail(year, month, today, payment_no, details):
       insert_query += f'        {date}, '
       insert_query += f'        {time}, '
       insert_query += f'        0);'
-
+      print(insert_query)
       cursor.execute(insert_query)
 
     conn.commit()                   #コミット

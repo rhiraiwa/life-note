@@ -137,6 +137,7 @@ const Payment = () => {
     for (let i = 0; i < work.length; i++) {
       if (work[i].price === '') continue;
       if (work[i].discount === '') work[i].discount = 0;
+      if (work[i].middleClass === '') work[i].middleClass = null;
       detail.push(work[i]);
     }
 
