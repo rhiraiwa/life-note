@@ -1,11 +1,31 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LineChart, ResponsiveContainer, Tooltip, moment, XAxis, YAxis, CartesianGrid, Line } from 'recharts';
 
 const ExLineChart = ({data}) => {
 
+  const [yAxis, setYAxis] = useState([]);
+
   useEffect(() => {
-    console.log(data);
-  },[]);
+    if (data.length !== 0) getYAxis();
+  },[data]);
+
+  const getYAxis = () => {
+    let max = 0;
+    for (let i = 0; i < data.length; i++) {
+      if (Number(data[i].sum) > max) {
+        max = Number(data[i].sum) * 1.2;
+      }
+    }
+
+    let yMax = parseInt((max + 1000) / 1000) * 1000;
+    let axis = [];
+
+    for (let i = 0; i < yMax + 5000; i += 5000) {
+      axis.push(i);
+    }
+
+    setYAxis(axis);
+  }
 
   return (
     <ResponsiveContainer width="95%">
@@ -19,8 +39,7 @@ const ExLineChart = ({data}) => {
         />
         <YAxis // Y軸
           domain={['dataMin', 'dataMax']}
-          // ticks={[0,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000]} // Y軸に表示する温度
-          ticks={[0,5000,10000,15000,20000,25000,30000]} // Y軸に表示する金額
+          ticks={yAxis} // Y軸に表示する金額
           unit="円" // Y軸の単位
         />
         <CartesianGrid // ガイド線の表示
