@@ -2,159 +2,167 @@ import mysql.connector
 import json
 import server.dao.db_connection as db
 
-# 現在時間取得SQL
-date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
-time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
-select_query  = 'SELECT   cd, '
-select_query += '         name '
-select_query += 'FROM     LARGE_CLASS_MF '
-select_query += 'WHERE    delete_flag = 0 '
-select_query += 'ORDER BY CAST(cd AS SIGNED);'
+date = "DATE_FORMAT(CURRENT_DATE(), '%Y%m%d')"
+time = "TIME_FORMAT(CURRENT_TIME(), '%H%i%s')"
+select_query = """
+    SELECT cd, name
+    FROM LARGE_CLASS_MF
+    WHERE delete_flag = 0
+    ORDER BY CAST(cd AS SIGNED);
+"""
 
 def select_mf():
-  output_json = base_process('')
-  return output_json
+    return execute_query("")
 
 def insert_mf(name):
-  query  = f'INSERT INTO LARGE_CLASS_MF '
-  query += f'VALUES ((SELECT CASE '
-  query += f'                     WHEN MAX(cd) IS NULL '
-  query += f'                     THEN 0 '
-  query += f'                     ELSE MAX(cd) + 1  '
-  query += f'                END '
-  query += f'         FROM   LARGE_CLASS_MF TEMP), '
-  query += f'        \'{name}\', '
-  query += f'        {date}, '
-  query += f'        {time}, '
-  query += f'        {date}, '
-  query += f'        {time}, '
-  query += f'        0);'
+    insert_query = f"""
+        INSERT INTO LARGE_CLASS_MF
+        VALUES (
+            (SELECT CASE
+                WHEN MAX(cd) IS NULL
+                THEN 0
+                ELSE MAX(cd) + 1
+            END
+            FROM LARGE_CLASS_MF TEMP),
+            '{name}',
+            {date},
+            {time},
+            {date},
+            {time},
+            0
+        );
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(insert_query)
 
 def edit_mf(cd, name):
-  query  = f'UPDATE LARGE_CLASS_MF '
-  query += f'SET    name = \'{name}\', '
-  query += f'       update_date = {date}, '
-  query += f'       update_time = {time} '
-  query += f'WHERE  cd = {cd};'
+    edit_query = f"""
+        UPDATE LARGE_CLASS_MF
+        SET name = '{name}',
+            update_date = {date},
+            update_time = {time}
+        WHERE cd = {cd};
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(edit_query)
 
 def delete_mf(cd):
-  query  = f'UPDATE LARGE_CLASS_MF '
-  query += f'SET    delete_flag = 1, '
-  query += f'       update_date = {date}, '
-  query += f'       update_time = {time} '
-  query += f'WHERE  cd = {cd};'
+    delete_query = f"""
+        UPDATE LARGE_CLASS_MF
+        SET delete_flag = 1,
+            update_date = {date},
+            update_time = {time}
+        WHERE cd = {cd};
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(delete_query)
 
-def base_process(query):
-  result_row = []
-  
-  try:
-    conn = db.get_conn()            #ここでDBに接続
-    cursor = conn.cursor()          #カーソルを取得
+def execute_query(query):
+    result_row = []
 
-    if query != '':
-      cursor.execute(query)
-      conn.commit()                 #コミット
-    
-    cursor.execute(select_query)    #sql実行
-    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+    try:
+        conn = db.get_conn()
+        cursor = conn.cursor()
 
-    ### ２つのリストを辞書へ変換
-    for data_tuple in rows:
-      label_tuple = ('cd', 'name')
-      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
-      result_row.append(row_dict)
+        if query != "":
+            cursor.execute(query)
+            conn.commit()
 
-  except(mysql.connector.errors.ProgrammingError) as e:
-    print('エラーが発生しました')
-    print(e)
-  finally:
-    if conn != None:
-      cursor.close()              # カーソルを終了
-      conn.close()                # DB切断
+        cursor.execute(select_query)
+        rows = cursor.fetchall()
 
-  output_json = json.dumps(result_row, ensure_ascii=False)
-  return output_json
+        for data_tuple in rows:
+            label_tuple = ("cd", "name")
+            row_dict = {label: data for data, label in zip(data_tuple, label_tuple)}
+            result_row.append(row_dict)
+
+    except mysql.connector.errors.ProgrammingError as e:
+        print("エラーが発生しました")
+        print(e)
+    finally:
+        if conn is not None:
+            cursor.close()
+            conn.close()
+
+    output_json = json.dumps(result_row, ensure_ascii=False)
+    return output_json
 
 def select_middle_class():
-  query = 'SELECT     A.cd, '
-  query += '          A.name, '
-  query += '          CASE WHEN B.cd IS NULL THEN \'\' ELSE B.cd END, '
-  query += '          CASE WHEN B.name IS NULL THEN \'\' ELSE B.name END '
-  query += 'FROM      large_class_mf A '
-  query += 'LEFT JOIN (select * from middle_class_mf where delete_flag = 0) B '
-  query += '       ON A.cd = B.large_class_cd '
-  query += 'WHERE     A.delete_flag = 0 '
-  query += '      AND (B.delete_flag = 0 OR B.delete_flag IS NULL) '
-  query += 'ORDER BY  A.cd, B.cd;'
-  result_row = []
+    query = """
+        SELECT A.cd, A.name,
+            CASE WHEN B.cd IS NULL THEN '' ELSE B.cd END,
+            CASE WHEN B.name IS NULL THEN '' ELSE B.name END
+        FROM large_class_mf A
+        LEFT JOIN (SELECT * FROM middle_class_mf WHERE delete_flag = 0) B
+            ON A.cd = B.large_class_cd
+        WHERE A.delete_flag = 0
+            AND (B.delete_flag = 0 OR B.delete_flag IS NULL)
+        ORDER BY A.cd, B.cd;
+    """
+    result_row = []
   
-  try:
-    conn = db.get_conn()            #ここでDBに接続
-    cursor = conn.cursor()          #カーソルを取得
-    cursor.execute(query)
-    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+    try:
+        conn = db.get_conn()
+        cursor = conn.cursor()
+        cursor.execute(query)
+        rows = cursor.fetchall()
 
-    ### ２つのリストを辞書へ変換
-    for data_tuple in rows:
-      label_tuple = ('large_class_cd', 'large_class_name', 'middle_class_cd', 'middle_class_name')
-      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
-      result_row.append(row_dict)
+        for data_tuple in rows:
+            label_tuple = ('large_class_cd', 'large_class_name', 'middle_class_cd', 'middle_class_name')
+            row_dict = {label: data for data, label in zip(data_tuple, label_tuple)} 
+            result_row.append(row_dict)
 
-  except(mysql.connector.errors.ProgrammingError) as e:
-    print('エラーが発生しました')
-    print(e)
-  finally:
-    if conn != None:
-      cursor.close()              # カーソルを終了
-      conn.close()                # DB切断
+    except mysql.connector.errors.ProgrammingError as e:
+        print('エラーが発生しました')
+        print(e)
+    finally:
+        if conn is not None:
+            cursor.close()
+            conn.close()
 
-  output_json = json.dumps(result_row, ensure_ascii=False)
-  return output_json
+    output_json = json.dumps(result_row, ensure_ascii=False)
+    return output_json
 
 def insert_middle_class(large_class, name):
-  query  = f'INSERT INTO MIDDLE_CLASS_MF '
-  query += f'VALUES ({large_class}, '
-  query += f'        (SELECT CASE '
-  query += f'                     WHEN MAX(cd) IS NULL '
-  query += f'                     THEN 0 '
-  query += f'                     ELSE MAX(cd) + 1  '
-  query += f'                END '
-  query += f'         FROM   MIDDLE_CLASS_MF TEMP), '
-  query += f'        \'{name}\', '
-  query += f'        {date}, '
-  query += f'        {time}, '
-  query += f'        {date}, '
-  query += f'        {time}, '
-  query += f'        0);'
+    insert_query = f"""
+        INSERT INTO MIDDLE_CLASS_MF
+        VALUES (
+            {large_class},
+            (SELECT CASE
+                WHEN MAX(cd) IS NULL
+                THEN 0
+                ELSE MAX(cd) + 1
+            END
+            FROM MIDDLE_CLASS_MF TEMP),
+            '{name}',
+            {date},
+            {time},
+            {date},
+            {time},
+            0
+        );
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(insert_query)
 
 def edit_middle_class(cd, name):
-  query  = f'UPDATE MIDDLE_CLASS_MF '
-  query += f'SET    name = \'{name}\', '
-  query += f'       update_date = {date}, '
-  query += f'       update_time = {time} '
-  query += f'WHERE  cd = {cd};'
+    edit_query = f"""
+        UPDATE MIDDLE_CLASS_MF
+        SET name = '{name}',
+            update_date = {date},
+            update_time = {time}
+        WHERE cd = {cd};
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(edit_query)
 
 def delete_middle_class(cd):
-  query  = f'UPDATE MIDDLE_CLASS_MF '
-  query += f'SET    delete_flag = 1, '
-  query += f'       update_date = {date}, '
-  query += f'       update_time = {time} '
-  query += f'WHERE  cd = {cd};'
+    delete_query = f"""
+        UPDATE MIDDLE_CLASS_MF
+        SET delete_flag = 1,
+            update_date = {date},
+            update_time = {time}
+        WHERE cd = {cd};
+    """
 
-  output_json = base_process(query)
-  return output_json
+    return execute_query(delete_query)
