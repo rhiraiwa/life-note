@@ -6,6 +6,8 @@ import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
 import clear from '../../../img/undo.png';
 import del from '../../../img/delete.png';
+import NumberInput from "../../atoms/NumberInput";
+import { formatComma } from "../../utils";
 
 const Payment = () => {
 
@@ -282,10 +284,20 @@ const Payment = () => {
                  />
         </td>
         <td className='col-payment'>
-          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
+          {/* <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
+          <NumberInput id={`unit-price-${idx}`}
+                       name='unitPrice'
+                       initialValue={detailForm.unitPrice === ''? '' : formatComma(detailForm.unitPrice)}
+                       changeEvent={(e)=>calcPrice(e)}
+                       />
         </td>
         <td className='col-payment'>
-          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
+          {/* <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
+          <NumberInput id={`discount-${idx}`}
+                       name='discount'
+                       initialValue={detailForm.discount === ''? '' : formatComma(detailForm.discount)}
+                       changeEvent={(e)=>calcPrice(e)}
+                       />
         </td>
         <td className='col-tax-rate'>
           <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
@@ -295,10 +307,15 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-item-count'>
-          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
+          {/* <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
+          <NumberInput id={`item-count-${idx}`}
+                       name='itemCount'
+                       initialValue={detailForm.itemCount === ''? '' : formatComma(detailForm.itemCount)}
+                       changeEvent={(e)=>calcPrice(e)}
+                       />
         </td>
         <td className='col-payment'>
-          <input type='text' id={`price-${idx}`} value={detailForm.price} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
+          <input type='text' id={`price-${idx}`} value={detailForm.price === ''? '' : formatComma(detailForm.price)} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
         </td>
         <td className='col-image-button'>
           <img onClick={()=>resetRow(idx)} src={clear} alt='clear' className='payment-img'/>
@@ -327,17 +344,17 @@ const Payment = () => {
         itemCount: '',
         price: ''
       }
-
+      
       row.detailNumber = i;
       row.largeClass = document.getElementById(`large-class-${i}`).value;
       row.middleClass = document.getElementById(`middle-class-${i}`).value;
       row.itemClass = document.getElementById(`item-class-${i}`).value;
       row.itemName = document.getElementById(`item-name-${i}`).value;
-      row.unitPrice = document.getElementById(`unit-price-${i}`).value;
-      row.discount = document.getElementById(`discount-${i}`).value;
+      row.unitPrice = document.getElementById(`unit-price-${i}`).value.replace(',', '');
+      row.discount = document.getElementById(`discount-${i}`).value.replace(',', '');
       row.taxRate = document.getElementById(`tax-rate-${i}`).value;
-      row.itemCount = document.getElementById(`item-count-${i}`).value;
-      row.price =  document.getElementById(`price-${i}`).value;
+      row.itemCount = document.getElementById(`item-count-${i}`).value.replace(',', '');
+      row.price =  document.getElementById(`price-${i}`).value.replace(',', '');
 
       rows.push(row);
     }
@@ -447,6 +464,9 @@ const Payment = () => {
       <FlexDiv id='payment'>
         <div className='payment-input-area'>
           <FlexDiv id='payment-year-month-date'>
+            {/* <NumberInput id='payment-year_input' initialValue={header.year} changeEvent={(e)=>setHeader({...header, year: e.target.value})} focusEvent={focusOnHeader}/>
+            <NumberInput id='payment-month_input' initialValue={header.month} changeEvent={(e)=>setHeader({...header, month: e.target.value})} focusEvent={focusOnHeader}/>
+            <NumberInput id='payment-date_input' initialValue={header.date} changeEvent={(e)=>setHeader({...header, date: e.target.value})} focusEvent={focusOnHeader}/> */}
             <LabelInput id='payment-year' label='' type='text' value={header.year} setValue={(e)=>setHeader({...header, year: e.target.value})} focusEvent={focusOnHeader}/>
             <LabelInput id='payment-month' label='/' type='text' value={header.month} setValue={(e)=>setHeader({...header, month: e.target.value})} focusEvent={focusOnHeader}/>
             <LabelInput id='payment-date' label='/' type='text' value={header.date} setValue={(e)=>setHeader({...header, date: e.target.value})} focusEvent={focusOnHeader}/>
@@ -466,6 +486,8 @@ const Payment = () => {
             </select>
           </div>
           <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
+            {/* <NumberInput id='payment-advances-paid-amount_input' initialValue={header.advancePaidAmount} changeEvent={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} focusEvent={focusOnHeader}/>
+            <button onClick={()=>console.log(header.year)}>確認</button> */}
         </div>
       </FlexDiv>
       <div id='detail-table-area'>

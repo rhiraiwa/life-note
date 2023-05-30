@@ -5,6 +5,7 @@ import LabelInput from "../../molecules/LabelInput";
 import del from '../../../img/delete.png';
 import { formatMoney } from "../../utils";
 import './index.scss';
+import NumberInput from "../../atoms/NumberInput";
 
 const Charge = ({year, month}) => {
   const {userlist} = useMasterFileData();
@@ -70,7 +71,7 @@ const Charge = ({year, month}) => {
     <>
       <FlexDiv id='charge'>
         <span>{`${year}/${month}/`}</span>
-        <input type='text' id='charge-date' value={form.date} onChange={(e)=>setForm({...form, date: e.target.value})}/>
+        <NumberInput id='charge-date' changeEvent={(e)=>setForm({...form, date: e.target.value})} maxLength={2}/>
         <div id='charge-user'>
           <label>ユーザー</label>
           <select value={form.user} onChange={(e)=>setForm({...form, user: e.target.value})}>
@@ -81,7 +82,10 @@ const Charge = ({year, month}) => {
             }
           </select>
         </div>
-        <LabelInput id='charge-amount' label='金額' type='text' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
+        <div id='charge-amount'>
+          <label>金額</label>
+          <NumberInput id='charge-amount-input' changeEvent={(e)=>setForm({...form, amount: e.target.value})}/>
+        </div>
         <button className='button-primary' onClick={chargeHistoryInsert}>登録</button>
       </FlexDiv>
       <div id='charge-table-area'>

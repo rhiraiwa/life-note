@@ -2,9 +2,21 @@
   #deposit-input-area {
     margin: 50px 0;
 
+    label {
+      width: 80px;
+      float: left;
+      padding-right: 10px;
+      text-align:justify;
+      text-align-last:justify;
+      height: 26px;
+    }
+
     #deposit-amount {
-      margin: 0 30px;
-    }    
+      margin-left: 30px;
+    }
+    #deposit-amount-input {
+      margin-right: 30px;
+    }
   }
 
   #deposit-table-area {
