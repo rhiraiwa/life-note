@@ -283,20 +283,10 @@ const Payment = () => {
                  />
         </td>
         <td className='col-payment'>
-          {/* <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
-          <NumberInput id={`unit-price-${idx}`}
-                       name='unitPrice'
-                       initialValue={detailForm.unitPrice === ''? '' : formatComma(detailForm.unitPrice)}
-                       changeEvent={(e)=>calcPrice(e)}
-                       />
+          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-payment'>
-          {/* <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
-          <NumberInput id={`discount-${idx}`}
-                       name='discount'
-                       initialValue={detailForm.discount === ''? '' : formatComma(detailForm.discount)}
-                       changeEvent={(e)=>calcPrice(e)}
-                       />
+          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-tax-rate'>
           <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
@@ -306,12 +296,7 @@ const Payment = () => {
           </select>
         </td>
         <td className='col-item-count'>
-          {/* <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/> */}
-          <NumberInput id={`item-count-${idx}`}
-                       name='itemCount'
-                       initialValue={detailForm.itemCount === ''? '' : formatComma(detailForm.itemCount)}
-                       changeEvent={(e)=>calcPrice(e)}
-                       />
+          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
         </td>
         <td className='col-payment'>
           <input type='text' id={`price-${idx}`} value={detailForm.price === ''? '' : formatComma(detailForm.price)} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
@@ -507,13 +492,7 @@ const Payment = () => {
               }
             </select>
           </div>
-          <div className='label-input' id='payment-advances-paid-amount'>
-            <label>立替額</label>
-            <input id='payment-advances-paid-amount_input' name='advancePaidAmount' type='text' value={header.advancePaidAmount} onChange={formatNumber} onFocus={focusOnHeader} disabled={isDisable}/>
-          </div>
-          {/* <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/> */}
-            {/* <NumberInput id='payment-advances-paid-amount_input' initialValue={header.advancePaidAmount} changeEvent={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} focusEvent={focusOnHeader}/>
-            <button onClick={()=>console.log(header.advancePaidAmount)}>確認</button> */}
+          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
         </div>
       </FlexDiv>
       <div id='detail-table-area'>

@@ -126,8 +126,7 @@ const Deposit = () => {
           </div>
           <div>
             <div id='deposit-amount'>
-              <label>金額</label>
-              <NumberInput id='deposit-amount-input' changeEvent={(e)=>setDeposit({...deposit, amount: e.target.value})}/>
+              <LabelInput label='金額' type='text' id='deposit-amount-input' value={deposit.amount} setValue={(e)=>setDeposit({...deposit, amount: e.target.value})}/>
             </div>
           </div>
           <button className='button-primary' onClick={insert_deposit}>登録</button>

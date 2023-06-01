@@ -83,8 +83,7 @@ const Charge = ({year, month}) => {
           </select>
         </div>
         <div id='charge-amount'>
-          <label>金額</label>
-          <NumberInput id='charge-amount-input' changeEvent={(e)=>setForm({...form, amount: e.target.value})}/>
+          <LabelInput label='金額' type='text' id='deposit-amount-input' value={form.amount} setValue={(e)=>setForm({...form, amount: e.target.value})}/>
         </div>
         <button className='button-primary' onClick={chargeHistoryInsert}>登録</button>
       </FlexDiv>
