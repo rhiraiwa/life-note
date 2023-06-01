@@ -95,10 +95,9 @@ const Payment = () => {
       let middleClass = JSON.parse(json['data']);
       setMiddleClasslist(middleClass);
     })
+    .then(getInitialHeader())
+    .then(getInitialDetails())
     .catch(err => alert(err))
-
-    getInitialHeader();
-    getInitialDetails();
   }, [])
 
   useEffect(() => {
@@ -459,17 +458,40 @@ const Payment = () => {
     setDetail(getCurrentRows());
   }
 
+  const formatNumber = (e) => {
+    // カンマを除去して数値だけを取得
+    let inputValue = e.target.value.replace(/,/g, '');
+
+    // 数値以外の文字を削除
+    let formattedValue = inputValue.replace(/[^\d.-]/g, '');
+
+    if (formattedValue === '') {
+      setHeader({...header, [e.target.name]: ''});
+      return;
+    }
+  
+    let formattedString = '';
+
+    // カンマを追加してフォーマット
+    // if (e.target.name === 'advancePaidAmount') {
+    //   formattedString = parseFloat(formattedValue).toLocaleString();
+    // }
+    // else {
+      formattedString = parseFloat(formattedValue);
+    // }
+    setHeader({...header, [e.target.name]: formattedString});
+  }
+
   return (
     <>
       <FlexDiv id='payment'>
         <div className='payment-input-area'>
           <FlexDiv id='payment-year-month-date'>
-            {/* <NumberInput id='payment-year_input' initialValue={header.year} changeEvent={(e)=>setHeader({...header, year: e.target.value})} focusEvent={focusOnHeader}/>
-            <NumberInput id='payment-month_input' initialValue={header.month} changeEvent={(e)=>setHeader({...header, month: e.target.value})} focusEvent={focusOnHeader}/>
-            <NumberInput id='payment-date_input' initialValue={header.date} changeEvent={(e)=>setHeader({...header, date: e.target.value})} focusEvent={focusOnHeader}/> */}
-            <LabelInput id='payment-year' label='' type='text' value={header.year} setValue={(e)=>setHeader({...header, year: e.target.value})} focusEvent={focusOnHeader}/>
-            <LabelInput id='payment-month' label='/' type='text' value={header.month} setValue={(e)=>setHeader({...header, month: e.target.value})} focusEvent={focusOnHeader}/>
-            <LabelInput id='payment-date' label='/' type='text' value={header.date} setValue={(e)=>setHeader({...header, date: e.target.value})} focusEvent={focusOnHeader}/>
+            <input id='payment-year_input' name='year' type='text' value={header.year} onChange={formatNumber} onFocus={focusOnHeader} maxLength={4}/>
+            /
+            <input id='payment-month_input' name='month' type='text' value={header.month} onChange={formatNumber} onFocus={focusOnHeader} maxLength={2}/>
+            /
+            <input id='payment-date_input' name='date' type='text' value={header.date} onChange={formatNumber} onFocus={focusOnHeader} maxLength={2}/>
           </FlexDiv>
           <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})} focusEvent={focusOnHeader}/>
         </div>
@@ -485,9 +507,13 @@ const Payment = () => {
               }
             </select>
           </div>
-          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
+          <div className='label-input' id='payment-advances-paid-amount'>
+            <label>立替額</label>
+            <input id='payment-advances-paid-amount_input' name='advancePaidAmount' type='text' value={header.advancePaidAmount} onChange={formatNumber} onFocus={focusOnHeader} disabled={isDisable}/>
+          </div>
+          {/* <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/> */}
             {/* <NumberInput id='payment-advances-paid-amount_input' initialValue={header.advancePaidAmount} changeEvent={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} focusEvent={focusOnHeader}/>
-            <button onClick={()=>console.log(header.year)}>確認</button> */}
+            <button onClick={()=>console.log(header.advancePaidAmount)}>確認</button> */}
         </div>
       </FlexDiv>
       <div id='detail-table-area'>
