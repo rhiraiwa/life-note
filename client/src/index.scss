@@ -3,6 +3,16 @@ body {
   color: #676F74;
   background-color: #F5F5F5;
 
+  .hidden-step-wrapper input[type="number"]::-webkit-inner-spin-button,
+  .hidden-step-wrapper input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+  }
+
+  .hidden-step-wrapper input[type="number"] {
+      -moz-appearance: textfield;
+  }
+
   .black-underline-1 {
     border-bottom: 1px solid #676F74;
   }

@@ -6,8 +6,6 @@ import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
 import clear from '../../../img/undo.png';
 import del from '../../../img/delete.png';
-import NumberInput from "../../atoms/NumberInput";
-import { formatComma } from "../../utils";
 
 const Payment = () => {
 
@@ -18,12 +16,24 @@ const Payment = () => {
 
   const {userlist, categorylist} = useMasterFileData();
   const [middleClasslist, setMiddleClasslist] = useState([]);
+  const taxRateOptions = [
+    { label: '8%', value: 0.08 },
+    { label: '10%', value: 0.1 },
+    { label: '税込', value: 0 },
+  ];
   const [isDisable, setIsDisable] = useState(true);
   
   const [header, setHeader] = useState([])
   const [detail, setDetail] = useState([]);
 
   const initialRowCount = 10;
+  const [currentId, setCurrentId] = useState(initialRowCount);
+
+  const uniqueId = () => {
+    const newId = currentId + 1;
+    setCurrentId(newId);
+    return newId;
+  };
 
   const getInitialHeader = () => {
     let year = '';
@@ -65,8 +75,6 @@ const Payment = () => {
       document.getElementById('payment-advances-paid-check_input').checked = true;
       setIsDisable(false);
     }
-
-    document.getElementById('sum-amount-input').value = Number(amount).toLocaleString();
   }
   
   const getInitialDetails = () => {
@@ -74,13 +82,13 @@ const Payment = () => {
     for (let i = 0; i < initialRowCount; i++) {
       details.push({
         detailNumber: i,
-        largeClass: '',
+        largeClass: categorylist[0].cd,
         middleClass: '',
         itemClass: '',
         itemName: '',
         unitPrice: '',
         discount: '',
-        taxRate: 1.10,
+        taxRate: 0.08,
         itemCount: '',
         price: ''
       })
@@ -119,7 +127,6 @@ const Payment = () => {
   }, [])
 
   const handleAdvancePaid = () => {
-    setDetail(getCurrentRows());
     setIsDisable(!isDisable)
 
     let checkbox = document.getElementById('payment-advances-paid-check_input');
@@ -133,47 +140,52 @@ const Payment = () => {
   }
 
   const insert_payment = () => {
-    let detail = [];
-    let work = getCurrentRows();
+    let sendDetail = [];
+    let work = detail;
     for (let i = 0; i < work.length; i++) {
-      if (work[i].price === '') continue;
+      if (work[i].price === '' || work[i].price === 0) continue;
       if (work[i].discount === '') work[i].discount = 0;
       if (work[i].middleClass === '') work[i].middleClass = null;
-      detail.push(work[i]);
+      sendDetail.push(work[i]);
     }
 
-    fetch('http://localhost:5000/payment_insert', {
-      method: 'POST',
-      body: JSON.stringify({
-        "header": header,
-        "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
-        "detail": detail
-      }),
-      headers: {
-        "Content-type": "application/json; charset=utf-8"
-      }
-    })
-    .then(response => response.json())
-    .catch(err => alert(err))
+    console.log(header);
+    console.log(sendDetail);
+    console.log(totalAmount);
 
-    navigate('/');
+    // fetch('http://localhost:5000/payment_insert', {
+    //   method: 'POST',
+    //   body: JSON.stringify({
+    //     "header": header,
+    //     "sum": totalAmount,
+    //     "detail": sendDetail
+    //   }),
+    //   headers: {
+    //     "Content-type": "application/json; charset=utf-8"
+    //   }
+    // })
+    // .then(response => response.json())
+    // .catch(err => alert(err))
+
+    // navigate('/');
   }
 
   const edit_payment = () => {
-    let detail = [];
-    let work = getCurrentRows();
+    let sendDetail = [];
+    let work = detail;
     for (let i = 0; i < work.length; i++) {
-      if (work[i].price === '') continue;
+      if (work[i].price === '' || work[i].price === 0) continue;
       if (work[i].discount === '') work[i].discount = 0;
-      detail.push(work[i]);
+      if (work[i].middleClass === '') work[i].middleClass = null;
+      sendDetail.push(work[i]);
     }
 
     fetch('http://localhost:5000/payment_edit', {
       method: 'POST',
       body: JSON.stringify({
         "header": header,
-        "sum": document.getElementById('sum-amount-input').value.replace(',', ''),
-        "detail": detail,
+        "sum": totalAmount,
+        "detail": sendDetail,
         "key": initial.header.key
       }),
       headers: {
@@ -186,262 +198,76 @@ const Payment = () => {
     navigate('/');
   }
 
-  // ヘッダー：「合計」計算　（detailの入力内容は保存されていないためsetStateしない）
-  const calcSum = (idx, price) => {
-    let sum = 0;
-    let value = 0;
-
-    for (let i = 0; i < detail.length; i++) {
-      value = i === idx? price : Number(document.getElementById(`price-${i}`).value);
-      sum += value;
-    }
+  const handleCellEdit = (rowIndex, columnName, value) => {
     
-    document.getElementById('sum-amount-input').value = sum.toLocaleString();
-  }
-
-  const Row = ({idx}) => {
-
-    const [detailForm, setDetailForm] = useState({
-      detailNumber: idx,
-      largeClass: detail[idx].largeClass,
-      middleClass: detail[idx].middleClass,
-      itemClass: detail[idx].itemClass,
-      itemName: detail[idx].itemName,
-      unitPrice: detail[idx].unitPrice,
-      discount: detail[idx].discount,
-      taxRate: detail[idx].taxRate,
-      itemCount: detail[idx].itemCount,
-      price: detail[idx].price
-    })
-
-    const [filter, setFilter] = useState([]);
-
-    useEffect(() => {
-      let filter = [];
-      for (let i = 0; i < middleClasslist.length; i++) {
-        if (middleClasslist[i].large_class_cd === Number(detailForm.largeClass)) {
-          filter.push(middleClasslist[i]);
+    setDetail((prevData) => {
+      const updatedData = prevData.map((row, index) => {
+        
+        let unitPrice = columnName === 'unitPrice'? value : Number(row.unitPrice);
+        let discount = columnName === 'discount'? value : Number(row.discount);
+        let itemCount = columnName === 'itemCount'? value : Number(row.itemCount);
+        let taxRate = columnName === 'taxRate'? value : Number(row.taxRate);
+        let subtotal = Math.round((unitPrice - discount) * itemCount * (1 + taxRate));
+        
+        if (index === rowIndex) {
+          return { ...row, [columnName]: value, price: subtotal}
         }
-      }
-      setFilter(filter);
-    }, [detailForm.largeClass])
+        return row;
+      });
+      return updatedData;
+    });
+  };
 
-    //明細：「金額」計算　（Tab移動が壊れるためdetailにはsetStateしない）
-    const calcPrice = (e) => {
-      let target = e.target.name;
-      let value = e.target.value;
+  // 金額計算
+  const calculateAmount = (price, discount, quantity, taxRate) => {
+    const subtotal = Math.round((price - discount) * quantity * (1 + taxRate));
+    return subtotal;
+  };
 
-      let unitPrice = target==='unitPrice'? value : detailForm.unitPrice;
-      let discount = target==='discount'? value : detailForm.discount;
-      let taxRate = target==='taxRate'? value : detailForm.taxRate;
-      let itemCount = target==='itemCount'? value : detailForm.itemCount;
-      let wPrice = '';
+  const totalAmount = detail.reduce((sum, row) => sum + calculateAmount(row.unitPrice, row.discount, row.itemCount, row.taxRate), 0);
 
-      if (unitPrice !== '' && itemCount !== '') {
-        wPrice = (unitPrice - discount) * taxRate * itemCount;
-        wPrice = parseInt(wPrice);
-      }
-      setDetailForm({...detailForm, [target]: value, price: wPrice});
-
-      calcSum(idx, wPrice);
-    }
-
-    return (
-      <tr key={idx} id={`row-${idx}`}>
-        <td className='col-class'>
-          <select id={`large-class-${idx}`} value={detailForm.largeClass} onChange={(e)=>setDetailForm({...detailForm, largeClass: e.target.value})}>
-            {
-              categorylist.map((category, index) => (
-                <option key={index} value={category.cd}>{category.name}</option>
-              ))
-            }
-          </select>
-        </td>
-        <td className='col-class'>
-          <select id={`middle-class-${idx}`} value={detailForm.middleClass} onChange={(e)=>setDetailForm({...detailForm, middleClass: e.target.value})}>
-            {
-              filter.map((middleClass, index) => (
-                <option key={index} value={middleClass.middle_class_cd}>{middleClass.middle_class_name}</option>
-              ))
-            }
-          </select>
-        </td>
-        <td className='col-class'>
-          <input type='text'
-                 id={`item-class-${idx}`}
-                 value={detailForm.itemClass} 
-                 onChange={(e)=>setDetailForm({...detailForm, itemClass: e.target.value})}
-                 autoComplete='off'
-                 />
-        </td>
-        <td className='col-item'>
-          <input type='text' 
-                 id={`item-name-${idx}`}
-                 value={detailForm.itemName} 
-                 onChange={(e)=>setDetailForm({...detailForm, itemName: e.target.value})}
-                 autoComplete='off'
-                 />
-        </td>
-        <td className='col-payment'>
-          <input type='text' id={`unit-price-${idx}`} name='unitPrice' value={detailForm.unitPrice} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
-        </td>
-        <td className='col-payment'>
-          <input type='text' id={`discount-${idx}`} name='discount' value={detailForm.discount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
-        </td>
-        <td className='col-tax-rate'>
-          <select id={`tax-rate-${idx}`} name='taxRate' value={detailForm.taxRate} onChange={(e)=>calcPrice(e)}>
-            <option value={1.10}>10%</option>
-            <option value={1.08}>8%</option>
-            <option value={1.00}>税込</option>
-          </select>
-        </td>
-        <td className='col-item-count'>
-          <input type='text' id={`item-count-${idx}`} name='itemCount' value={detailForm.itemCount} onChange={(e)=>calcPrice(e)} autoComplete='off'/>
-        </td>
-        <td className='col-payment'>
-          <input type='text' id={`price-${idx}`} value={detailForm.price === ''? '' : formatComma(detailForm.price)} onChange={()=>alert('change!')} tabIndex={-1} readOnly/>
-        </td>
-        <td className='col-image-button'>
-          <img onClick={()=>resetRow(idx)} src={clear} alt='clear' className='payment-img'/>
-        </td>
-        <td className='col-image-button'>
-          <img onClick={()=>deleteRow(idx)} src={del} alt='delete' className='payment-img'/>
-        </td>
-      </tr>
-    )
-  }
-
-  const getCurrentRows = () => {
-    let rows = [];
-
-    for (let i = 0; i < detail.length; i++) {
-
-      let row = {
-        detailNumber: 0,
-        largeClass: '',
-        middleClass: '',
-        itemClass: '',
-        itemName: '',
-        unitPrice: '',
-        discount: '',
-        taxRate: 1.10,
-        itemCount: '',
-        price: ''
-      }
-      
-      row.detailNumber = i;
-      row.largeClass = document.getElementById(`large-class-${i}`).value;
-      row.middleClass = document.getElementById(`middle-class-${i}`).value;
-      row.itemClass = document.getElementById(`item-class-${i}`).value;
-      row.itemName = document.getElementById(`item-name-${i}`).value;
-      row.unitPrice = document.getElementById(`unit-price-${i}`).value.replace(',', '');
-      row.discount = document.getElementById(`discount-${i}`).value.replace(',', '');
-      row.taxRate = document.getElementById(`tax-rate-${i}`).value;
-      row.itemCount = document.getElementById(`item-count-${i}`).value.replace(',', '');
-      row.price =  document.getElementById(`price-${i}`).value.replace(',', '');
-
-      rows.push(row);
-    }
-
-    return rows;
-  }
-
-  const addRow = () => {
-    let rows = getCurrentRows();
-
-    setDetail([
-      ...rows, {
-      detailNumber: detail.length,
-      largeClass: '',
+  const handleAddRow = () => {
+    const newRow = {
+      detailNumber: uniqueId(),
+      largeClass: categorylist[0].cd,
       middleClass: '',
       itemClass: '',
       itemName: '',
       unitPrice: '',
       discount: '',
-      taxRate: 1.10,
       itemCount: '',
+      taxRate: 0.08,
       price: ''
-    }]);
-  }
+    };
+    setDetail((prevTableData) => [...prevTableData, newRow]);
+  };
 
-  const resetRow = (rowNo) => {
-    let rows = [];
-
-    for (let i = 0; i < detail.length; i++) {
-
-      let row = {
-        detailNumber: 0,
-        largeClass: '',
-        middleClass: '',
-        itemClass: '',
-        itemName: '',
-        unitPrice: '',
-        discount: '',
-        taxRate: 1.10,
-        itemCount: '',
-        price: ''
+  const handleClearRow = (rowId) => {
+    const updatedData = detail.map((row) => {
+      if (row.id === rowId) {
+        return {
+          ...row,
+          largeClass: categorylist[0].cd,
+          middleClass: '',
+          itemClass: '',
+          itemName: '',
+          unitPrice: '',
+          discount: '',
+          itemCount: '',
+          taxRate: 0.08,
+          price: ''
+        };
       }
+      return row;
+    });
 
-      if (i !== rowNo) {
-        row.detailNumber = i;
-        row.largeClass = document.getElementById(`large-class-${i}`).value;
-        row.middleClass = document.getElementById(`middle-class-${i}`).value;
-        row.itemClass = document.getElementById(`item-class-${i}`).value;
-        row.itemName = document.getElementById(`item-name-${i}`).value;
-        row.unitPrice = document.getElementById(`unit-price-${i}`).value;
-        row.discount = document.getElementById(`discount-${i}`).value;
-        row.taxRate = document.getElementById(`tax-rate-${i}`).value;
-        row.itemCount = document.getElementById(`item-count-${i}`).value;
-        row.price =  document.getElementById(`price-${i}`).value;
-      }
+    setDetail(updatedData);
+  };
 
-      rows.push(row);
-    }
-
-    setDetail(rows);
-  }
-
-  
-  const deleteRow = (rowNo) => {
-    let rows = [];
-
-    for (let i = 0; i < detail.length; i++) {
-      
-      if (i === rowNo) continue;
-      
-      let row = {
-        detailNumber: 0,
-        largeClass: '',
-        middleClass: '',
-        itemClass: '',
-        itemName: '',
-        unitPrice: '',
-        discount: '',
-        taxRate: 1.10,
-        itemCount: '',
-        price: ''
-      }
-
-      row.detailNumber = i > rowNo? i - 1: i;
-      row.largeClass = document.getElementById(`large-class-${i}`).value;
-      row.middleClass = document.getElementById(`middle-class-${i}`).value;
-      row.itemClass = document.getElementById(`item-class-${i}`).value;
-      row.itemName = document.getElementById(`item-name-${i}`).value;
-      row.unitPrice = document.getElementById(`unit-price-${i}`).value;
-      row.discount = document.getElementById(`discount-${i}`).value;
-      row.taxRate = document.getElementById(`tax-rate-${i}`).value;
-      row.itemCount = document.getElementById(`item-count-${i}`).value;
-      row.price =  document.getElementById(`price-${i}`).value;
-
-      rows.push(row);
-    }
-
-    setDetail(rows);
-  }
-
-  const focusOnHeader = () => {
-    setDetail(getCurrentRows());
-  }
+  const handleDeleteRow = (rowId) => {
+    const updatedData = detail.filter((row) => row.id !== rowId);
+    setDetail(updatedData);
+  };
 
   const formatNumber = (e) => {
     // カンマを除去して数値だけを取得
@@ -472,19 +298,19 @@ const Payment = () => {
       <FlexDiv id='payment'>
         <div className='payment-input-area'>
           <FlexDiv id='payment-year-month-date'>
-            <input id='payment-year_input' name='year' type='text' value={header.year} onChange={formatNumber} onFocus={focusOnHeader} maxLength={4}/>
+            <input id='payment-year_input' name='year' type='text' value={header.year} onChange={formatNumber} maxLength={4}/>
             /
-            <input id='payment-month_input' name='month' type='text' value={header.month} onChange={formatNumber} onFocus={focusOnHeader} maxLength={2}/>
+            <input id='payment-month_input' name='month' type='text' value={header.month} onChange={formatNumber} maxLength={2}/>
             /
-            <input id='payment-date_input' name='date' type='text' value={header.date} onChange={formatNumber} onFocus={focusOnHeader} maxLength={2}/>
+            <input id='payment-date_input' name='date' type='text' value={header.date} onChange={formatNumber} maxLength={2}/>
           </FlexDiv>
-          <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})} focusEvent={focusOnHeader}/>
+          <LabelInput id='payment-shop-name' label='店名' type='text' value={header.shopName} setValue={(e)=>setHeader({...header, shopName: e.target.value})}/>
         </div>
         <div className='payment-input-area'>
           <LabelInput id='payment-advances-paid-check' label='立替' type='checkbox' clickEvent={handleAdvancePaid}/>
           <div className='label-input'>
             <label>ユーザー</label>
-            <select value={header.advancePaidUser} onChange={(e)=>setHeader({...header, advancePaidUser: e.target.value})} disabled={isDisable} onFocus={focusOnHeader}>
+            <select value={header.advancePaidUser} onChange={(e)=>setHeader({...header, advancePaidUser: e.target.value})} disabled={isDisable}>
               {
                 userlist.map((user, index) => (
                   <option key={index} value={user.cd}>{user.name}</option>
@@ -492,7 +318,7 @@ const Payment = () => {
               }
             </select>
           </div>
-          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable} focusEvent={focusOnHeader}/>
+          <LabelInput id='payment-advances-paid-amount' label='立替額' type='text' value={header.advancePaidAmount} setValue={(e)=>setHeader({...header, advancePaidAmount: e.target.value})} isDisabled={isDisable}/>
         </div>
       </FlexDiv>
       <div id='detail-table-area'>
@@ -505,25 +331,122 @@ const Payment = () => {
               <th className='col-item'>商品名</th>
               <th className='col-payment'>単価</th>
               <th className='col-payment'>割引</th>
-              <th className='col-tax-rate'>税率</th>
               <th className='col-item-count'>数量</th>
+              <th className='col-tax-rate'>税率</th>
               <th className='col-payment'>金額</th>
               <th colSpan={2} className='col-button'>
-                <button className='button-cancel' onClick={addRow}>行＋</button>
+                <button className='button-cancel' onClick={handleAddRow}>行＋</button>
               </th>
             </tr>
           </thead>
-          <tbody id='test'>
-            {detail.map((row, idx) => 
-              <Row key={idx} idx={idx}/>
-            )}
+          <tbody>
+            {detail.map((row, rowIndex) => {
+              const amount = calculateAmount(row.unitPrice, row.discount, row.itemCount, row.taxRate, rowIndex);
+              
+              let filter = [];
+              for (let i = 0; i < middleClasslist.length; i++) {
+                if (middleClasslist[i].large_class_cd === Number(row.largeClass)) {
+                  filter.push(middleClasslist[i]);
+                }
+              }
+
+              // フィルタリングされたmiddleClassリストが存在し、かつrow.middleClassがnullの場合、最初の値を設定する
+              if (filter.length > 0 && (row.middleClass === null || row.middleClass === '')) {
+                {/* row.middleClass = filter[0].middle_class_cd; */}
+                debugger;
+                handleCellEdit(rowIndex, 'middleClass', filter[0].middle_class_cd);
+              }
+
+              return (
+                <tr key={row.detailNumber}>
+                  <td className='col-class'>
+                    <select
+                      value={row.largeClass}
+                      onChange={(e) => handleCellEdit(rowIndex, 'largeClass', e.target.value)}
+                    >
+                      {
+                        categorylist.map((category, index) => (
+                          <option key={index} value={category.cd}>{category.name}</option>
+                        ))
+                      }
+                    </select>
+                  </td>
+                  <td className='col-class'>
+                    <select
+                      value={row.middleClass}
+                      onChange={(e) => handleCellEdit(rowIndex, 'middleClass', e.target.value)}
+                    >
+                      {filter.map((middleClass, index) => (
+                        <option key={index} value={middleClass.middle_class_cd}>{middleClass.middle_class_name}</option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className='col-class'>
+                    <input
+                      type="text"
+                      value={row.itemClass}
+                      onChange={(e) => handleCellEdit(rowIndex, 'itemClass', e.target.value)}
+                    />
+                  </td>
+                  <td className='col-item'>
+                    <input
+                      type="text"
+                      value={row.itemName}
+                      onChange={(e) => handleCellEdit(rowIndex, 'itemName', e.target.value)}
+                    />
+                  </td>
+                  <td className="hidden-step-wrapper col-payment">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={row.unitPrice}
+                      onChange={(e) => handleCellEdit(rowIndex, 'unitPrice', parseFloat(e.target.value))}
+                    />
+                  </td>
+                  <td className="hidden-step-wrapper col-payment">
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={row.discount}
+                      onChange={(e) => handleCellEdit(rowIndex, 'discount', parseFloat(e.target.value))}
+                    />
+                  </td>
+                  <td className="hidden-step-wrapper col-item-count">
+                    <input
+                      type="number"
+                      value={row.itemCount}
+                      onChange={(e) => handleCellEdit(rowIndex, 'itemCount', parseInt(e.target.value))}
+                    />
+                  </td>
+                  <td className='col-tax-rate'>
+                    <select
+                      value={row.taxRate}
+                      onChange={(e) => handleCellEdit(rowIndex, 'taxRate', parseFloat(e.target.value))}
+                    >
+                      {taxRateOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className='col-payment'>{amount === 0? '' : amount.toLocaleString()}</td>
+                  <td className='col-image-button'>
+                    <img onClick={() => handleClearRow(row.id)} src={clear} alt='clear' className='payment-img'/>
+                  </td>
+                  <td className='col-image-button'>
+                    <img onClick={() => handleDeleteRow(row.id)} src={del} alt='delete' className='payment-img'/>
+                  </td>
+                </tr>
+              );
+            })}
             <tr>
               <td colSpan={7}>
-                <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考" onFocus={focusOnHeader} autoComplete='off'/>
+                <textarea id='payment-note' value={header.note} onChange={(e)=>setHeader({...header, note: e.target.value})} placeholder="備 考" autoComplete='off'/>
               </td>
               <td id='sum-label'><label>合計</label></td>
               <td id='sum-amount' className='col-payment'>
-                <input type="text" id="sum-amount-input" readOnly tabIndex={-1}/>
+                {totalAmount.toLocaleString()}
               </td>
               <td colSpan={2} className='col-button'>
                 {
