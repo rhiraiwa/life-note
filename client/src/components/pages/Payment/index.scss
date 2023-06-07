@@ -1,7 +1,7 @@
 #payment {
 
   .payment-input-area {
-    width: 200px;
+    width: 260px;
     margin-right: 10px;
 
     .label-input {
@@ -19,7 +19,7 @@
       
         input {
           &:not(input[type='checkbox'], input[type='file']) {
-            width: 80px;
+            width: 160px;
             height: 20px;
           }
         }
@@ -123,10 +123,10 @@
       text-align: right;
     }
   
-    #payment-note {
-      margin-top: 7px;
-      width:665px;
-      height: 55px;
-    }
   }
 }
+    #payment-note {
+      margin-top: 5px;
+      width:250px;
+      height: 78px;
+    }
