@@ -31,6 +31,7 @@ const Payment = () => {
     let year = '';
     let month = '';
     let date = '';
+    let paymentNumber = '';
     let shopName = '';
     let amount = '';
     let isAdvancePaid = 0;
@@ -43,6 +44,7 @@ const Payment = () => {
       month = initial.month;
       date = initial.date;
       if (initial.header) {
+        paymentNumber = initial.header.payment_number;
         shopName = initial.header.shop_name;
         amount = initial.header.amount;
         isAdvancePaid = initial.header.advancesPaidFlag;
@@ -55,6 +57,7 @@ const Payment = () => {
       year: year,
       month: month,
       date: date,
+      paymentNumber: paymentNumber,
       shopName: shopName,
       amount: amount,
       isAdvancePaid: isAdvancePaid,

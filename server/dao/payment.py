@@ -61,30 +61,26 @@ def insert_detail(year, month, today, payment_no, details):
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     for detail in details:
-      insert_query  = f'INSERT INTO PAYMENT_DETAIL '
-      insert_query += f'VALUES (\'{year}\', '
-      insert_query += f'        \'{month}\', '
-      insert_query += f'        \'{today}\', '
-      insert_query += f'        {payment_no}, '
-      insert_query += f'        {detail["detailNumber"]}, '
-      insert_query += f'        {detail["largeClass"]}, '
-      if detail["middleClass"] == None:
-        insert_query += f'        NULL, '
-      else:
-        insert_query += f'        {detail["middleClass"]}, '
-      insert_query += f'        \'{detail["itemClass"]}\', '
-      insert_query += f'        \'{detail["itemName"]}\', '
-      insert_query += f'        {detail["unitPrice"]}, '
-      insert_query += f'        {detail["taxRate"]}, '
-      insert_query += f'        {detail["discount"]}, '
-      insert_query += f'        {detail["itemCount"]}, '
-      insert_query += f'        {detail["price"]}, '
-      insert_query += f'        {date}, '
-      insert_query += f'        {time}, '
-      insert_query += f'        {date}, '
-      insert_query += f'        {time}, '
-      insert_query += f'        0);'
-      print(insert_query)
+      insert_query = f'''INSERT INTO PAYMENT_DETAIL 
+                        VALUES ('{year}', 
+                                '{month}', 
+                                '{today}', 
+                                {payment_no}, 
+                                {detail["detailNumber"]}, 
+                                {detail["largeClass"]}, 
+                                {'NULL' if detail["middleClass"] is None else detail["middleClass"]}, 
+                                '{detail["itemClass"]}', 
+                                '{detail["itemName"]}', 
+                                {detail["unitPrice"]}, 
+                                {detail["taxRate"]}, 
+                                {detail["discount"]}, 
+                                {detail["itemCount"]}, 
+                                {detail["price"]}, 
+                                {date}, 
+                                {time}, 
+                                {date}, 
+                                {time}, 
+                                0);'''
       cursor.execute(insert_query)
 
     conn.commit()                   #コミット
@@ -124,30 +120,64 @@ def edit_payment(shop, amount, advance_paid_flag, advance_paid_amount, advance_p
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
 
-def edit_detail(details, key):
+def edit_detail(details, key, year, month, today, payment_no):
 
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
     for detail in details:
-      insert_query  = f'UPDATE  PAYMENT_DETAIL '
-      insert_query += f'SET     large_class_cd = {detail["largeClass"]}, '
-      insert_query += f'        middle_class_cd = {detail["middleClass"]}, '
-      insert_query += f'        item_class = \'{detail["itemClass"]}\', '
-      insert_query += f'        item_name = \'{detail["itemName"]}\', '
-      insert_query += f'        unit_price = {detail["unitPrice"]}, '
-      insert_query += f'        tax_rate = {detail["taxRate"]}, '
-      insert_query += f'        discount = {detail["discount"]}, '
-      insert_query += f'        item_count = {detail["itemCount"]}, '
-      insert_query += f'        price = {detail["price"]}, '
-      insert_query += f'        update_date = {date}, '
-      insert_query += f'        update_time = {time} '
-      insert_query += f'WHERE   CONCAT(year, month, date, payment_number) = \'{key}\''
-      insert_query += f'  AND   detail_number = \'{detail["detailNumber"]}\''
 
-      cursor.execute(insert_query)
+      select_query = f'''
+        SELECT COUNT(*) FROM PAYMENT_DETAIL
+        WHERE  CONCAT(year, month, date, payment_number) = \'{key}\'
+        AND    detail_number = \'{detail["detailNumber"]}\'
+      '''
 
-    conn.commit()                   #コミット
+      cursor.execute(select_query)           #sql実行
+      rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+      if (rows[0][0] == 0):
+        query = f'''
+          INSERT INTO PAYMENT_DETAIL 
+                        VALUES ('{year}', 
+                                '{month}', 
+                                '{today}', 
+                                {payment_no}, 
+                                {detail["detailNumber"]}, 
+                                {detail["largeClass"]}, 
+                                {'NULL' if detail["middleClass"] is None else detail["middleClass"]}, 
+                                '{detail["itemClass"]}', 
+                                '{detail["itemName"]}', 
+                                {detail["unitPrice"]}, 
+                                {detail["taxRate"]}, 
+                                {detail["discount"]}, 
+                                {detail["itemCount"]}, 
+                                {detail["price"]}, 
+                                {date}, 
+                                {time}, 
+                                {date}, 
+                                {time}, 
+                                0);
+        '''
+
+      else:
+        query  = f'UPDATE  PAYMENT_DETAIL '
+        query += f'SET     large_class_cd = {detail["largeClass"]}, '
+        query += f'        middle_class_cd = {detail["middleClass"]}, '
+        query += f'        item_class = \'{detail["itemClass"]}\', '
+        query += f'        item_name = \'{detail["itemName"]}\', '
+        query += f'        unit_price = {detail["unitPrice"]}, '
+        query += f'        tax_rate = {detail["taxRate"]}, '
+        query += f'        discount = {detail["discount"]}, '
+        query += f'        item_count = {detail["itemCount"]}, '
+        query += f'        price = {detail["price"]}, '
+        query += f'        update_date = {date}, '
+        query += f'        update_time = {time} '
+        query += f'WHERE   CONCAT(year, month, date, payment_number) = \'{key}\''
+        query += f'  AND   detail_number = \'{detail["detailNumber"]}\''
+
+      cursor.execute(query)
+
+    conn.commit()
 
   except(mysql.connector.errors.ProgrammingError) as e:
     print('エラーが発生しました')

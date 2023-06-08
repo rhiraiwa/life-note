@@ -4,8 +4,6 @@ import {BrowserRouter} from 'react-router-dom';
 import App from './App';
 import './index.scss';
 import MFDataProvider from './context/MasterFileContext';
-import EditableTable from './EditableTable';
-import InputForm from './InputForm';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -13,8 +11,6 @@ root.render(
     <BrowserRouter>
       <MFDataProvider>
         <App />
-        {/* <InputForm/> */}
-        {/* <EditableTable/> */}
       </MFDataProvider>
     </BrowserRouter>
   </React.StrictMode>

@@ -16,7 +16,7 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
   ];
 
   const initialRowCount = 10;
-  const [currentId, setCurrentId] = useState(initialRowCount);
+  const [currentId, setCurrentId] = useState(initialRowCount+1);
 
   useEffect(() => {
     fetch('http://localhost:5000/middle_class_select', {method: 'POST'})

@@ -82,12 +82,14 @@ def select_data(year, month):
   return output_json
 
 def undo_home(key):
-  query = f'DELETE FROM PAYMENT WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
+  delete_header_query = f'DELETE FROM PAYMENT WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
+  delete_detail_query = f'DELETE FROM PAYMENT_DETAIL WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
 
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
-    cursor.execute(query)
+    cursor.execute(delete_header_query)
+    cursor.execute(delete_detail_query)
     conn.commit()                   #コミット
 
   except(mysql.connector.errors.ProgrammingError) as e:

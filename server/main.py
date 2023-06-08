@@ -207,8 +207,8 @@ def payment_edit():
   key = rd['key']
   detail = rd['detail']
   header['advancePaidAmount'] = header['advancePaidAmount'] if header['advancePaidAmount'] != '' else 0
-  no = payment.edit_payment(header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'], key)
-  payment.edit_detail(detail, key)
+  payment.edit_payment(header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'], key)
+  payment.edit_detail(detail, key, header['year'], header['month'], header['date'], header['paymentNumber'])
 
   return {'payment_insert': 'done'}
 
