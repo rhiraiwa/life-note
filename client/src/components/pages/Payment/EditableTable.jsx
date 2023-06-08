@@ -24,8 +24,8 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
     .then(json => {
       let middleClass = JSON.parse(json['data']);
       setMiddleClasslist(middleClass);
+      getInitialDetails(middleClass)
     })
-    .then(getInitialDetails())
     .catch(err => alert(err))
   }, [])
 
@@ -33,14 +33,13 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
     return middleClasslist.filter((category) => category.large_class_cd === Number(category1));
   };
 
-  const getInitialDetails = () => {
+  const getInitialDetails = (middleClass) => {
     let details = [];
-    let initialMiddleClass = filterCategories2(categorylist[0].cd);
     for (let i = 0; i < initialRowCount; i++) {
       details.push({
         detailNumber: i,
         largeClass: categorylist[0].cd,
-        middleClass: initialMiddleClass.length > 0 ? initialMiddleClass[0].middle_class_cd : '',
+        middleClass: middleClass[0].middle_class_cd,  // largeClassでorderbyしているので問題ないはず
         itemClass: '',
         itemName: '',
         unitPrice: '',
@@ -83,7 +82,7 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
     const filteredCategories2 = filterCategories2(value);
     const updatedData = detail.map((row, index) => {
       if (index === rowIndex) {
-        const updatedRow = { ...row, 'largeClass': value, 'middleClass': filteredCategories2[0]?.value || '' };
+        const updatedRow = { ...row, 'largeClass': value, 'middleClass': filteredCategories2[0]?.middle_class_cd || '' };
         updatedRow.price = calculateAmount(updatedRow);
         return updatedRow;
       }
@@ -93,11 +92,10 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
   };
 
   const handleAddRow = () => {
-    const initialCategroy2 = filterCategories2(categorylist[0].cd);
     const newRow = {
       detailNumber: uniqueId(),
-      largeClass: categorylist[0].value,
-      middleClass: initialCategroy2[0]?.value || '',
+      largeClass: categorylist[0].cd,
+      middleClass: middleClasslist[0].middle_class_cd,
       itemClass: '',
       itemName: '',
       unitPrice: '',
@@ -110,13 +108,12 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
   };
 
   const handleClearRow = (rowIndex) => {
-    const initialCategroy2 = filterCategories2(categorylist[0].cd);
     const updatedData = detail.map((row, index) => {
       if (index === rowIndex) {
         const updatedRow = {
           ...row,
           largeClass: categorylist[0].value,
-          middleClass: initialCategroy2[0]?.value || '',
+          middleClass: middleClasslist[0].middle_class_cd,
           itemClass: '',
           itemName: '',
           unitPrice: '',
@@ -246,7 +243,7 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
                 ))}
               </select>
             </td>
-            <td className='col-payment'>{isNaN(row.price) ? '' : row.price.toLocaleString()}</td>
+            <td className='col-price'>{isNaN(row.price) ? '' : row.price.toLocaleString()}</td>
             <td className='col-image-button'>
               <img onClick={() => handleClearRow(row.id)} src={clear} alt='clear' className='payment-img'/>
             </td>
@@ -256,8 +253,9 @@ const EditableTable = ({detail, setDetail, totalAmount}) => {
           </tr>
         ))}
         <tr>
-          <td colSpan={8}>合計</td>
-          <td>{totalAmount.toLocaleString()}</td>
+          <td colSpan={7}></td>
+          <td>合計</td>
+          <td className='col-price'>{totalAmount.toLocaleString()}</td>
           <td colSpan={2}></td>
         </tr>
       </tbody>

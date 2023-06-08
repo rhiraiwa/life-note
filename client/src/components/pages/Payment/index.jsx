@@ -21,7 +21,7 @@ const Payment = () => {
   
   // 金額計算
   const calculateTotal = (price, discount, quantity, taxRate) => {
-    const subtotal = Math.round((price - discount) * quantity * (1 + taxRate));
+    const subtotal = Math.round((Number(price) - Number(discount)) * Number(quantity) * (1 + Number(taxRate)));
     return subtotal;
   };
   
@@ -75,7 +75,6 @@ const Payment = () => {
 
     if (!initial) return;
     if (initial.key === undefined) return;
-    console.log(initial.key);
     fetch('http://localhost:5000/detail_select', {
       method: 'POST',
       body: JSON.stringify({
@@ -110,7 +109,7 @@ const Payment = () => {
       if (work[i].price === '') continue;
       if (work[i].discount === '') work[i].discount = 0;
       if (work[i].middleClass === '') work[i].middleClass = null;
-      detail.push(work[i]);
+      sendDetail.push(work[i]);
     }
 
     fetch('http://localhost:5000/payment_insert', {
@@ -136,7 +135,7 @@ const Payment = () => {
     for (let i = 0; i < work.length; i++) {
       if (work[i].price === '') continue;
       if (work[i].discount === '') work[i].discount = 0;
-      detail.push(work[i]);
+      sendDetail.push(work[i]);
     }
 
     fetch('http://localhost:5000/payment_edit', {

@@ -47,6 +47,8 @@
   overflow-y: scroll;
   -ms-overflow-style: none;    /* IE, Edge 対応 */
 
+  width: 90vw;
+
   &::-webkit-scrollbar {
     display:none;
   }
@@ -102,6 +104,12 @@
         text-align: right;
         padding-right: 5px;
       }
+    }
+
+    .col-price {
+      text-align: right;
+      min-width: 100px;
+      padding-right: 10px;
     }
   
     .col-button {
