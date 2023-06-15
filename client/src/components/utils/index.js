@@ -34,3 +34,24 @@ export const formatMoney = (value) => {
 export const formatComma = (value) => {
   return `${Number(value).toLocaleString()}`
 }
+
+// 数値の整形（入力時）
+export const formatNumber = (value) => {
+  
+  if (value === '') return '';
+
+  // カンマを除去して数値だけを取得
+  const inputValue = value.replace(/,/g, '');
+
+  // 数値以外の文字を削除
+  const formattedValue = inputValue.replace(/[^\d.-]/g, '');
+
+  if (formattedValue === '') {
+    return '';
+  }
+
+  // カンマを追加してフォーマット
+  const formattedString = parseFloat(formattedValue).toLocaleString();
+
+  return formattedString;
+};

@@ -31,6 +31,14 @@
         color: #40bed1;
       }
     }
+
+    .selected-row {
+      td {
+        &:not(.col-checkbox , .col-date, .col-day) {
+          background-color: #ffdcdb;
+        }
+      }
+    }
   
     tr {
       .col-checkbox {
@@ -50,6 +58,15 @@
         
         &:not(th) {
           cursor: pointer;
+        }
+      }
+
+
+      &:hover {
+        td {
+          &:not(.col-checkbox , .col-date, .col-day) {
+            background-color: #dbfeff;
+          }
         }
       }
     }
@@ -116,6 +133,27 @@
           img {
             max-width: 20px;
             padding-right: 5px;
+          }
+        }
+      }
+    }
+  }
+
+  #sub-table-area {
+    height: 75vh;
+
+    #sub-table {
+      margin: 29px 20px;
+
+      .col-count {
+        min-width: 50px;
+        text-align: center;
+      }
+
+      tr {
+        &:hover {
+          td {
+            background-color: #dbfeff;
           }
         }
       }

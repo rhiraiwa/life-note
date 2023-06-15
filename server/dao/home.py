@@ -45,18 +45,19 @@ def select_data(year, month):
   query += f'          year, '
   query += f'          month, '
   query += f'          date, '
-  query += f'          category_cd, '
-  query += f'          name, '
+  query += f'          payment_number, '
   query += f'          shop_name, '
-  query += f'          CAST(amount AS NCHAR) '
+  query += f'          CAST(amount AS NCHAR), '
+  query += f'          CAST(advances_paid_flag AS NCHAR), '
+  query += f'          CAST(advances_paid_amount AS NCHAR), '
+  query += f'          CAST(advances_paid_user_cd AS NCHAR), '
+  query += f'          note '
   query += f'FROM      PAYMENT '
-  query += f'LEFT JOIN CATEGORY_MF '
-  query += f'       ON category_cd = cd '
   query += f'WHERE     year = \'{year}\' '
   query += f'      AND month = \'{month}\' '
   query += f'ORDER BY  CAST(date AS SIGNED);'
   result_row = []
-  
+
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
@@ -65,7 +66,7 @@ def select_data(year, month):
 
     ### ２つのリストを辞書へ変換
     for data_tuple in rows:
-      label_tuple = ('key', 'year', 'month', 'date', 'category_cd', 'category_name', 'shop_name', 'amount')
+      label_tuple = ('key', 'year', 'month', 'date', 'payment_number', 'shop_name', 'amount', 'advancesPaidFlag', 'advancesPaidAmount', 'advancesPaidUserCd', 'note')
       row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
       result_row.append(row_dict)
 
@@ -81,12 +82,14 @@ def select_data(year, month):
   return output_json
 
 def undo_home(key):
-  query = f'DELETE FROM PAYMENT WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
+  delete_header_query = f'DELETE FROM PAYMENT WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
+  delete_detail_query = f'DELETE FROM PAYMENT_DETAIL WHERE CONCAT(year, month, date, payment_number) = \'{key}\';'
 
   try:
     conn = db.get_conn()            #ここでDBに接続
     cursor = conn.cursor()          #カーソルを取得
-    cursor.execute(query)
+    cursor.execute(delete_header_query)
+    cursor.execute(delete_detail_query)
     conn.commit()                   #コミット
 
   except(mysql.connector.errors.ProgrammingError) as e:

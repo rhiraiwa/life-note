@@ -1,7 +1,82 @@
 #result {
+  #main-table-area {
+    width: 535px;
+    
+    .selected {
+      td {
+        background-color: #ffdcdb;
+      }
+    }
+
+    tr {
+      &:hover {
+        td {
+            background-color: #dbfeff;
+        }
+      }
+    }
+  }
   #sum-row {
     .col-category {
       color: #F99695;
     }
   }
+}
+
+#result-detail-area {
+  height: 80vh;
+  overflow-y: scroll;
+  -ms-overflow-style: none;    /* IE, Edge 対応 */
+
+  &::-webkit-scrollbar {
+    display:none;
+  }
+
+  #selected-detail-label {
+    margin-left: 30px;
+  }
+
+  #result-detail-table {
+    margin-top: 5px;
+    margin-left: 30px;
+    
+    tr {
+      .col-result-date {
+        width: 50px;
+        text-align: center;
+      }
+      .col-shop {
+        width: 150px;
+      }
+      .col-item-name {
+        width: 150px;
+      }
+      .col-count {
+        width: 50px;
+        text-align: center;
+      }
+
+      &:hover {
+        td {
+            background-color: #dbfeff;
+        }
+      }
+    }
+  }  
+}
+
+#pie-chart-area {
+  margin-top: 30px;
+  background-color: #FFFFFF;
+  width: 250px;
+  height: 30vh;
+  // border: 1px dotted #676F74;
+}
+
+#line-chart-area {
+  margin-top: 30px;
+  background-color: #FFFFFF;
+  // width: 95%;
+  height: 300px;
+  // border: 1px dotted #676F74;
 }

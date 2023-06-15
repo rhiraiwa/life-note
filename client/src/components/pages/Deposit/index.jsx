@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import FlexDiv from "../../atoms/FlexDiv";
 import LabelInput from "../../molecules/LabelInput";
 import YearMonthChanger from "../../molecules/YearMonthChanger";
@@ -6,25 +6,26 @@ import undo from '../../../img/undo.png';
 import './index.scss';
 import { useMasterFileData } from "../../../context/MasterFileContext";
 import { formatDate, formatMoney, formatTime, formatComma } from "../../utils/"
+import NumberInput from "../../atoms/NumberInput";
 
 const Deposit = () => {
 
   const date = new Date();
-  const [selected, setSelected] = React.useState({
+  const [selected, setSelected] = useState({
     year: date.getFullYear(),
     month: date. getMonth()
   })
 
   const {userlist, categorylist} = useMasterFileData();
-  const [deposit, setDeposit] = React.useState({
+  const [deposit, setDeposit] = useState({
     user: userlist[0].cd,
     category: categorylist[0].cd,
     amount: ''
   });
-  const [statuslist, setStatuslist] = React.useState([]);
-  const [historylist, setHistorylist] = React.useState([]);
+  const [statuslist, setStatuslist] = useState([]);
+  const [historylist, setHistorylist] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetch('http://localhost:5000/deposit_init', {
       method: 'POST',
       body: JSON.stringify({
@@ -124,7 +125,9 @@ const Deposit = () => {
             </select>
           </div>
           <div>
-            <LabelInput id='deposit-amount' label='金額' type='text' value={deposit.amount} setValue={(e)=>setDeposit({...deposit, amount: e.target.value})}/>            
+            <div id='deposit-amount'>
+              <LabelInput label='金額' type='text' id='deposit-amount-input' value={deposit.amount} setValue={(e)=>setDeposit({...deposit, amount: e.target.value})}/>
+            </div>
           </div>
           <button className='button-primary' onClick={insert_deposit}>登録</button>
         </FlexDiv>
@@ -146,7 +149,7 @@ const Deposit = () => {
                   <td className='col-category'>{status.category_name}</td>
                   <td className='col-amount'>{formatMoney(status.budget)}</td>
                   <td className='col-amount'>{formatMoney(status.deposit)}</td>
-                </tr>                
+                </tr>
               ))}
             </tbody>
           </table>

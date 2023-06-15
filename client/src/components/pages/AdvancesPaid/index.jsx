@@ -128,9 +128,9 @@ const AdvancesPaid = () => {
           <table>
             <thead>
               <tr>
-                <th className='col-category'>カテゴリ</th>
-                <th className='col-amount'>立替額</th>
+                {/* <th className='col-category'>カテゴリ</th> */}
                 <th className='col-shop-name'>店名</th>
+                <th className='col-amount'>立替額</th>
                 <th className='col-year-month-date'>立替日</th>
                 <th className='col-image-button'>返金</th>
                 <th className='col-image-button'></th>
@@ -141,9 +141,9 @@ const AdvancesPaid = () => {
               {
                 advancesPaidlist.map((history, index) => (
                   <tr key={index}>
-                    <td className='col-category'>{history.category}</td>
-                    <td className='col-amount'>{formatMoney(history.amount)}</td>
+                    {/* <td className='col-category'>{history.category}</td> */}
                     <td className='col-shop-name'>{history.shop_name}</td>
+                    <td className='col-amount'>{formatMoney(history.amount)}</td>
                     <td className='col-year-month-date'>{history.payment_date}</td>
                     {
                       history.refund_flag === 1 ?

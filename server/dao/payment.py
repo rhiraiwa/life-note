@@ -7,10 +7,8 @@ import shutil
 # 現在時間取得SQL
 date = 'DATE_FORMAT(CURRENT_DATE(), \'%Y%m%d\')'
 time = 'TIME_FORMAT(CURRENT_TIME(), \'%H%i%s\')'
-temp_path = 'client/public/receipt/temp/'
-preview_path = 'client/public/receipt/preview/'
 
-def insert_payment(year, month, today, category, shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note, filename):
+def insert_payment(year, month, today, shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note):
   count_query  = f'SELECT CASE '
   count_query += f'            WHEN MAX(payment_number) IS NULL '
   count_query += f'            THEN 0 '
@@ -31,7 +29,6 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     insert_query += f'        \'{month}\', '
     insert_query += f'        \'{today}\', '
     insert_query += f'        {rows[0][0]}, '
-    insert_query += f'        \'{category}\', '
     insert_query += f'        \'{shop}\', '
     insert_query += f'        {amount}, '
     insert_query += f'        \'{advance_paid_flag}\', '
@@ -45,16 +42,72 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     insert_query += f'        {time}, '
     insert_query += f'        0);'
 
-    #画像保存
-    store_path = f'client/public/receipt/stored/{year}{month}{today}{rows[0][0]}/'
-    
-    if os.path.exists(store_path):  # 必要かどうか分からない（修正処理が実装されれば必要か）
-      shutil.rmtree(store_path)
+    cursor.execute(insert_query)
+    conn.commit()                   #コミット
 
-    if filename != '':
-      os.mkdir(store_path)
-      os.replace(preview_path + filename, store_path + filename)
-      os.remove(temp_path + filename)
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+  
+  return rows[0][0]
+
+def insert_detail(year, month, today, payment_no, details):
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    for detail in details:
+      insert_query = f'''INSERT INTO PAYMENT_DETAIL 
+                        VALUES ('{year}', 
+                                '{month}', 
+                                '{today}', 
+                                {payment_no}, 
+                                {detail["detailNumber"]}, 
+                                {detail["largeClass"]}, 
+                                {'NULL' if detail["middleClass"] is None else detail["middleClass"]}, 
+                                '{detail["itemClass"]}', 
+                                '{detail["itemName"]}', 
+                                {detail["unitPrice"]}, 
+                                {detail["taxRate"]}, 
+                                {detail["discount"]}, 
+                                {detail["itemCount"]}, 
+                                {detail["price"]}, 
+                                {date}, 
+                                {time}, 
+                                {date}, 
+                                {time}, 
+                                0);'''
+      cursor.execute(insert_query)
+
+    conn.commit()                   #コミット
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+def edit_payment(shop, amount, advance_paid_flag, advance_paid_amount, advance_paid_user, note, key):
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    insert_query  = f'UPDATE PAYMENT '
+    insert_query += f'SET    shop_name = \'{shop}\', '
+    insert_query += f'       amount = {amount}, '
+    insert_query += f'       advances_paid_flag = \'{advance_paid_flag}\', '
+    insert_query += f'       advances_paid_amount = {advance_paid_amount}, '
+    insert_query += f'       advances_paid_user_cd = \'{advance_paid_user}\', '
+    insert_query += f'       note = \'{note}\', '
+    insert_query += f'       update_date = {date}, '
+    insert_query += f'       update_time = {time} '
+    insert_query += f'WHERE  CONCAT(year, month, date, payment_number) = \'{key}\';'
 
     cursor.execute(insert_query)
     conn.commit()                   #コミット
@@ -66,3 +119,144 @@ def insert_payment(year, month, today, category, shop, amount, advance_paid_flag
     if conn != None:
       cursor.close()              # カーソルを終了
       conn.close()                # DB切断
+
+def edit_detail(details, key, year, month, today, payment_no):
+
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    for detail in details:
+
+      select_query = f'''
+        SELECT COUNT(*) FROM PAYMENT_DETAIL
+        WHERE  CONCAT(year, month, date, payment_number) = \'{key}\'
+        AND    detail_number = \'{detail["detailNumber"]}\'
+      '''
+
+      cursor.execute(select_query)           #sql実行
+      rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+      if (rows[0][0] == 0):
+        query = f'''
+          INSERT INTO PAYMENT_DETAIL 
+                        VALUES ('{year}', 
+                                '{month}', 
+                                '{today}', 
+                                {payment_no}, 
+                                {detail["detailNumber"]}, 
+                                {detail["largeClass"]}, 
+                                {'NULL' if detail["middleClass"] is None else detail["middleClass"]}, 
+                                '{detail["itemClass"]}', 
+                                '{detail["itemName"]}', 
+                                {detail["unitPrice"]}, 
+                                {detail["taxRate"]}, 
+                                {detail["discount"]}, 
+                                {detail["itemCount"]}, 
+                                {detail["price"]}, 
+                                {date}, 
+                                {time}, 
+                                {date}, 
+                                {time}, 
+                                0);
+        '''
+
+      else:
+        query  = f'UPDATE  PAYMENT_DETAIL '
+        query += f'SET     large_class_cd = {detail["largeClass"]}, '
+        query += f'        middle_class_cd = {detail["middleClass"]}, '
+        query += f'        item_class = \'{detail["itemClass"]}\', '
+        query += f'        item_name = \'{detail["itemName"]}\', '
+        query += f'        unit_price = {detail["unitPrice"]}, '
+        query += f'        tax_rate = {detail["taxRate"]}, '
+        query += f'        discount = {detail["discount"]}, '
+        query += f'        item_count = {detail["itemCount"]}, '
+        query += f'        price = {detail["price"]}, '
+        query += f'        update_date = {date}, '
+        query += f'        update_time = {time} '
+        query += f'WHERE   CONCAT(year, month, date, payment_number) = \'{key}\''
+        query += f'  AND   detail_number = \'{detail["detailNumber"]}\''
+
+      cursor.execute(query)
+
+    conn.commit()
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+def select_detail(key):
+  query  = f'SELECT    CAST(detail_number AS NCHAR), '
+  query += f'          CAST(large_class_cd AS NCHAR), '
+  query += f'          CAST(middle_class_cd AS NCHAR), '
+  query += f'          CAST(item_class AS NCHAR), '
+  query += f'          CAST(item_name AS NCHAR), '
+  query += f'          CAST(unit_price AS NCHAR), '
+  query += f'          CAST(discount AS NCHAR), '
+  query += f'          CAST(tax_rate AS NCHAR), '
+  query += f'          CAST(item_count AS NCHAR), '
+  query += f'          CAST(price AS NCHAR) '
+  query += f'FROM      PAYMENT_DETAIL '
+  query += f'WHERE     CONCAT(year, month, date, payment_number) = \'{key}\' '
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('detailNumber', 'largeClass', 'middleClass', 'itemClass', 'itemName', 'unitPrice', 'discount', 'taxRate', 'itemCount', 'price')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json
+
+def select_waon(year, month):
+  query  = f'SELECT    date, '
+  query += f'          CAST(advances_paid_amount AS NCHAR), '
+  query += f'          name, '
+  query += f'          CONCAT(year, month, date, payment_number) '
+  query += f'FROM      PAYMENT '
+  query += f'LEFT JOIN USER_MF '
+  query += f'       ON advances_paid_user_cd = cd '
+  query += f'WHERE     year = \'{year}\' '
+  query += f'      AND month = \'{month}\' '
+  query += f'      AND shop_name = \'チャージ\' '
+  result_row = []
+  
+  try:
+    conn = db.get_conn()            #ここでDBに接続
+    cursor = conn.cursor()          #カーソルを取得
+    cursor.execute(query)           #sql実行
+    rows = cursor.fetchall()        #selectの結果を全件タプルに格納
+
+    ### ２つのリストを辞書へ変換
+    for data_tuple in rows:
+      label_tuple = ('date', 'amount', 'user', 'key')
+      row_dict = {label:data for data, label in zip(data_tuple, label_tuple)} 
+      result_row.append(row_dict)
+
+  except(mysql.connector.errors.ProgrammingError) as e:
+    print('エラーが発生しました')
+    print(e)
+  finally:
+    if conn != None:
+      cursor.close()              # カーソルを終了
+      conn.close()                # DB切断
+
+  output_json = json.dumps(result_row, ensure_ascii=False)
+  return output_json

@@ -2,6 +2,7 @@ from server import app
 from server.dao import user_maintenance, category_maintenance, budget, home as home_refarance, deposit, payment, result, advances_paid
 from server.model import camera
 from flask import request, json
+import subprocess
 
 @app.route('/')
 def index():
@@ -36,6 +37,33 @@ def user_delete():
   return {'data': table_data}
 
 # カテゴリマスタメンテナンス
+@app.route('/middle_class_select', methods=['POST'])
+def middle_class_select():
+  table_data = category_maintenance.select_middle_class()
+
+  return {'data': table_data}
+
+@app.route('/middle_class_insert', methods=['POST'])
+def middle_class_insert():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.insert_middle_class(rd['largeClassCd'], rd['middleClassName'])
+  
+  return {'data': table_data}
+
+@app.route('/middle_class_edit', methods=['POST'])
+def middle_class_edit():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.edit_middle_class(rd['cd'], rd['name'])
+
+  return {'data': table_data}
+
+@app.route('/middle_class_delete', methods=['POST'])
+def middle_class_delete():
+  rd = json.loads(request.data)
+  table_data = category_maintenance.delete_middle_class(rd['cd'])
+
+  return {'data': table_data}
+
 @app.route('/category_select', methods=['POST'])
 def category_select():
   table_data = category_maintenance.select_mf()
@@ -59,7 +87,7 @@ def category_edit():
 @app.route('/category_delete', methods=['POST'])
 def category_delete():
   rd = json.loads(request.data)
-  table_data = category_maintenance.delete_mf(rd['categorycd'])
+  table_data = category_maintenance.delete_mf(rd['cd'])
 
   return {'data': table_data}
 
@@ -162,11 +190,35 @@ def deposit_undo():
 @app.route('/payment_insert', methods=['POST'])
 def payment_insert():
   rd = json.loads(request.data)
-  rd = rd['form']
-  rd['advancePaidAmount'] = rd['advancePaidAmount'] if rd['advancePaidAmount'] != '' else 0
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], rd['category'], rd['shopName'], rd['amount'], rd['isAdvancePaid'], rd['advancePaidAmount'], rd['advancePaidUser'], rd['note'], rd['filename'])
+  header = rd['header']
+  sum = rd['sum']
+  detail = rd['detail']
+  header['advancePaidAmount'] = header['advancePaidAmount'] if header['advancePaidAmount'] != '' else 0
+  no = payment.insert_payment(header['year'], header['month'], header['date'], header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'])
+  payment.insert_detail(header['year'], header['month'], header['date'], no, detail)
 
   return {'payment_insert': 'done'}
+
+@app.route('/payment_edit', methods=['POST'])
+def payment_edit():
+  rd = json.loads(request.data)
+  header = rd['header']
+  sum = rd['sum']
+  key = rd['key']
+  detail = rd['detail']
+  header['advancePaidAmount'] = header['advancePaidAmount'] if header['advancePaidAmount'] != '' else 0
+  payment.edit_payment(header['shopName'], sum, header['isAdvancePaid'], header['advancePaidAmount'], header['advancePaidUser'], header['note'], key)
+  payment.edit_detail(detail, key, header['year'], header['month'], header['date'], header['paymentNumber'])
+
+  return {'payment_insert': 'done'}
+
+# 明細照会（簡易）
+@app.route('/detail_select', methods=['POST'])
+def detail_select():
+  rd = json.loads(request.data)
+  table_data = payment.select_detail(rd['key'])
+
+  return {'detail': table_data}
 
 # WAONカードチャージ
 @app.route('/charge_history_insert', methods=['POST'])
@@ -174,9 +226,27 @@ def charge_history_insert():
   rd = json.loads(request.data)
   rd = rd['form']
   charge = rd['amount']
-  payment.insert_payment(rd['year'], rd['month'], rd['date'], 999, f'{charge}円', 0, 1, rd['amount'], rd['user'], f'{charge}円', '')
+  payment.insert_payment(rd['year'], rd['month'], rd['date'], f'チャージ', 0, 1, rd['amount'], rd['user'], f'\\{charge}')
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
 
-  return {'payment_insert': 'done'}
+# WAONチャージ履歴取得
+@app.route('/charge_history_select', methods=['POST'])
+def charge_history_select():
+  rd = json.loads(request.data)
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
+
+# WAONチャージ履歴取得
+@app.route('/charge_history_delete', methods=['POST'])
+def charge_history_delete():
+  rd = json.loads(request.data)
+  home_refarance.undo_home(rd['key'])
+  table_data = payment.select_waon(rd['year'], rd['month'])
+  
+  return {'data': table_data}
 
 # 実績照会画面
 @app.route('/result_select', methods=['POST'])
@@ -185,6 +255,23 @@ def result_select():
   table_data = result.select_result(rd['year'], rd['month'])
 
   return {'data': table_data}
+
+# 実績照会画面明細取得
+@app.route('/detail_result_select', methods=['POST'])
+def detail_result_select():
+  rd = json.loads(request.data)
+  table_data = result.select_detail_result(rd['year'], rd['month'], rd['large_class_cd'], rd['middle_class_cd'])
+
+  return {'data': table_data}
+
+# グラフデータ取得
+@app.route('/chart_select', methods=['POST'])
+def pie_chart_select():
+  rd = json.loads(request.data)
+  pie_chart_data = result.select_pie_chart(rd['year'], rd['month'], rd['large_class_cd'])
+  line_chart_data = result.select_line_chart(rd['year'], rd['month'], rd['large_class_cd'])
+
+  return {'pie': pie_chart_data, 'line': line_chart_data}
 
 # 立替管理
 @app.route('/advances_paid_select', methods=['POST'])
@@ -208,18 +295,8 @@ def refund_flag_handle():
 
   return {'data': table_data}
 
-# 画像処理
-@app.route('/image_processing', methods=['POST'])
-def image_processing():
-  filename = camera.camera_main()
+@app.route('/calc', methods=['POST'])
+def exeCalc():
+  subprocess.Popen(['start', r'C:\Windows\WinSxS\\amd64_microsoft-windows-calc_31bf3856ad364e35_10.0.19041.1_none_5faf0ebeba197e78\\calc.exe'], shell=True)
 
-  return {'filename': filename}
-
-@app.route('/image_web', methods=['POST'])
-def image_web():
-  rd = json.loads(request.data)
-  # filename = camera.web(rd['filename'])
-  camera.web(rd['filename'])
-
-  # return {'filename': filename}
-  return {'web': 'done'}
+  return {'calculator': 'open'}

@@ -1,11 +1,12 @@
 #payment {
 
-  #payment-input-area {
-    width: 500px;
+  .payment-input-area {
+    width: 260px;
+    margin-right: 10px;
 
     .label-input {
       &:not(#payment-year, #payment-month, #payment-date) {
-        margin: 29px 0px;
+        margin: 5px 0px;
 
         label {
           width: 80px;
@@ -18,7 +19,7 @@
       
         input {
           &:not(input[type='checkbox'], input[type='file']) {
-            width: 80px;
+            width: 160px;
             height: 20px;
           }
         }
@@ -38,20 +39,102 @@
     #payment-date_input {
       width: 20px;
       margin-left: 5px;
-    }
-  }
-
-  #payment-receipt-preview {
-    width: 50vw;
-    height: 70vh;
-    border-left: 1px solid #AAAAAA;
-    margin-left: 25px;
-    padding-left: 25px;
-  
-    img{
-      width: 100%;
-      height: 100%;
-      object-fit: scale-down;
-    }
+    }    
   }
 }
+#detail-table-area {
+  height: 80vh;
+  overflow-y: scroll;
+  -ms-overflow-style: none;    /* IE, Edge 対応 */
+
+  width: 90vw;
+
+  &::-webkit-scrollbar {
+    display:none;
+  }
+
+  #detail-table {
+
+    button {
+      margin :5px;
+    }
+    
+    td {
+      height: 30px;
+  
+      input {
+        &:not(#sum-amount-input) {
+          height: 100%;
+          padding-top: 0;
+        }
+        border: none;
+        user-select: none;
+      }
+  
+      select {
+        height: 100%;
+        border: none;
+      }
+    }
+  
+    .col-class {
+      width: 100px;
+      text-align: center;
+      input, select {
+        width: 100px;
+      }
+    }
+  
+    .col-tax-rate {
+      width: 10px;
+    }
+  
+    .col-item-count {
+      min-width: 50px;
+      input {
+        width: 50px;
+        text-align: right;
+      }
+    }
+  
+    .col-payment {
+      min-width: 60px;
+      input {
+        width: 60px;
+        text-align: right;
+        padding-right: 5px;
+      }
+    }
+
+    .col-price {
+      text-align: right;
+      min-width: 100px;
+      padding-right: 10px;
+    }
+  
+    .col-button {
+      button {
+        margin-left: auto;
+        margin-right: auto;
+      }
+    }
+  
+    .payment-img {
+      margin-left: 10px;
+    }
+  
+    #sum-label {
+      text-align: center;
+    }
+  
+    #sum-amount {
+      text-align: right;
+    }
+  
+  }
+}
+    #payment-note {
+      margin-top: 5px;
+      width:250px;
+      height: 78px;
+    }

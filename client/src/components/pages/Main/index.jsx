@@ -8,10 +8,11 @@ import Charge from '../../templates/Charge';
 import money from '../../../img/charge.png';
 import attention from '../../../img/attention.png';
 import del from '../../../img/delete.png';
+import edit from '../../../img/edit.png';
 import './index.scss';
 import { formatComma, formatMoney } from '../../utils';
 
-const Table = ({year, month, data}) => {
+const Table = ({year, month, data, selectRow, setSelectRow}) => {
   const navigate = useNavigate();
 
   return (
@@ -20,20 +21,20 @@ const Table = ({year, month, data}) => {
         <tr>
           <th className='col-checkbox'></th>
           <th colSpan={2} className='col-date'>日</th>
-          <th className='col-category'>カテゴリ</th>
           <th className='col-shop-name'>店名</th>
           <th className='col-amount'>金額</th>
+          <th className='col-image-button'></th>
           <th className='col-image-button'></th>
         </tr>
       </thead>
       <tbody>
-        {getCompleteRow(data, year, month, navigate)}
+        {getCompleteRow(data, year, month, selectRow, setSelectRow, navigate)}
       </tbody>
     </table>
   );
 }
 
-const getCompleteRow = (data, year, month, navigate) => {
+const getCompleteRow = (data, year, month, selectRow, setSelectRow, navigate) => {
 
   const lastDate = new Date(year, month + 1, 0).getDate();
   
@@ -45,9 +46,10 @@ const getCompleteRow = (data, year, month, navigate) => {
         rows.push(
           {
             "date":j.toString(),
-            "category":"",
+            "payment_number":"",
             "shop_name":"",
-            "amount":""
+            "amount":"",
+            "advancesPaidAmount":""
           }
         )
       }
@@ -60,16 +62,17 @@ const getCompleteRow = (data, year, month, navigate) => {
       rows.push(
         {
           "date":i.toString(),
-          "category":"",
+          "payment_number":"",
           "shop_name":"",
-          "amount":""
+          "amount":"",
+          "advancesPaidAmount":""
         }
       )
     }
   }
 
   let countMap = countDate(rows);
-  let displayRows = formatRow(rows, countMap, year, month, navigate);
+  let displayRows = formatRow(rows, countMap, year, month, selectRow, setSelectRow, navigate);
 
   return displayRows;
 }
@@ -120,7 +123,7 @@ const countDate = (rows) => {
   return countMap;
 }
 
-const formatRow = (original, count, year, month, navigate) => {
+const formatRow = (original, count, year, month, selectRow, setSelectRow, navigate) => {
   const days = ['日', '月', '火', '水', '木', '金', '土'];
 
   const undoPayment = (key) => {
@@ -154,8 +157,10 @@ const formatRow = (original, count, year, month, navigate) => {
       else if (day === 6) className = 'saturday-row';
       else className  = 'other-day-row';
 
+      if (selectRow !== undefined && original[i].key === selectRow) className += ' selected-row';
+
       rows.push(
-        <tr key={i} className={className}>
+        <tr key={i} className={className} onClick={()=>setSelectRow(original[i].key)}>
           <td rowSpan={count[index.toString()]} className='col-checkbox'>
             <input type='checkbox'/>
           </td>
@@ -163,9 +168,13 @@ const formatRow = (original, count, year, month, navigate) => {
           <td rowSpan={count[index.toString()]} className='col-day' onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date }})}>
             {`(${days[new Date(year, month, original[i].date).getDay()]})`}
           </td>
-          <td className='col-category'>{original[i].category_name}</td>
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, key: original[i].key, header: original[i] }})} src={edit} alt='edit'/>
+            )}
+          </td>
           <td className='col-image-button'>
             {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
               <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
@@ -176,11 +185,19 @@ const formatRow = (original, count, year, month, navigate) => {
       count[index] = 0;
      }
     else {
+      
+      let className2
+      if (selectRow !== undefined && original[i].key === selectRow) className2 = 'selected-row';
+
       rows.push(
-        <tr key={i}>
-          <td className='col-category'>{original[i].category_name}</td>
+        <tr key={i} className={className2} onClick={()=>setSelectRow(original[i].key)}>
           <td className='col-shop-name'>{original[i].shop_name}</td>
-          <td className='col-amount'>{formatMoney(original[i].amount)}</td>
+          <td className='col-amount'>{original[i].shop_name === 'チャージ' ? formatMoney(original[i].advancesPaidAmount) : formatMoney(original[i].amount)}</td>
+          <td className='col-image-button'>
+            {!(original[i].category_name === '' || original[i].shop_name === '' || original[i].amount === '') && (
+              <img onClick={()=>navigate('/payment', { state: {year: year, month: month+1, date: original[i].date, key: original[i].key, header: original[i] }})} src={edit} alt='edit'/>
+            )}
+          </td>
           <td className='col-image-button'>
             <img onClick={()=>undoPayment(original[i].key)} src={del} alt='delete'/>
           </td>
@@ -213,7 +230,13 @@ const Main = () => {
   const [noFilter, setNoFilter] = useState([]);
   const [filter, setFilter] = useState([]);
 
+  const [selectRow, setSelectRow] = useState('');
+  const [detail, setDetail] = useState([]);
+
   useEffect(() => {
+
+    if (isOpen) return;
+
     setReference({...reference, budget: ''});
 
     fetch('http://localhost:5000/home', {
@@ -244,7 +267,7 @@ const Main = () => {
       let filter = [];
       for(let i = 0; i < JSON.parse(json['data']).length; i++) {
         
-        if (JSON.parse(json['data'])[i].category_cd === 999) continue;
+        if (JSON.parse(json['data'])[i].shop_name === 'チャージ') continue;
 
         filter.push(JSON.parse(json['data'])[i]);
       }
@@ -253,7 +276,25 @@ const Main = () => {
       setData(filter);
     })
     .catch(err => alert(err))
-  }, [selected]);
+  }, [selected, isOpen]);
+
+  useEffect(() => {
+
+    if (selectRow === undefined || selectRow === '') return;
+
+    fetch('http://localhost:5000/detail_select', {
+      method: 'POST',
+      body: JSON.stringify({
+        "key": selectRow,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=utf-8"
+      }
+    })
+    .then(response => response.json())
+    .then(json => setDetail(JSON.parse(json['detail'])))
+    .catch(err => alert(err))
+  }, [selectRow])
 
   const handleFilter = () => {
     let checkbox = document.getElementById('display-charge');
@@ -272,17 +313,43 @@ const Main = () => {
               <label htmlFor='display-charge'>チャージを含む</label>
             </FlexDiv>
           <div id='home-table-area'>
-            <Table year={selected.year} month={selected.month} data={data}/>
+            <Table year={selected.year} month={selected.month} data={data} selectRow={selectRow} setSelectRow={setSelectRow}/>
           </div>
           <FlexDiv>
             <button className='button-primary home-button' onClick={()=>setIsOpen(true)}>
               <img src={money} alt='money'/>
               WAON
             </button>
-            {/* <button className='button-primary home-button'>一括チャージ</button> */}
             <LabelInput id='subtotal' label='小計' type='text' isReadOnly={true}/>
           </FlexDiv>
         </div>
+        {
+          selectRow !== '' &&
+          selectRow !== undefined &&
+          detail.length !== 0 &&
+          <div id='sub-table-area'>
+            <table id='sub-table'>
+              <thead>
+                <tr>
+                  <th className='col-shop-name'>商品名</th>
+                  <th className='col-count'>数量</th>
+                  <th className='col-amount'>金額</th>
+                </tr>
+              </thead>
+              <tbody>
+                {
+                  detail.map((value, index) => (
+                    <tr key={index}>
+                      <td className='col-shop-name'>{value.itemName}</td>
+                      <td className='col-count'>{value.itemCount}</td>
+                      <td className='col-amount'>{formatMoney(value.price)}</td>
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          </div>
+        }
         <div id='flex-right'>
           <LabelInput label='予算' type='text' isReadOnly={true} value={formatComma(reference.budget)}/>
           <LabelInput label='入金' type='text' isReadOnly={true} value={formatComma(reference.deposit)}/>
